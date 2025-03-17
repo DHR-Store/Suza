@@ -19,32 +19,7 @@
             padding: 0;
             scroll-behavior: smooth;
         }
-                  /* Loader Animation */
-                 /* Loader Animation */
-        #loader {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: black;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        /* Image animation */
-        @keyframes fadeInOut {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        #loader img {
-            width: 200px;
-            animation: fadeInOut 3s ease-in-out;
-        }
-
-        /* Hide content initially */
+        
         #content {
             display: none;
         }
@@ -170,9 +145,7 @@
 </head>
 
 <body class="bg-dark text-light">
-    <div id="loader">
-          <img src="suza.png" alt="Loading..." style="background: transparent;">
-      </div>
+  
 
     <!-- Hero Section -->
     <div id="hero">
@@ -201,58 +174,98 @@
     <!-- Bottom Navigation Bar -->
     <nav class="navbar navbar-dark fixed-bottom">
         <div class="container-fluid d-flex justify-content-around">
-            <a href="index.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
+            <a href="home.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
             <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
             <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br></a>
             <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
         </div>
     </nav>
 
-    <script>
-    setTimeout(() => {
-              document.getElementById('loader').style.display = 'none';
-              document.getElementById('content').style.display = 'block';
-          }, 3000); 
-          
-        const API_KEY = "245f8617"; // Replace with your OMDb API Key
+        <script>
+  
+    const API_KEY = "245f8617"; // अपने OMDb API Key से बदलें
 
-        async function fetchOMDbData(searchQuery, elementId, updateHero = false) {
-            const response = await fetch(`https://www.omdbapi.com/?s=${searchQuery}&apikey=${API_KEY}`);
-            const data = await response.json();
+// Hero Section Update Every 30 Seconds
+async function updateHeroSection() {
+    const categories = ["movie", "series", "anime", "bollywood", "hollywood", "korean", "chinese"];
+    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+    
+    const response = await fetch(`https://www.omdbapi.com/?s=${randomCategory}&apikey=${API_KEY}`);
+    const data = await response.json();
 
-            let htmlContent = "";
-            if (data.Search) {
-                if (updateHero) {
-                    let topMovie = data.Search[0];
-                    document.getElementById("hero").style.backgroundImage = `url(${topMovie.Poster})`;
-                    document.getElementById("hero-title").textContent = topMovie.Title;
-                    document.getElementById("hero-desc").textContent = `Released: ${topMovie.Year}`;
-                    document.getElementById("watch-hero").onclick = () => {
-                        window.location.href = `watch.html?title=${encodeURIComponent(topMovie.Title)}`;
-                    };
-                }
+    if (data.Search) {
+        let topMovie = data.Search[0];
+        document.getElementById("hero").style.backgroundImage = `url(${topMovie.Poster})`;
+        document.getElementById("hero-title").textContent = topMovie.Title;
+        document.getElementById("hero-desc").textContent = `Released: ${topMovie.Year}`;
+        document.getElementById("watch-hero").onclick = () => {
+            window.location.href = `watch.html?title=${encodeURIComponent(topMovie.Title)}`;
+        };
+    }
+}
 
-                data.Search.slice(0, 10).forEach(movie => {
-                    htmlContent += `
-                        <div class="scroll-item" onclick="openWatchPage('${movie.Title}')">
-                            <img src="${movie.Poster}" alt="${movie.Title}" title="${movie.Title}">
-                        </div>`;
-                });
-            }
-            document.getElementById(elementId).innerHTML = htmlContent;
+// Movie, Web Series, TV Shows Update Every 1 Minute
+async function updateSection(section, query) {
+    const response = await fetch(`https://www.omdbapi.com/?s=${query}&apikey=${API_KEY}`);
+    const data = await response.json();
+
+    let htmlContent = "";
+    if (data.Search) {
+        data.Search.slice(0, 10).forEach(item => {
+            let shortTitle = item.Title.length > 15 ? item.Title.substring(0, 15) + "..." : item.Title;
+            htmlContent += `
+                <div class="scroll-item" onclick="openWatchPage('${item.Title}')">
+                    <img src="${item.Poster}" alt="${item.Title}" title="${item.Title}">
+                    <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+                </div>`;
+        });
+    }
+    document.getElementById(section).innerHTML = htmlContent;
+}
+
+// Fetch Latest Anime Data from MyAnimeList (Jikan API)
+async function updateAnimeSection() {
+    try {
+        const response = await fetch("https://api.jikan.moe/v4/top/anime");
+        const data = await response.json();
+
+        let htmlContent = "";
+        if (data.data) {
+            data.data.slice(0, 10).forEach(anime => {
+                let shortTitle = anime.title.length > 15 ? anime.title.substring(0, 15) + "..." : anime.title;
+                htmlContent += `
+                    <div class="scroll-item" onclick="openWatchPage('${anime.title}')">
+                        <img src="${anime.images.jpg.image_url}" alt="${anime.title}" title="${anime.title}">
+                        <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+                    </div>`;
+            });
         }
+        document.getElementById("anime-scroll").innerHTML = htmlContent;
+    } catch (error) {
+        console.error("Anime data fetch error:", error);
+    }
+}
 
-        function openWatchPage(title) {
-            window.location.href = `watch.html?title=${encodeURIComponent(title)}`;
-        }
+// Click Function to Load Watch Page
+function openWatchPage(title) {
+    window.location.href = `watch.html?title=${encodeURIComponent(title)}`;
+}
 
-        // Fetch Data
-        fetchOMDbData("trending", "hero-background", true);
-        fetchOMDbData("action", "movies-scroll");
-        fetchOMDbData("anime", "anime-scroll");
-        fetchOMDbData("series", "web-series-scroll");
-        fetchOMDbData("drama", "tv-shows-scroll");
-    </script>
+// Call Functions Initially
+updateHeroSection();
+updateSection("movies-scroll", "movie");
+updateAnimeSection();
+updateSection("web-series-scroll", "series");
+updateSection("tv-shows-scroll", "drama");
 
+// Set Interval for Automatic Updates
+setInterval(updateHeroSection, 30000); // Hero Section - 30 सेकंड
+setInterval(updateAnimeSection, 60000); // Anime Section - 1 मिनट
+setInterval(() => {
+    updateSection("movies-scroll", "movie");
+    updateSection("web-series-scroll", "series");
+    updateSection("tv-shows-scroll", "drama");
+}, 60000); // Movies, Web Series, TV Shows - 1 मिनट
+</script>
 </body>
 </html>
