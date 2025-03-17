@@ -4,7 +4,7 @@ A simple web-based streaming app that allows users to
 watch movies and TV shows (including web series, anime,
 and cartoons) using IMDb IDs and API integration.
 
-Features
+<h3>Features/<h3>
 
 ✅ Watch movies with a single play button
 ✅ Browse TV show seasons & episodes dynamically
@@ -13,7 +13,7 @@ Features
 ✅ Error handling for missing or incorrect data
 ✅ Fully responsive (works on mobile & desktop)
 
-Project Structure
+<h3>Project Structure</h3>
 
 /watch-streaming-app
 │── index.html             # Home page (Optional)
@@ -22,7 +22,7 @@ Project Structure
 │── style.css              # (Optional) Add custom styling
 │── README.md              # Documentation (this file)
 
-Setup & Usage
+<h3>Setup & Usage</h4>
 
 1️⃣ Open watch.html with a Valid IMDb ID
 
