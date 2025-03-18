@@ -801,3 +801,45 @@ document.querySelector("#fullscreen-btn").addEventListener("click", function () 
         iframe.msRequestFullscreen();
     }
 });
+
+
+
+document.getElementById("videoPlayer").onload = function () {
+    let iframe = document.getElementById("videoPlayer").contentWindow;
+
+    if (!iframe) {
+        console.error("Iframe not loaded properly.");
+        return;
+    }
+
+    function removeAds() {
+        try {
+            let iframeDoc = iframe.document;
+
+            // Common ad selectors ko remove karein
+            let adSelectors = [
+                ".ads", "#ad-banner", ".popup", ".overlay", "iframe[src*='ads']",
+                "[onclick*='ad']", "[class*='advert']", "[id*='ad']"
+            ];
+
+            adSelectors.forEach(selector => {
+                iframeDoc.querySelectorAll(selector).forEach(ad => ad.remove());
+            });
+
+            // Agar koi fullscreen ad overlay ho to usko bhi remove karein
+            let overlays = iframeDoc.querySelectorAll("div[style*='z-index']");
+            overlays.forEach(overlay => {
+                if (overlay.style.zIndex > 1000) {
+                    overlay.remove();
+                }
+            });
+
+            console.log("Ads removed from iframe.");
+        } catch (error) {
+            console.error("Error accessing iframe content:", error);
+        }
+    }
+
+    // Har 2 second me ads check karega aur remove karega
+    setInterval(removeAds, 2000);
+};
