@@ -802,44 +802,32 @@ document.querySelector("#fullscreen-btn").addEventListener("click", function () 
     }
 });
 
-
-
-document.getElementById("videoPlayer").onload = function () {
-    let iframe = document.getElementById("videoPlayer").contentWindow;
-
-    if (!iframe) {
-        console.error("Iframe not loaded properly.");
-        return;
-    }
-
-    function removeAds() {
-        try {
-            let iframeDoc = iframe.document;
-
-            // Common ad selectors ko remove karein
-            let adSelectors = [
-                ".ads", "#ad-banner", ".popup", ".overlay", "iframe[src*='ads']",
-                "[onclick*='ad']", "[class*='advert']", "[id*='ad']"
-            ];
-
-            adSelectors.forEach(selector => {
-                iframeDoc.querySelectorAll(selector).forEach(ad => ad.remove());
-            });
-
-            // Agar koi fullscreen ad overlay ho to usko bhi remove karein
-            let overlays = iframeDoc.querySelectorAll("div[style*='z-index']");
-            overlays.forEach(overlay => {
-                if (overlay.style.zIndex > 1000) {
-                    overlay.remove();
-                }
-            });
-
-            console.log("Ads removed from iframe.");
-        } catch (error) {
-            console.error("Error accessing iframe content:", error);
+// Wait for the iframe to fully load
+  document.getElementById('videoPlayer').onload = function() {
+    // Access the iframe's document (this works only for same-origin content)
+    var iframeDoc = this.contentDocument || this.contentWindow.document;
+    
+    // Use event delegation to capture clicks anywhere in the iframe
+    iframeDoc.addEventListener('click', function(e) {
+      var target = e.target;
+      
+      // Traverse up the DOM tree to find if an anchor element was clicked
+      while (target && target !== iframeDoc.body) {
+        if (target.tagName.toLowerCase() === 'a') {
+          // Allow the click if it's the search button (identified by a specific class)
+          if (target.classList && target.classList.contains('search-btn')) {
+            return; // Allow default action for the search button
+          }
+          // Optionally, you can allow links to your trusted domain(s)
+          if (target.href && target.href.indexOf('your-trusted-domain.com') !== -1) {
+            return; // Allow trusted links
+          }
+          // Block all other links
+          e.preventDefault();
+          console.log('Blocked external link:', target.href);
+          return;
         }
-    }
-
-    // Har 2 second me ads check karega aur remove karega
-    setInterval(removeAds, 2000);
-};
+        target = target.parentElement;
+      }
+    });
+  };
