@@ -802,32 +802,42 @@ document.querySelector("#fullscreen-btn").addEventListener("click", function () 
     }
 });
 
-// Wait for the iframe to fully load
-  document.getElementById('videoPlayer').onload = function() {
-    // Access the iframe's document (this works only for same-origin content)
-    var iframeDoc = this.contentDocument || this.contentWindow.document;
-    
-    // Use event delegation to capture clicks anywhere in the iframe
-    iframeDoc.addEventListener('click', function(e) {
-      var target = e.target;
-      
-      // Traverse up the DOM tree to find if an anchor element was clicked
-      while (target && target !== iframeDoc.body) {
-        if (target.tagName.toLowerCase() === 'a') {
-          // Allow the click if it's the search button (identified by a specific class)
-          if (target.classList && target.classList.contains('search-btn')) {
-            return; // Allow default action for the search button
+ const iframe = document.getElementById('videoPlayer');
+
+  iframe.onload = function() {
+    try {
+      var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+      // Function to block unknown links on both click and touch events
+      function blockUnknownLink(e) {
+        var target = e.target;
+
+        // Traverse upward in the DOM tree to check if an anchor (<a>) element was clicked
+        while (target && target !== iframeDoc.body) {
+          if (target.tagName && target.tagName.toLowerCase() === 'a') {
+            // Agar yeh search button hai, jisko 'search-btn' class di gayi hai, to allow karein
+            if (target.classList && target.classList.contains('search-btn')) {
+              return; // Allow the event
+            }
+            // Agar trusted link hai, jise aap allow karna chahte hain (apne domain ka use karein)
+            if (target.href && target.href.indexOf('your-trusted-domain.com') !== -1) {
+              return; // Allow trusted links
+            }
+            // Otherwise, block the link permanently
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Blocked external link:', target.href);
+            return false;
           }
-          // Optionally, you can allow links to your trusted domain(s)
-          if (target.href && target.href.indexOf('your-trusted-domain.com') !== -1) {
-            return; // Allow trusted links
-          }
-          // Block all other links
-          e.preventDefault();
-          console.log('Blocked external link:', target.href);
-          return;
+          target = target.parentElement;
         }
-        target = target.parentElement;
       }
-    });
+
+      // Add listeners for both click and touchstart events in capturing phase
+      iframeDoc.addEventListener('click', blockUnknownLink, true);
+      iframeDoc.addEventListener('touchstart', blockUnknownLink, true);
+
+    } catch (error) {
+      console.error('Error accessing iframe content:', error);
+    }
   };
