@@ -780,7 +780,222 @@ document.addEventListener("DOMContentLoaded", function() {
   if (typeof YT === "undefined" || typeof YT.Player === "undefined") {
     var tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api?key=AIzaSyBTpP0-7enNqizPGetb_2G5Km_pKdguNF8";
+    var firstScriptTag = document.getElementsByTagNamdocument.addEventListener("DOMContentLoaded", function() {
+  let miniPlayer = null; // Store YT.Player instance
+  
+  /***** Helper: Extract YouTube Video ID from URL *****/
+  function extractVideoId(url) {
+    // Matches common YouTube URL formats: embed/, watch?v=, youtu.be/
+    var match = url.match(/(?:embed\/|watch\?v=|youtu\.be\/)([\w-]{11})/);
+    return match ? match[1] : null;
+  }
+  
+  /***** Bookmark Icon: Save Movie to Watchlist *****/
+  const bookmarkIcon = document.querySelector(".poster-container .bi-bookmark-fill");
+  if (bookmarkIcon) {
+    bookmarkIcon.addEventListener("click", function() {
+      // Gather movie details from the page
+      var movie = {
+        title: document.getElementById("show-title").textContent.trim(),
+        releaseYear: document.getElementById("release-year").textContent.trim(),
+        duration: document.getElementById("duration").textContent.trim(),
+        genres: [
+          document.getElementById("genre1").textContent.trim(),
+          document.getElementById("genre2").textContent.trim()
+        ],
+        cast: Array.from(document.querySelectorAll("#cast-list span")).map(el => el.textContent.trim()),
+        synopsis: document.getElementById("synopsis").textContent.trim(),
+        poster: document.getElementById("poster").getAttribute("src")
+      };
+      
+      // Retrieve existing watchlist from localStorage or create a new one
+      var watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+      // Check for duplicates based on movie title
+      var exists = watchlist.some(item => item.title === movie.title);
+      if (!exists) {
+        watchlist.push(movie);
+        localStorage.setItem("watchlist", JSON.stringify(watchlist));
+        alert("Movie added to watchlist!");
+      } else {
+        alert("Movie already exists in your watchlist.");
+      }
+      // Redirect to watchlist page (adjust as needed)
+      window.location.href = "watchlist.html";
+    });
+  }
+  
+  /***** Trailer Icon: Search and Play Trailer in a Centered Iframe with Dark Background *****/
+  const trailerIcon = document.querySelector(".poster-container .bi-play-circle-fill");
+  if (trailerIcon) {
+    trailerIcon.addEventListener("click", function() {
+      // Use the movie title to search for its trailer
+      var movieTitle = document.getElementById("show-title").textContent.trim();
+      if (!movieTitle) {
+        console.warn("Movie title not found.");
+        return;
+      }
+      // Build a YouTube search query (e.g., "Movie Title trailer")
+      var query = encodeURIComponent(movieTitle + " trailer");
+      // YouTube Data API v3 search URL with your API key
+      var apiKey = "AIzaSyBTpP0-7enNqizPGetb_2G5Km_pKdguNF8";
+      var searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${query}&type=video&key=${apiKey}`;
+      
+      // Fetch trailer video info from YouTube
+      fetch(searchUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data.items && data.items.length > 0) {
+            var videoId = data.items[0].id.videoId;
+            if (videoId) {
+              playMiniTrailer(videoId);
+            } else {
+              console.warn("No video ID found for the trailer.");
+            }
+          } else {
+            console.warn("No trailer found for this movie.");
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching trailer from YouTube API:", error);
+        });
+    });
+  }
+  
+  /***** Function: Create and Play Centered Mini Trailer with Dark Background, Fullscreen Toggle & Close Option *****/
+  function playMiniTrailer(videoId) {
+    // If an existing mini player exists, destroy it first.
+    if (miniPlayer) {
+      miniPlayer.destroy();
+      miniPlayer = null;
+    }
+    // Remove any existing container and overlay.
+    let existingContainer = document.getElementById("miniPlayerContainer");
+    if (existingContainer) {
+      existingContainer.remove();
+    }
+    let existingOverlay = document.getElementById("darkOverlay");
+    if (existingOverlay) {
+      existingOverlay.remove();
+    }
+    
+    // Create dark overlay for a night dark effect background.
+    let darkOverlay = document.createElement("div");
+    darkOverlay.id = "darkOverlay";
+    darkOverlay.style.position = "fixed";
+    darkOverlay.style.top = "0";
+    darkOverlay.style.left = "0";
+    darkOverlay.style.width = "100%";
+    darkOverlay.style.height = "100%";
+    darkOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    darkOverlay.style.zIndex = "900"; // Place it behind the mini player container
+    document.body.appendChild(darkOverlay);
+    
+    // Create the mini player container.
+    let miniPlayerContainer = document.createElement("div");
+    miniPlayerContainer.id = "miniPlayerContainer";
+    miniPlayerContainer.style.position = "fixed";
+    miniPlayerContainer.style.top = "46%";
+    miniPlayerContainer.style.left = "50%";
+    miniPlayerContainer.style.transform = "translate(-50%, -50%)";
+    miniPlayerContainer.style.width = "360px";
+    miniPlayerContainer.style.height = "260px";
+    miniPlayerContainer.style.zIndex = "1000";
+    miniPlayerContainer.style.backgroundColor = "#000";
+    miniPlayerContainer.style.border = "2px solid #fff";
+    miniPlayerContainer.style.borderRadius = "8px";
+    miniPlayerContainer.style.overflow = "hidden";
+    document.body.appendChild(miniPlayerContainer);
+    
+    // Create a dedicated child div for the YouTube player.
+    let playerDiv = document.createElement("div");
+    playerDiv.id = "ytplayer";
+    playerDiv.style.width = "100%";
+    playerDiv.style.height = "100%";
+    miniPlayerContainer.appendChild(playerDiv);
+    
+    // Create overlay buttons (they will sit on top of the video).
+    // Close button (top-right)
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = "✖";
+    closeButton.style.position = "absolute";
+    closeButton.style.top = "5px";
+    closeButton.style.right = "5px";
+    closeButton.style.background = "rgba(0, 0, 0, 0.7)";
+    closeButton.style.color = "#fff";
+    closeButton.style.border = "none";
+    closeButton.style.padding = "5px";
+    closeButton.style.cursor = "pointer";
+    closeButton.style.fontSize = "14px";
+    closeButton.style.zIndex = "1001";
+    closeButton.addEventListener("click", function() {
+      if (miniPlayer) {
+        miniPlayer.destroy();
+        miniPlayer = null;
+      }
+      miniPlayerContainer.remove();
+      darkOverlay.remove(); // Remove the dark overlay when closing the trailer.
+    });
+    miniPlayerContainer.appendChild(closeButton);
+    
+    // Toggle (maximize/fullscreen) button (top-left)
+    const toggleButton = document.createElement("button");
+    toggleButton.innerHTML = "Maximize";
+    toggleButton.style.position = "absolute";
+    toggleButton.style.top = "5px";
+    toggleButton.style.left = "5px";
+    toggleButton.style.background = "rgba(0, 0, 0, 0.7)";
+    toggleButton.style.color = "#fff";
+    toggleButton.style.border = "none";
+    toggleButton.style.padding = "5px";
+    toggleButton.style.cursor = "pointer";
+    toggleButton.style.fontSize = "14px";
+    toggleButton.style.zIndex = "1001";
+    toggleButton.addEventListener("click", function() {
+      if (!miniPlayerContainer.classList.contains("full-size")) {
+        miniPlayerContainer.classList.add("full-size");
+        miniPlayerContainer.style.top = "0";
+        miniPlayerContainer.style.left = "0";
+        miniPlayerContainer.style.transform = "none";
+        miniPlayerContainer.style.width = "100%";
+        miniPlayerContainer.style.height = "100%";
+        toggleButton.innerHTML = "Exit Fullscreen";
+      } else {
+        miniPlayerContainer.classList.remove("full-size");
+        miniPlayerContainer.style.top = "50%";
+        miniPlayerContainer.style.left = "50%";
+        miniPlayerContainer.style.transform = "translate(-50%, -50%)";
+        miniPlayerContainer.style.width = "320px";
+        miniPlayerContainer.style.height = "180px";
+        toggleButton.innerHTML = "Maximize";
+      }
+    });
+    miniPlayerContainer.appendChild(toggleButton);
+    
+    // Create the YouTube IFrame Player inside the dedicated child div.
+    miniPlayer = new YT.Player("ytplayer", {
+      height: "100%",
+      width: "100%",
+      videoId: videoId,
+      playerVars: {
+        autoplay: 1,
+        controls: 1
+      },
+      events: {
+        onReady: function(event) {
+          event.target.playVideo();
+        }
+      }
+    });
+  }
+  
+  /***** Fallback: Ensure YouTube IFrame API is Loaded *****/
+  if (typeof YT === "undefined" || typeof YT.Player === "undefined") {
+    var tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api?key=AIzaSyBTpP0-7enNqizPGetb_2G5Km_pKdguNF8";
     var firstScriptTag = document.getElementsByTagName("script")[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  }
+});e("script")[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
   }
 });
