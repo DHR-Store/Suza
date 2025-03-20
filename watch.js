@@ -844,3 +844,18 @@ function isAllowedLink(url) {
   // Block all other links
   return false;
 }
+
+// Hide/Show bottom navigation based on scroll direction
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', () => {
+      let st = window.pageYOffset || document.documentElement.scrollTop;
+      const nav = document.getElementById('bottom-nav');
+      if (st > lastScrollTop) {
+        // Scrolling down: hide nav
+        nav.style.transform = 'translateY(100%)';
+      } else {
+        // Scrolling up: show nav
+        nav.style.transform = 'translateY(0)';
+      }
+      lastScrollTop = st <= 0 ? 0 : st;
+    });
