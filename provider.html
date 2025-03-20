@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Coming Soon</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      /* Animated gradient background */
+      body, html {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(270deg, #ff6a00, #ee0979, #ff6a00);
+        background-size: 600% 600%;
+        animation: gradientAnimation 16s ease infinite;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        color: #fff;
+      }
+      @keyframes gradientAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      /* Overlay to slightly darken the background */
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 0;
+      }
+
+      /* Main content styling */
+      .coming-soon {
+        position: relative;
+        text-align: center;
+        z-index: 1;
+      }
+      .coming-soon h1 {
+        font-size: 4rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        animation: textFadeIn 2s ease-out, textGlow 2s ease-in-out infinite alternate;
+      }
+      @keyframes textFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes textGlow {
+        from { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        to { text-shadow: 0 0 20px rgba(255,255,255,1); }
+      }
+      .coming-soon p {
+        font-size: 1.5rem;
+        margin-top: 20px;
+        animation: fadeInUp 2s ease-out;
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Floating decorative elements */
+      .decorative {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: float 6s ease-in-out infinite;
+      }
+      .circle1 {
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.3);
+        top: 10%;
+        left: 15%;
+        animation-duration: 8s;
+      }
+      .circle2 {
+        width: 150px;
+        height: 150px;
+        background: rgba(255, 255, 255, 0.2);
+        bottom: 10%;
+        right: 15%;
+        animation-duration: 10s;
+      }
+      .circle3 {
+        width: 75px;
+        height: 75px;
+        background: rgba(255, 255, 255, 0.4);
+        top: 20%;
+        right: 25%;
+        animation-duration: 7s;
+      }
+      @keyframes float {
+        0% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+        100% { transform: translateY(0) rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay"></div>
+    <div class="coming-soon">
+      <h1>Coming Soon</h1>
+      <p>We are launching something amazing. Stay tuned!</p>
+    </div>
+    <div class="decorative circle1"></div>
+    <div class="decorative circle2"></div>
+    <div class="decorative circle3"></div>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
