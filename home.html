@@ -153,8 +153,7 @@
     .scroll-item:hover {
       transform: scale(1.1);
     }
-
-    /* Bottom Navigation Bar */
+        /* Bottom Navigation Bar */
     nav.navbar {
       background: transparent;
       backdrop-filter: blur(8px);
@@ -166,6 +165,7 @@
       align-items: center;
       padding: 10px 0;
       border-top: 1px solid #444;
+      transition: transform 0.3s ease;
     }
     .nav-link {
       text-align: center;
@@ -182,6 +182,8 @@
       color: cyan;
       transform: scale(1.1);
     }
+
+    
   </style>
 </head>
 
@@ -351,6 +353,21 @@
         resetHeroInterval();
       }
     }
+
+      // Hide/Show bottom navigation based on scroll direction
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', () => {
+      let st = window.pageYOffset || document.documentElement.scrollTop;
+      const nav = document.getElementById('bottom-nav');
+      if (st > lastScrollTop) {
+        // Scrolling down: hide nav
+        nav.style.transform = 'translateY(100%)';
+      } else {
+        // Scrolling up: show nav
+        nav.style.transform = 'translateY(0)';
+      }
+      lastScrollTop = st <= 0 ? 0 : st;
+    });
 
     // Horizontal scroll sections update (Movies, Web Series, TV Shows)
     async function updateSection(sectionId, query) {
