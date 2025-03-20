@@ -804,40 +804,46 @@ document.querySelector("#fullscreen-btn").addEventListener("click", function () 
 
  const iframe = document.getElementById('videoPlayer');
 
-  iframe.onload = function() {
-    try {
-      var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+iframe.addEventListener('load', () => {
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 
-      // Function to block unknown links on both click and touch events
-      function blockUnknownLink(e) {
-        var target = e.target;
+  // Listen for clicks within the iframe
+  iframeDoc.addEventListener('click', (e) => {
+    let target = e.target;
 
-        // Traverse upward in the DOM tree to check if an anchor (<a>) element was clicked
-        while (target && target !== iframeDoc.body) {
-          if (target.tagName && target.tagName.toLowerCase() === 'a') {
-            // Agar yeh search button hai, jisko 'search-btn' class di gayi hai, to allow karein
-            if (target.classList && target.classList.contains('search-btn')) {
-              return; // Allow the event
-            }
-            // Agar trusted link hai, jise aap allow karna chahte hain (apne domain ka use karein)
-            if (target.href && target.href.indexOf('your-trusted-domain.com') !== -1) {
-              return; // Allow trusted links
-            }
-            // Otherwise, block the link permanently
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Blocked external link:', target.href);
-            return false;
-          }
-          target = target.parentElement;
+    // Traverse up in case the clicked element is nested inside an <a>
+    while (target && target !== iframeDoc.body) {
+      if (target.tagName === 'A') {
+        const href = target.getAttribute('href');
+        if (!isAllowedLink(href)) {
+          // Block navigation for unknown links
+          e.preventDefault();
+          console.log(`Blocked navigation to: ${href}`);
+          // Optionally, you can provide feedback to the user here.
+          return;
         }
+        break;
       }
-
-      // Add listeners for both click and touchstart events in capturing phase
-      iframeDoc.addEventListener('click', blockUnknownLink, true);
-      iframeDoc.addEventListener('touchstart', blockUnknownLink, true);
-
-    } catch (error) {
-      console.error('Error accessing iframe content:', error);
+      target = target.parentElement;
     }
-  };
+  });
+});
+
+// Define allowed links based on your criteria
+function isAllowedLink(url) {
+  // Allow links to your navigation pages
+  const allowedPages = ['index.html', 'search.html', 'watchlist.html', 'settings.html'];
+  if (url) {
+    for (const allowed of allowedPages) {
+      if (url.indexOf(allowed) !== -1) {
+        return true;
+      }
+    }
+    // Also allow anchor links (if needed)
+    if (url.startsWith('#')) {
+      return true;
+    }
+  }
+  // Block all other links
+  return false;
+}
