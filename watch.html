@@ -212,30 +212,31 @@ button:hover {
 .download-btn:hover {
   background-color: #e0a800;
 }
-    /* Bottom Navigation */
+         /* Bottom Navigation Bar */
     nav.navbar {
-  background: transparent;
-  backdrop-filter: blur(8px);
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 0;
-  border-top: 1px solid #444;
-}
-    
-    .nav-link {
-      color: white;
-      font-size: 14px;
-      transition: 0.3s;
+      background: transparent;
+      backdrop-filter: blur(8px);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #444;
+      transition: transform 0.3s ease;
     }
-    
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease, color 0.3s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
     .nav-link i {
       font-size: 24px;
     }
-    
     .nav-link:hover {
       color: cyan;
       transform: scale(1.1);
