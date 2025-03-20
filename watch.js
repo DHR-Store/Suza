@@ -785,22 +785,6 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
-    // Hide/Show bottom navigation based on scroll direction
-    let lastScrollTop = 0;
-    window.addEventListener('scroll', () => {
-      let st = window.pageYOffset || document.documentElement.scrollTop;
-      const nav = document.getElementById('bottom-nav');
-      if (st > lastScrollTop) {
-        // Scrolling down: hide nav
-        nav.style.transform = 'translateY(100%)';
-      } else {
-        // Scrolling up: show nav
-        nav.style.transform = 'translateY(0)';
-      }
-      lastScrollTop = st <= 0 ? 0 : st;
-    });
-
-
 // 🎥 Fullscreen Button
 document.querySelector("#fullscreen-btn").addEventListener("click", function () {
     const iframe = document.querySelector("#videoPlayer");
