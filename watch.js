@@ -259,7 +259,7 @@ function fetchEpisodesTVMaze(showID, seasonID, seasonNumber, title) {
         playIcon.className = "episode-play-icon";
         // Style the play icon to appear centered over the image
         playIcon.style.position = "absolute";
-        playIcon.style.top = "50%";
+        playIcon.style.top = "25%";
         playIcon.style.left = "50%";
         playIcon.style.transform = "translate(-50%, -50%)";
         playIcon.style.fontSize = "24px";
