@@ -403,7 +403,7 @@ function fetchEpisodesTVMaze(showID, seasonID, seasonNumber, title) {
 }
 // end
 // Load episode (or movie) video into the iframe player
-Anime video loader (using VidAPI)
+//Anime video loader (using VidAPI)
 function loadAnimeVideo() {
   const urlParams = new URLSearchParams(window.location.search);
   const link_url = urlParams.get("link_url") ? decodeURIComponent(urlParams.get("link_url")) : "";
