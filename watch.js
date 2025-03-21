@@ -704,6 +704,52 @@ document.querySelector("#fullscreen-btn").addEventListener("click", function () 
     }
 });
 
+ const iframe = document.getElementById('videoPlayer');
+
+iframe.addEventListener('load', () => {
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+  // Listen for clicks within the iframe
+  iframeDoc.addEventListener('click', (e) => {
+    let target = e.target;
+
+    // Traverse up in case the clicked element is nested inside an <a>
+    while (target && target !== iframeDoc.body) {
+      if (target.tagName === 'A') {
+        const href = target.getAttribute('href');
+        if (!isAllowedLink(href)) {
+          // Block navigation for unknown links
+          e.preventDefault();
+          console.log(`Blocked navigation to: ${href}`);
+          // Optionally, you can provide feedback to the user here.
+          return;
+        }
+        break;
+      }
+      target = target.parentElement;
+    }
+  });
+});
+
+// Define allowed links based on your criteria
+function isAllowedLink(url) {
+  // Allow links to your navigation pages
+  const allowedPages = ['index.html', 'search.html', 'watchlist.html', 'settings.html'];
+  if (url) {
+    for (const allowed of allowedPages) {
+      if (url.indexOf(allowed) !== -1) {
+        return true;
+      }
+    }
+    // Also allow anchor links (if needed)
+    if (url.startsWith('#')) {
+      return true;
+    }
+  }
+  // Block all other links
+  return false;
+}
+
 // Hide/Show bottom navigation based on scroll direction
     let lastScrollTop = 0;
     window.addEventListener('scroll', () => {
