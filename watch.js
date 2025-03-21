@@ -704,12 +704,6 @@ document.querySelector("#fullscreen-btn").addEventListener("click", function () 
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-  const iframe = document.getElementById('videoPlayer');
-  // Set sandbox attribute to allow normal interactions, but block top-level navigation.
-  iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups');
-});
-
 // Hide/Show bottom navigation based on scroll direction
     let lastScrollTop = 0;
     window.addEventListener('scroll', () => {
