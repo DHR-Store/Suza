@@ -802,19 +802,42 @@ function isAllowedLink(url) {
 }
 
 // Hide/Show bottom navigation based on scroll direction
-    let lastScrollTop = 0;
-    window.addEventListener('scroll', () => {
-      let st = window.pageYOffset || document.documentElement.scrollTop;
-      const nav = document.getElementById('bottom-nav');
-      if (st > lastScrollTop) {
-        // Scrolling down: hide nav
-        nav.style.transform = 'translateY(100%)';
-      } else {
-        // Scrolling up: show nav
-        nav.style.transform = 'translateY(0)';
-      }
-      lastScrollTop = st <= 0 ? 0 : st;
-    });
+let lastScrollTop = 0;
+const nav = document.getElementById('bottom-nav');
+let navVisible = true;
+
+// Hide or show nav based on scroll direction
+window.addEventListener('scroll', () => {
+  let st = window.pageYOffset || document.documentElement.scrollTop;
+  if (st > lastScrollTop) {
+    // Scrolling down: hide nav
+    nav.style.transform = 'translateY(100%)';
+    navVisible = false;
+  } else {
+    // Scrolling up: show nav
+    nav.style.transform = 'translateY(0)';
+    navVisible = true;
+  }
+  lastScrollTop = st <= 0 ? 0 : st;
+});
+
+// Double-tap detection for toggling nav visibility
+let lastTap = 0;
+document.addEventListener('touchend', () => {
+  const currentTime = new Date().getTime();
+  const tapInterval = currentTime - lastTap;
+  // Check if two taps occurred within 300ms
+  if (tapInterval > 0 && tapInterval < 300) {
+    if (navVisible) {
+      nav.style.transform = 'translateY(100%)';
+      navVisible = false;
+    } else {
+      nav.style.transform = 'translateY(0)';
+      navVisible = true;
+    }
+  }
+  lastTap = currentTime;
+});
           // Wait until the DOM is loaded
   document.addEventListener('DOMContentLoaded', function() {
     // Get the current file name from the URL (default to home.html if empty)
