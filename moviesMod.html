@@ -448,7 +448,7 @@
         document.getElementById("hero-title").textContent = show.name || "Unknown Title";
         document.getElementById("hero-rating").textContent = `Rating: ${show.rating && show.rating.average ? show.rating.average : "N/A"}`;
         document.getElementById("watch-hero").onclick = () => {
-          window.location.href = `moviesMod/watchM.html?title=${encodeURIComponent(show.name)}`;
+          window.location.href = `moviesModwatchM.html?title=${encodeURIComponent(show.name)}`;
         };
         // Update dot indicators
         const dots = document.querySelectorAll(".hero-dot");
