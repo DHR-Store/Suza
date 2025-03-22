@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Movie & TV Show Home</title>
   
   <!-- Bootstrap CSS -->
@@ -50,55 +50,66 @@
         font-size: 1.8rem;
         color: #fff;
       }
-      
-      /* Offcanvas Sidebar Enhancements with Responsive Width */
-      .offcanvas-start {
-        /* Default for smaller screens */
-        width: 50px;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(5px);
-      }
-      /* Increase width for larger screens */
-      @media (min-width: 700px) {
-        .offcanvas-start {
-          width: 150px;
-        }
-      }
-      .offcanvas-header h5 {
-        color: #fff;
-      }
-      .offcanvas-body ul {
-        padding-left: 0;
-      }
-      .offcanvas-body ul li {
-        margin-bottom: 10px;
-      }
-      .offcanvas-body ul li a {
-        display: block;
-        background: rgba(255,255,255,0.1);
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 8px;
-        padding: 8px 10px;
-        color: #fff;
-        font-size: 1rem;
-        text-decoration: none;
-        transition: background 0.3s ease, color 0.3s ease;
-      }
-      /* When a provider link is active, apply a glow effect */
-      .offcanvas-body ul li a.active {
-        background: rgba(0, 255, 255, 0.3);
-        color: #fff;
-        font-weight: bold;
-        box-shadow: 0 0 10px #00ffff;
-      }
-      .offcanvas-body ul li a:hover {
-        background: rgba(0, 255, 255, 0.2);
-        color: #00ffff;
-      }
-      .provider-icon {
-        margin-right: 6px;
-        color: #00ffff;
-      }
+
+    /* Offcanvas Sidebar Enhancements with Responsive Width */
+.offcanvas-start {
+  /* Default for smaller screens */
+  width: 50px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+}
+
+/* Increase width for larger screens */
+@media (min-width: 700px) {
+  .offcanvas-start {
+    width: 150px;
+  }
+}
+
+.offcanvas-header h5 {
+  color: #fff;
+}
+
+.offcanvas-body ul {
+  padding-left: 0;
+}
+
+.offcanvas-body ul li {
+  margin-bottom: 10px;
+}
+
+/* Provider link styling */
+.offcanvas-body ul li a {
+  display: block;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #fff;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Active provider link styling with a glow effect */
+.offcanvas-body ul li a.active {
+  background: rgba(0, 255, 255, 0.3);
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 0 10px #00ffff;
+}
+
+/* Hover state for provider links */
+.offcanvas-body ul li a:hover {
+  background: rgba(0, 255, 255, 0.2);
+  color: #00ffff;
+}
+
+/* Provider icon styling */
+.provider-icon {
+  margin-right: 6px;
+  color: #00ffff;
+}
       
     /* HERO SECTION and related styles */
     #hero {
@@ -266,41 +277,41 @@
 
   <!-- Offcanvas Sidebar for Providers -->
   <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasProviders" aria-labelledby="offcanvasProvidersLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasProvidersLabel">Providers</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      <ul class="list-unstyled">
-        <li>
-          <a href="home.html?provider=vegamovies">
-            <i class="bi bi-film provider-icon"></i>vegamovies
-          </a>
-        </li>
-        <li>
-          <a href="moviesMod.html?provider=moviesmod">
-            <i class="bi bi-film provider-icon"></i>moviesmod
-          </a>
-        </li>
-        <li>
-          <a href="provider.html?provider=gogo">
-            <i class="bi bi-film provider-icon"></i>gogo
-          </a>
-        </li>
-        <li>
-          <a href="provider.html?provider=netmirror">
-            <i class="bi bi-film provider-icon"></i>netmirror
-          </a>
-        </li>
-        <li>
-          <a href="provider.html?provider=moviedrive">
-            <i class="bi bi-film provider-icon"></i>moviedrive
-          </a>
-        </li>
-      </ul>
-    </div>
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasProvidersLabel">Providers</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
-
+  <div class="offcanvas-body">
+    <ul class="list-unstyled">
+      <li>
+        <a href="home.html?provider=vegamovies" class="provider-link" data-provider="vegamovies">
+          <i class="bi bi-film provider-icon"></i>vegamovies
+        </a>
+      </li>
+      <li>
+        <a href="moviesMod.html?provider=moviesmod" class="provider-link" data-provider="moviesmod">
+          <i class="bi bi-film provider-icon"></i>moviesmod
+        </a>
+      </li>
+      <li>
+        <a href="provider.html?provider=gogo" class="provider-link" data-provider="gogo">
+          <i class="bi bi-film provider-icon"></i>gogo
+        </a>
+      </li>
+      <li>
+        <a href="provider.html?provider=netmirror" class="provider-link" data-provider="netmirror">
+          <i class="bi bi-film provider-icon"></i>netmirror
+        </a>
+      </li>
+      <li>
+        <a href="provider.html?provider=moviedrive" class="provider-link" data-provider="moviedrive">
+          <i class="bi bi-film provider-icon"></i>moviedrive
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+          
   <!-- MAIN CONTENT (Horizontal Scroll Sections) -->
   <div class="container mt-4">
     <h3>Movies</h3>
@@ -339,33 +350,59 @@
     offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
       document.querySelector('.hamburger-btn').style.opacity = '1';
     });
+
+    document.addEventListener('DOMContentLoaded', function() {  
+  // Get the current file name from the URL
+  var path = window.location.pathname.split("/").pop();  
+  if (path === '') { 
+    path = 'moviesMod.html'; // Default file if no specific file is in the URL
+  }  
+  
+  // Select all nav button links
+  var navLinks = document.querySelectorAll('nav.navbar .nav-link');  
+  
+  // Loop through each nav link and toggle the active class
+  navLinks.forEach(function(link) {  
+    var href = link.getAttribute('href');  
+    if (href === path) {  
+      link.classList.add('active'); // Add active class to the matching link
+    } else {  
+      link.classList.remove('active'); // Remove active class from other links
+    }  
+  });  
+});
     
-    // On the provider selection page, set the active provider based on the URL parameter.
+    // On the provider selection page, 
+   // set the active provider based on the URL parameter.
     document.addEventListener('DOMContentLoaded', function() {
-      // Check if a provider query parameter exists
-      const urlParams = new URLSearchParams(window.location.search);
-      const provider = urlParams.get('provider');
-      if (provider) {
-        const providerLinks = document.querySelectorAll('.offcanvas-body ul li a');
-        providerLinks.forEach(link => {
-          // If the link's href includes the selected provider, add the active class.
-          if (link.href.includes(`provider=${provider}`)) {
-            link.classList.add('active');
-          } else {
-            link.classList.remove('active');
-          }
-        });
+    // Get all provider links
+    const providerLinks = document.querySelectorAll('.provider-link');
+
+    // Retrieve saved active provider from localStorage
+    const savedProvider = localStorage.getItem('activeProvider');
+    if (savedProvider) {
+      const activeLink = document.querySelector(`.provider-link[data-provider="${savedProvider}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active');
       }
-      // Also, update the bottom nav active state based on current file name.
-      var path = window.location.pathname.split("/").pop();
-      if (path === '') { path = 'moviesMod.html'; }
-      var navLinks = document.querySelectorAll('nav.navbar .nav-link');
-      navLinks.forEach(function(link) {
-        var href = link.getAttribute('href');
-        if (href === path) { link.classList.add('active'); }
-        else { link.classList.remove('active'); }
+    } else if (providerLinks.length) {
+      // Optionally, set the first provider as active if none is saved
+      providerLinks[0].classList.add('active');
+      localStorage.setItem('activeProvider', providerLinks[0].getAttribute('data-provider'));
+    }
+
+    // Add click event listeners to update the active state
+    providerLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        // Remove active class from all links
+        providerLinks.forEach(l => l.classList.remove('active'));
+        // Add active class to the clicked link
+        this.classList.add('active');
+        // Save the current provider in localStorage
+        localStorage.setItem('activeProvider', this.getAttribute('data-provider'));
       });
     });
+  });
     
     document.addEventListener("DOMContentLoaded", function() {
       // TVMaze API endpoint for shows
