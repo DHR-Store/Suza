@@ -235,16 +235,16 @@
   <!-- Bottom Navigation Bar -->
   <nav class="navbar navbar-dark fixed-bottom" id="bottomNav">
     <div class="container-fluid d-flex justify-content-around">
-      <a href="moviesMod/moviesMod.html" class="nav-link">
+      <a href="../moviesMod.html" class="nav-link">
         <i class="bi bi-house-door-fill"></i><br />
       </a>
-      <a href="moviesMod/searchMovies.html" class="nav-link">
+      <a href="searchMovies.html" class="nav-link">
         <i class="bi bi-search"></i><br />
       </a>
-      <a href="moviesMod/watchlistM.html" class="nav-link">
+      <a href="watchlistM.html" class="nav-link">
         <i class="bi bi-bookmark-fill"></i><br />
       </a>
-      <a href="moviesMod/settingsM.html" class="nav-link">
+      <a href="settingsM.html" class="nav-link">
         <i class="bi bi-gear-fill"></i><br />
       </a>
     </div>
@@ -281,7 +281,7 @@
       localStorage.setItem("searchHistory", JSON.stringify(history));
 
       // Redirect to your results page
-      window.location.href = `moviesMod/resultsM.html?query=${encodeURIComponent(query)}`;
+      window.location.href = `resultsM.html?query=${encodeURIComponent(query)}`;
     }
 
     // Load and display search history
@@ -450,7 +450,7 @@
     // Get the current file name from the URL (default to home.html if empty)
     var path = window.location.pathname.split("/").pop();
     if (path === '') {
-      path = 'moviesMod/searchMovies.html';
+      path = 'searchMovies.html';
     }
     
     // Select all nav links inside the navbar
