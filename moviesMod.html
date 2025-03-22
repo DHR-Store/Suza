@@ -374,21 +374,18 @@
     
     // On the provider selection page, 
    // set the active provider based on the URL parameter.
+
     document.addEventListener('DOMContentLoaded', function() {
     // Get all provider links
     const providerLinks = document.querySelectorAll('.provider-link');
 
-    // Retrieve saved active provider from localStorage
+    // Retrieve saved active provider from localStorage (if any)
     const savedProvider = localStorage.getItem('activeProvider');
     if (savedProvider) {
       const activeLink = document.querySelector(`.provider-link[data-provider="${savedProvider}"]`);
       if (activeLink) {
         activeLink.classList.add('active');
       }
-    } else if (providerLinks.length) {
-      // Optionally, set the first provider as active if none is saved
-      providerLinks[0].classList.add('active');
-      localStorage.setItem('activeProvider', providerLinks[0].getAttribute('data-provider'));
     }
 
     // Add click event listeners to update the active state
@@ -402,7 +399,8 @@
         localStorage.setItem('activeProvider', this.getAttribute('data-provider'));
       });
     });
-  });
+  });    
+    
     
     document.addEventListener("DOMContentLoaded", function() {
       // TVMaze API endpoint for shows
