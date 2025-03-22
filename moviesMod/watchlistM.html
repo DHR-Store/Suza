@@ -102,8 +102,7 @@
       container.innerHTML = "";
 
       if (watchlist.length === 0) {
-        container.innerHTML =
-          "<p class='text-center text-warning fs-4'>Your watchlist is empty! 📭</p>";
+        container.innerHTML = "<p class='text-center text-warning fs-4'>Your watchlist is empty! 📭</p>";
         return;
       }
 
@@ -111,10 +110,7 @@
         const card = document.createElement("div");
         card.classList.add("col-4");
 
-        const shortTitle =
-          item.title && item.title.length > 15
-            ? item.title.substring(0, 15) + "..."
-            : item.title || "Unknown";
+        const shortTitle = item.title && item.title.length > 15 ? item.title.substring(0, 15) + "..." : item.title || "Unknown";
 
         card.innerHTML = `
           <div class="card shadow-sm">
@@ -128,10 +124,12 @@
           <small class="d-block text-center text-white mt-1">${shortTitle} (${item.releaseYear || "N/A"})</small>
         `;
 
+        // When the poster is clicked, fetch full details and load watch.html using redirectToWatch
         card.querySelector(".movie-poster").addEventListener("click", () => {
           openWatchPage(item);
         });
 
+        // Remove button to delete an item from the watchlist
         card.querySelector(".remove-btn").addEventListener("click", (e) => {
           e.stopPropagation();
           removeItem(item.title);
@@ -141,6 +139,7 @@
       });
     }
 
+    // Remove an item from the watchlist and update localStorage
     function removeItem(title) {
       let watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
       watchlist = watchlist.filter(item => item.title !== title);
@@ -148,35 +147,52 @@
       loadWatchlist();
     }
 
+    // Redirect function that passes movie details as query parameters
+    function redirectToWatch(imdbID, title, poster) {
+      window.location.href = `watchM.html?id=${imdbID}&title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
+    }
+
+    // When a poster is clicked, fetch full movie/series details from OMDb and redirect to watch.html using redirectToWatch
     function openWatchPage(movie) {
-      localStorage.setItem("selectedMovie", JSON.stringify(movie));
-      window.location.href = "watchM.html";
+      const apiKey = "90b37ad0"; // Replace with your actual OMDb API key
+      const url = `https://www.omdbapi.com/?apikey=${apiKey}&t=${encodeURIComponent(movie.title)}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.Response === "True") {
+            // Use the returned details from OMDb
+            redirectToWatch(data.imdbID, data.Title, data.Poster);
+          } else {
+            // Fallback to the stored movie data if API returns an error
+            redirectToWatch(movie.imdbID || "", movie.title, movie.poster);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching movie details:', error);
+          // Fallback redirection in case of fetch error
+          redirectToWatch(movie.imdbID || "", movie.title, movie.poster);
+        });
     }
 
-    document.addEventListener("DOMContentLoaded", loadWatchlist);
+    // Set active state on the navigation bar based on the current page
+    document.addEventListener("DOMContentLoaded", function() {
+      loadWatchlist();
 
-        
-      // Wait until the DOM is loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    // Get the current file name from the URL (default to home.html if empty)
-    var path = window.location.pathname.split("/").pop();
-    if (path === '') {
-      path = 'watchlistM.html';
-    }
-    
-    // Select all nav links inside the navbar
-    var navLinks = document.querySelectorAll('nav.navbar .nav-link');
-    
-    // Loop through each nav link and add active class if href matches current path
-    navLinks.forEach(function(link) {
-      var href = link.getAttribute('href');
-      if (href === path) {
-        link.classList.add('active');
-      } else {
-        link.classList.remove('active');
+      var path = window.location.pathname.split("/").pop();
+      if (path === "") {
+        path = "watchlistM.html";
       }
+      var navLinks = document.querySelectorAll("nav.navbar .nav-link");
+      navLinks.forEach(function(link) {
+        var href = link.getAttribute("href");
+        if (href === path) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      });
     });
-  });
     
     
     
