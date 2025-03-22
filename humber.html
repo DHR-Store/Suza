@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movie & TV Show Home</title>
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+  
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Custom CSS -->
+  <style>
+    /* Custom Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    
+    * {
+      font-family: 'Poppins', sans-serif;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+    
+    body.bg-dark {
+      background-color: #000;
+      color: #fff;
+    }
+    
+      /* Hamburger Button inside Hero Section */
+      .hamburger-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: transparent;
+        border: none;
+        border-radius: 50%;
+        padding: 10px;
+        z-index: 30;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+      .hamburger-btn:hover {
+        transform: scale(1.1);
+      }
+      .hamburger-btn i {
+        font-size: 1.8rem;
+        color: #fff;
+      }
+      
+      /* Offcanvas Sidebar Enhancements with Responsive Width */
+      .offcanvas-start {
+        /* Default for smaller screens */
+        width: 50px;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(5px);
+      }
+      /* Increase width for larger screens */
+      @media (min-width: 700px) {
+        .offcanvas-start {
+          width: 150px;
+        }
+      }
+      .offcanvas-header h5 {
+        color: #fff;
+      }
+      .offcanvas-body ul {
+        padding-left: 0;
+      }
+      .offcanvas-body ul li {
+        margin-bottom: 10px;
+      }
+      .offcanvas-body ul li a {
+        display: block;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 8px;
+        padding: 8px 10px;
+        color: #fff;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+      /* When a provider link is active, apply a glow effect */
+      .offcanvas-body ul li a.active {
+        background: rgba(0, 255, 255, 0.3);
+        color: #fff;
+        font-weight: bold;
+        box-shadow: 0 0 10px #00ffff;
+      }
+      .offcanvas-body ul li a:hover {
+        background: rgba(0, 255, 255, 0.2);
+        color: #00ffff;
+      }
+      .provider-icon {
+        margin-right: 6px;
+        color: #00ffff;
+      }
+      
+    /* HERO SECTION and related styles */
+    #hero {
+      position: relative;
+      height: 70vh;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      transition: background 0.5s ease;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+    #hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+    #hero-content {
+      position: relative;
+      z-index: 20;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s forwards;
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    #hero-title {
+      font-size: 2.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    #hero-rating {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    .hero-btn {
+      padding: 12px 25px;
+      background: linear-gradient(90deg, #00ffff, #00d4ff);
+      color: black;
+      font-size: 16px;
+      border: none;
+      border-radius: 25px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    .hero-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+    }
+    /* Dot Indicators */
+    #hero-dots {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .hero-dot {
+      width: 12px;
+      height: 12px;
+      background: #ccc;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .hero-dot.active {
+      background: cyan;
+    }
+    
+    /* Horizontal Scroll Sections */
+    .horizontal-scroll {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px 0;
+      gap: 12px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .horizontal-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .scroll-item {
+      flex: 0 0 auto;
+      width: 150px;
+      scroll-snap-align: center;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .scroll-item img {
+      width: 100%;
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+    .scroll-item:hover {
+      transform: scale(1.1);
+    }
+    
+    /* Bottom Navigation Bar */
+    nav.navbar {
+      background: transparent;
+      backdrop-filter: blur(8px);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #444;
+      transition: transform 0.3s ease;
+    }
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease, color 0.3s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .nav-link i {
+      font-size: 24px;
+    }
+    .nav-link:hover {
+      color: cyan;
+      transform: scale(1.1);
+    }
+    .nav-link.active {
+      color: cyan;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="bg-dark text-light">
+  <!-- Hamburger Icon placed inside the HERO SECTION -->
+  <div id="hero">
+    <button class="hamburger-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasProviders" aria-controls="offcanvasProviders">
+      <i class="bi bi-list"></i>
+    </button>
+    <div id="hero-overlay"></div>
+    <div id="hero-content">
+      <h1 id="hero-title">Movie Title</h1>
+      <div id="hero-rating">Rating: N/A</div>
+      <button class="hero-btn" id="watch-hero">Watch Now</button>
+      <!-- Dot indicators container -->
+      <div id="hero-dots"></div>
+    </div>
+  </div>
+
+  <!-- Offcanvas Sidebar for Providers -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasProviders" aria-labelledby="offcanvasProvidersLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasProvidersLabel">Providers</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="list-unstyled">
+        <li>
+          <a href="humber.html?provider=vegamovies">
+            <i class="bi bi-film provider-icon"></i>vegamovies
+          </a>
+        </li>
+        <li>
+          <a href="humber.html?provider=moviesmod">
+            <i class="bi bi-film provider-icon"></i>moviesmod
+          </a>
+        </li>
+        <li>
+          <a href="provider.html?provider=gogo">
+            <i class="bi bi-film provider-icon"></i>gogo
+          </a>
+        </li>
+        <li>
+          <a href="provider.html?provider=netmirror">
+            <i class="bi bi-film provider-icon"></i>netmirror
+          </a>
+        </li>
+        <li>
+          <a href="provider.html?provider=moviedrive">
+            <i class="bi bi-film provider-icon"></i>moviedrive
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT (Horizontal Scroll Sections) -->
+  <div class="container mt-4">
+    <h3>Movies</h3>
+    <div class="horizontal-scroll" id="movies-scroll"></div>
+
+    <h3>Anime</h3>
+    <div class="horizontal-scroll" id="anime-scroll"></div>
+
+    <h3>Web Series</h3>
+    <div class="horizontal-scroll" id="web-series-scroll"></div>
+
+    <h3>TV Shows</h3>
+    <div class="horizontal-scroll" id="tv-shows-scroll"></div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="humber.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
+      <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br></a>
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
+    </div>
+  </nav>
+
+  <!-- Bootstrap JS Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom Scripts -->
+  <script>
+    // Hide hamburger when offcanvas opens and show it when closed
+    var offcanvasEl = document.getElementById('offcanvasProviders');
+    offcanvasEl.addEventListener('show.bs.offcanvas', function () {
+      document.querySelector('.hamburger-btn').style.opacity = '0';
+    });
+    offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
+      document.querySelector('.hamburger-btn').style.opacity = '1';
+    });
+    
+    // On the provider selection page, set the active provider based on the URL parameter.
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if a provider query parameter exists
+      const urlParams = new URLSearchParams(window.location.search);
+      const provider = urlParams.get('provider');
+      if (provider) {
+        const providerLinks = document.querySelectorAll('.offcanvas-body ul li a');
+        providerLinks.forEach(link => {
+          // If the link's href includes the selected provider, add the active class.
+          if (link.href.includes(`provider=${provider}`)) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+      // Also, update the bottom nav active state based on current file name.
+      var path = window.location.pathname.split("/").pop();
+      if (path === '') { path = 'ho.html'; }
+      var navLinks = document.querySelectorAll('nav.navbar .nav-link');
+      navLinks.forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href === path) { link.classList.add('active'); }
+        else { link.classList.remove('active'); }
+      });
+    });
+    
+    document.addEventListener("DOMContentLoaded", function() {
+      // TVMaze API endpoint for shows
+      const TVMAZE_API = "https://api.tvmaze.com/shows?page=1";
+
+      let allShows = [];   // Array to store the full list of shows from TVMaze
+      let heroShows = [];  // Array for hero carousel (first 5 shows)
+      let heroIndex = 0;   // Current index in the heroShows array
+      let heroInterval;    // Interval reference for auto-play
+
+      // Variables for swipe detection
+      let touchStartX = 0;
+      let touchEndX = 0;
+      const swipeThreshold = 50; // Minimum distance (in pixels) to consider a swipe
+
+      // Fetch all shows from TVMaze API once
+      async function fetchAllShows() {
+        try {
+          const response = await fetch(TVMAZE_API, { mode: 'cors', cache: 'no-cache' });
+          const data = await response.json();
+          if (data && data.length > 0) {
+            allShows = data;
+            // Setup hero carousel using the first 5 shows
+            heroShows = allShows.slice(0, 5);
+            heroIndex = 0;
+            showHeroShow(heroIndex);
+            buildHeroDots();
+            if (heroInterval) clearInterval(heroInterval);
+            heroInterval = setInterval(() => {
+              heroIndex = (heroIndex + 1) % heroShows.length;
+              showHeroShow(heroIndex);
+            }, 5000);
+            // Update horizontal sections with different slices
+            updateSection("movies-scroll", 0, 10);
+            updateSection("anime-scroll", 10, 10);
+            updateSection("web-series-scroll", 20, 10);
+            updateSection("tv-shows-scroll", 30, 10);
+          }
+        } catch (error) {
+          console.error("Error fetching TVMaze shows:", error);
+        }
+      }
+
+      // Build dot indicators for the hero carousel
+      function buildHeroDots() {
+        const dotsContainer = document.getElementById("hero-dots");
+        dotsContainer.innerHTML = "";
+        heroShows.forEach((show, idx) => {
+          const dot = document.createElement("div");
+          dot.classList.add("hero-dot");
+          if (idx === heroIndex) dot.classList.add("active");
+          dot.addEventListener("click", () => {
+            heroIndex = idx;
+            showHeroShow(heroIndex);
+            resetHeroInterval();
+          });
+          dotsContainer.appendChild(dot);
+        });
+      }
+
+      // Reset the auto-play interval
+      function resetHeroInterval() {
+        clearInterval(heroInterval);
+        heroInterval = setInterval(() => {
+          heroIndex = (heroIndex + 1) % heroShows.length;
+          showHeroShow(heroIndex);
+        }, 5000);
+      }
+
+      // Update hero section with show details and update dot indicators
+      function showHeroShow(index) {
+        const show = heroShows[index];
+        if (!show) return;
+        // Use the image from TVMaze. Use the original image if available or fallback.
+        if (show.image && show.image.original) {
+          document.getElementById("hero").style.backgroundImage = `url(${show.image.original})`;
+        } else {
+          document.getElementById("hero").style.backgroundImage = "url('fallback-image.jpg')";
+        }
+        document.getElementById("hero-title").textContent = show.name || "Unknown Title";
+        document.getElementById("hero-rating").textContent = `Rating: ${show.rating && show.rating.average ? show.rating.average : "N/A"}`;
+        document.getElementById("watch-hero").onclick = () => {
+          window.location.href = `watch.html?title=${encodeURIComponent(show.name)}`;
+        };
+        // Update dot indicators
+        const dots = document.querySelectorAll(".hero-dot");
+        dots.forEach((dot, idx) => {
+          dot.classList.toggle("active", idx === index);
+        });
+        // Restart hero content animation for smooth transition
+        const heroContent = document.getElementById("hero-content");
+        heroContent.style.animation = 'none';
+        setTimeout(() => heroContent.style.animation = '', 50);
+      }
+
+      // Touch event handlers for swipe detection on the hero section
+      const heroElement = document.getElementById("hero");
+      if (heroElement) {
+        heroElement.addEventListener("touchstart", (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        });
+        heroElement.addEventListener("touchend", (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+        });
+      }
+
+      function handleSwipe() {
+        const distance = touchEndX - touchStartX;
+        if (Math.abs(distance) > swipeThreshold) {
+          if (distance < 0) { // Swipe left
+            heroIndex = (heroIndex + 1) % heroShows.length;
+          } else { // Swipe right
+            heroIndex = (heroIndex - 1 + heroShows.length) % heroShows.length;
+          }
+          showHeroShow(heroIndex);
+          resetHeroInterval();
+        }
+      }
+
+      // Hide/Show bottom navigation based on scroll direction
+      let lastScrollTop = 0;
+      window.addEventListener('scroll', () => {
+        let st = window.pageYOffset || document.documentElement.scrollTop;
+        const nav = document.getElementById('bottom-nav');
+        if (st > lastScrollTop) {
+          nav.style.transform = 'translateY(100%)';
+        } else {
+          nav.style.transform = 'translateY(0)';
+        }
+        lastScrollTop = st <= 0 ? 0 : st;
+      });
+
+      // Update a horizontal section using a slice from allShows
+      // start: starting index in the allShows array, count: number of items to display
+      function updateSection(sectionId, start, count) {
+        const sectionData = allShows.slice(start, start + count);
+        let htmlContent = "";
+        sectionData.forEach(item => {
+          let title = item.name;
+          // Escape any single quotes in title to avoid breaking the onclick attribute
+          let safeTitle = title.replace(/'/g, "\\'");
+          let shortTitle = title.length > 15 ? title.substring(0, 15) + "..." : title;
+          htmlContent += `
+            <div class="scroll-item" onclick="openWatchPage('${safeTitle}')">
+              <img src="${item.image && item.image.medium ? item.image.medium : 'fallback-image.jpg'}" alt="${title}" title="${title}">
+              <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+            </div>`;
+        });
+        document.getElementById(sectionId).innerHTML = htmlContent;
+      }
+
+      // Open watch page function
+      window.openWatchPage = function(title) {
+        window.location.href = `watch.html?title=${encodeURIComponent(title)}`;
+      }
+
+      // INITIAL CALL: Fetch TVMaze shows and update all sections
+      fetchAllShows();
+
+      // Optionally, update horizontal sections every 1 minute (if data changes)
+      setInterval(() => {
+        updateSection("movies-scroll", 0, 10);
+        updateSection("anime-scroll", 10, 10);
+        updateSection("web-series-scroll", 20, 10);
+        updateSection("tv-shows-scroll", 30, 10);
+      }, 60000);
+    });
+  </script>
+</body>
+</html>
