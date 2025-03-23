@@ -12,7 +12,18 @@
       background: #000;
       color: white;
       font-family: 'Poppins', sans-serif;
+            -webkit-user-select: none; /* Chrome, Safari */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* IE10+ */
+      user-select: none;         /* Standard syntax */
     }
+    
+    /* Disable dragging for images */
+    img {
+      -webkit-user-drag: none;
+      cursor: default;
+    }
+    
     .container {
       margin-top: 50px;
     }
@@ -95,6 +106,19 @@
   </div>
 
   <script>
+    // Prevent default right-click/context menu on the entire document
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Prevent long-press on touch devices from showing image preview
+    document.addEventListener('touchstart', function(e) {
+      if(e.touches.length > 1) {
+        e.preventDefault();
+      }
+    });
+
+    
     // Load watchlist from localStorage (an array of movie objects)
     function loadWatchlist() {
       const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
