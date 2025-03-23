@@ -4,6 +4,18 @@ let currentTMDB = "";          // TMDB id (passed in URL for Filmu embed)
 let currentMovieTitle = "";
 let isSeasonContainerOpen = false;
 
+    // Prevent default right-click/context menu on the entire document
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Prevent long-press on touch devices from showing image preview
+    document.addEventListener('touchstart', function(e) {
+      if(e.touches.length > 1) {
+        e.preventDefault();
+      }
+    });
+
 document.addEventListener("DOMContentLoaded", function () {
   // Parse URL parameters
   const urlParams = new URLSearchParams(window.location.search);
