@@ -149,7 +149,7 @@
 
     // Redirect function that passes movie details as query parameters
     function redirectToWatch(imdbID, title, poster) {
-      window.location.href = `watchM.html?id=${imdbID}&title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
+      window.location.href = `watchT.html?id=${imdbID}&title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
     }
 
     // When a poster is clicked, fetch full movie/series details from OMDb and redirect to watch.html using redirectToWatch
@@ -181,7 +181,7 @@
 
       var path = window.location.pathname.split("/").pop();
       if (path === "") {
-        path = "watchlistM.html";
+        path = "watchlistT.html";
       }
       var navLinks = document.querySelectorAll("nav.navbar .nav-link");
       navLinks.forEach(function(link) {
@@ -200,10 +200,10 @@
   
   <nav class="navbar navbar-dark fixed-bottom">
     <div class="container-fluid d-flex justify-content-around">
-      <a href="../moviesMod.html" class="nav-link"><i class="bi bi-house-door-fill"></i></a>
-      <a href="searchMovies.html" class="nav-link"><i class="bi bi-search"></i></a>
-      <a href="watchlistM.html" class="nav-link"><i class="bi bi-bookmark-fill"></i></a>
-      <a href="settingsM.html" class="nav-link"><i class="bi bi-gear-fill"></i></a>
+      <a href="trakt.html" class="nav-link"><i class="bi bi-house-door-fill"></i></a>
+      <a href="searchT.html" class="nav-link"><i class="bi bi-search"></i></a>
+      <a href="watchlistT.html" class="nav-link"><i class="bi bi-bookmark-fill"></i></a>
+      <a href="settingsT.html" class="nav-link"><i class="bi bi-gear-fill"></i></a>
     </div>
   </nav>
 </body>
