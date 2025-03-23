@@ -872,11 +872,7 @@ document.addEventListener('touchend', () => {
   });
 
     // Once the iframe loads, send it a message to block ads.
-    var iframe = document.getElementById('videoContainer');
-    iframe.onload = function() {
-      // This sends a message to the iframe (ensure same origin for this to work).
-      iframe.contentWindow.postMessage({ action: 'blockAds' }, '*');
-    };
+    
 
 
 
