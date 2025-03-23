@@ -390,31 +390,35 @@
     
     // On the provider selection page, 
    // set the active provider based on the URL parameter.
-      document.addEventListener('DOMContentLoaded', function() {
-    // Get all provider links
-    const providerLinks = document.querySelectorAll('.provider-link');
-
-    // Retrieve saved active provider from localStorage (if any)
-    const savedProvider = localStorage.getItem('activeProvider');
-    if (savedProvider) {
-      const activeLink = document.querySelector(`.provider-link[data-provider="${savedProvider}"]`);
-      if (activeLink) {
-        activeLink.classList.add('active');
-      }
-    }
-
-    // Add click event listeners to update the active state
-    providerLinks.forEach(link => {
-      link.addEventListener('click', function(e) {
-        // Remove active class from all links
-        providerLinks.forEach(l => l.classList.remove('active'));
-        // Add active class to the clicked link
-        this.classList.add('active');
-        // Save the current provider in localStorage
-        localStorage.setItem('activeProvider', this.getAttribute('data-provider'));
-      });
-    });
-  });    
+      document.addEventListener('DOMContentLoaded', function() {  
+    // Get all provider links  
+    const providerLinks = document.querySelectorAll('.provider-link');  
+  
+    // Retrieve saved active provider from localStorage  
+    const savedProvider = localStorage.getItem('activeProvider');  
+    if (savedProvider) {  
+      const activeLink = document.querySelector(`.provider-link[data-provider="${savedProvider}"]`);  
+      if (activeLink) {  
+        activeLink.classList.add('active');  
+      }  
+    } else if (providerLinks.length) {  
+      // Optionally, set the first provider as active if none is saved  
+      providerLinks[0].classList.add('active');  
+      localStorage.setItem('activeProvider', providerLinks[0].getAttribute('data-provider'));  
+    }  
+  
+    // Add click event listeners to update the active state  
+    providerLinks.forEach(link => {  
+      link.addEventListener('click', function(e) {  
+        // Remove active class from all links  
+        providerLinks.forEach(l => l.classList.remove('active'));  
+        // Add active class to the clicked link  
+        this.classList.add('active');  
+        // Save the current provider in localStorage  
+        localStorage.setItem('activeProvider', this.getAttribute('data-provider'));  
+      });  
+    });  
+  });  
    
     const API_KEY = "90b37ad0"; // Replace with your OMDb API Key if needed
 
