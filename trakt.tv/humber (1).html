@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movie & TV Show Home</title>
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+  
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Custom CSS -->
+  <style>
+    /* Custom Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    
+    * {
+      font-family: 'Poppins', sans-serif;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+    
+    body.bg-dark {
+      background-color: #000;
+      color: #fff;
+    }
+    
+      /* Hamburger Button inside Hero Section */
+      .hamburger-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: transparent;
+        border: none;
+        border-radius: 50%;
+        padding: 10px;
+        z-index: 30;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+      .hamburger-btn:hover {
+        transform: scale(1.1);
+      }
+      .hamburger-btn i {
+        font-size: 1.8rem;
+        color: #fff;
+      }
+      
+      /* Offcanvas Sidebar Enhancements with Responsive Width */
+      .offcanvas-start {
+        /* Default for smaller screens */
+        width: 50px;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(5px);
+      }
+      /* Increase width for larger screens */
+      @media (min-width: 700px) {
+        .offcanvas-start {
+          width: 150px;
+        }
+      }
+      .offcanvas-header h5 {
+        color: #fff;
+      }
+      .offcanvas-body ul {
+        padding-left: 0;
+      }
+      .offcanvas-body ul li {
+        margin-bottom: 10px;
+      }
+      .offcanvas-body ul li a {
+        display: block;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 8px;
+        padding: 8px 10px;
+        color: #fff;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+      /* When a provider link is active, apply a glow effect */
+      .offcanvas-body ul li a.active {
+        background: rgba(0, 255, 255, 0.3);
+        color: #fff;
+        font-weight: bold;
+        box-shadow: 0 0 10px #00ffff;
+      }
+      .offcanvas-body ul li a:hover {
+        background: rgba(0, 255, 255, 0.2);
+        color: #00ffff;
+      }
+      .provider-icon {
+        margin-right: 6px;
+        color: #00ffff;
+      }
+      
+    /* HERO SECTION and related styles */
+    #hero {
+      position: relative;
+      height: 70vh;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      transition: background 0.5s ease;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+    #hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+    #hero-content {
+      position: relative;
+      z-index: 20;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s forwards;
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    #hero-title {
+      font-size: 2.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    #hero-rating {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    .hero-btn {
+      padding: 12px 25px;
+      background: linear-gradient(90deg, #00ffff, #00d4ff);
+      color: black;
+      font-size: 16px;
+      border: none;
+      border-radius: 25px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    .hero-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+    }
+    /* Dot Indicators */
+    #hero-dots {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .hero-dot {
+      width: 12px;
+      height: 12px;
+      background: #ccc;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .hero-dot.active {
+      background: cyan;
+    }
+    
+    /* Horizontal Scroll Sections */
+    .horizontal-scroll {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px 0;
+      gap: 12px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .horizontal-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .scroll-item {
+      flex: 0 0 auto;
+      width: 150px;
+      scroll-snap-align: center;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .scroll-item img {
+      width: 100%;
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+    .scroll-item:hover {
+      transform: scale(1.1);
+    }
+    
+    /* Bottom Navigation Bar */
+    nav.navbar {
+      background: transparent;
+      backdrop-filter: blur(8px);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #444;
+      transition: transform 0.3s ease;
+    }
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease, color 0.3s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .nav-link i {
+      font-size: 24px;
+    }
+    .nav-link:hover {
+      color: cyan;
+      transform: scale(1.1);
+    }
+    .nav-link.active {
+      color: cyan;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="bg-dark text-light">
+  <!-- Hamburger Icon placed inside the HERO SECTION -->
+  <div id="hero">
+    <button class="hamburger-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasProviders" aria-controls="offcanvasProviders">
+      <i class="bi bi-list"></i>
+    </button>
+    <div id="hero-overlay"></div>
+    <div id="hero-content">
+      <h1 id="hero-title">Movie Title</h1>
+      <div id="hero-rating">Rating: N/A</div>
+      <button class="hero-btn" id="watch-hero">Watch Now</button>
+      <!-- Dot indicators container -->
+      <div id="hero-dots"></div>
+    </div>
+  </div>
+
+  <!-- Offcanvas Sidebar for Providers -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasProviders" aria-labelledby="offcanvasProvidersLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasProvidersLabel">Providers</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="list-unstyled">
+        <li>
+          <a href="humber.html?provider=vegamovies">
+            <i class="bi bi-film provider-icon"></i>vegamovies
+          </a>
+        </li>
+        <li>
+          <a href="humber.html?provider=moviesmod">
+            <i class="bi bi-film provider-icon"></i>moviesmod
+          </a>
+        </li>
+        <li>
+          <a href="provider.html?provider=gogo">
+            <i class="bi bi-film provider-icon"></i>gogo
+          </a>
+        </li>
+        <li>
+          <a href="provider.html?provider=netmirror">
+            <i class="bi bi-film provider-icon"></i>netmirror
+          </a>
+        </li>
+        <li>
+          <a href="provider.html?provider=moviedrive">
+            <i class="bi bi-film provider-icon"></i>moviedrive
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT (Horizontal Scroll Sections) -->
+  <div class="container mt-4">
+    <h3>Movies</h3>
+    <div class="horizontal-scroll" id="movies-scroll"></div>
+
+    <h3>Anime</h3>
+    <div class="horizontal-scroll" id="anime-scroll"></div>
+
+    <h3>Web Series</h3>
+    <div class="horizontal-scroll" id="web-series-scroll"></div>
+
+    <h3>TV Shows</h3>
+    <div class="horizontal-scroll" id="tv-shows-scroll"></div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="humber.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
+      <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br></a>
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
+    </div>
+  </nav>
+
+  <!-- Bootstrap JS Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom Scripts -->
+  <script>
+    // Hide hamburger when offcanvas opens and show it when closed
+    var offcanvasEl = document.getElementById('offcanvasProviders');
+    offcanvasEl.addEventListener('show.bs.offcanvas', function () {
+      document.querySelector('.hamburger-btn').style.opacity = '0';
+    });
+    offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
+      document.querySelector('.hamburger-btn').style.opacity = '1';
+    });
+    
+    // On the provider selection page, set the active provider based on the URL parameter.
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if a provider query parameter exists
+      const urlParams = new URLSearchParams(window.location.search);
+      const provider = urlParams.get('provider');
+      if (provider) {
+        const providerLinks = document.querySelectorAll('.offcanvas-body ul li a');
+        providerLinks.forEach(link => {
+          // If the link's href includes the selected provider, add the active class.
+          if (link.href.includes(`provider=${provider}`)) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+      // Also, update the bottom nav active state based on current file name.
+      var path = window.location.pathname.split("/").pop();
+      if (path === '') { path = 'ho.html'; }
+      var navLinks = document.querySelectorAll('nav.navbar .nav-link');
+      navLinks.forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href === path) { link.classList.add('active'); }
+        else { link.classList.remove('active'); }
+      });
+    });
+    
+    document.addEventListener("DOMContentLoaded", function() {
+  // ---------------------
+  // CONFIGURATION
+  // ---------------------
+  const TRAKT_CLIENT_ID = "97ca49d276bd090c063dd2c6174ed4c622ee58d443d1160aac87276f50b34b36"; // Your Trakt.tv Client ID
+  const OMDB_API_KEY = "c244e183";         // Your OMDb API key
+
+  const TRAKT_API_BASE = "https://api.trakt.tv";
+  const OMDB_API_BASE = "https://www.omdbapi.com/";
+
+  const traktHeaders = {
+    "Content-Type": "application/json",
+    "trakt-api-version": "2",
+    "trakt-api-key": TRAKT_CLIENT_ID
+  };
+
+  // ---------------------
+  // DATA CONTAINERS
+  // ---------------------
+  let heroMovies = [];        // First 5 trending movies for hero carousel
+  let heroIndex = 0;          // Current index for hero carousel
+  let heroInterval;           // Interval for auto-play carousel
+
+  // ---------------------
+  // REDIRECT FUNCTION
+  // ---------------------
+  // When a poster image is clicked in any section, call this function.
+  function redirectToWatch(imdbID, title, poster) {
+    window.location.href = `watch.html?id=${imdbID}&title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
+  }
+
+  // ---------------------
+  // HELPER: Enrich an item using OMDb (for poster, rating, title)
+  // ---------------------
+  async function enrichItem(item) {
+    if (item.ids && item.ids.imdb) {
+      const imdbID = item.ids.imdb;
+      const omdbUrl = `${OMDB_API_BASE}?i=${imdbID}&apikey=${OMDB_API_KEY}`;
+      try {
+        const response = await fetch(omdbUrl);
+        const omdbData = await response.json();
+        return {
+          ...item,
+          omdbPoster: (omdbData.Poster && omdbData.Poster !== "N/A") ? omdbData.Poster : "fallback-image.jpg",
+          omdbRating: (omdbData.imdbRating && omdbData.imdbRating !== "N/A") ? omdbData.imdbRating : "N/A",
+          omdbTitle: omdbData.Title || item.title || item.name || "Unknown Title"
+        };
+      } catch (error) {
+        console.error("OMDb error for", item.title || item.name, error);
+        return { ...item, omdbPoster: "fallback-image.jpg" };
+      }
+    }
+    return { ...item, omdbPoster: "fallback-image.jpg" };
+  }
+
+  // ---------------------
+  // FETCH FUNCTIONS (Only for fetching/enriching data)
+  // ---------------------
+  async function fetchTrendingMovies() {
+    try {
+      const url = `${TRAKT_API_BASE}/movies/trending?limit=10&extended=full`;
+      const response = await fetch(url, { headers: traktHeaders });
+      const data = await response.json();
+      const movies = data.map(item => item.movie);
+      const enriched = await Promise.all(movies.map(enrichItem));
+      // Use first 5 movies for hero carousel.
+      heroMovies = enriched.slice(0, 5);
+      heroIndex = 0;
+      showHeroItem(heroIndex);
+      buildHeroDots();
+      if (heroInterval) clearInterval(heroInterval);
+      heroInterval = setInterval(() => {
+        heroIndex = (heroIndex + 1) % heroMovies.length;
+        showHeroItem(heroIndex);
+      }, 5000);
+      // Update Movies section.
+      updateSection("movies-scroll", enriched);
+    } catch (error) {
+      console.error("Error fetching trending movies:", error);
+    }
+  }
+
+  async function fetchTrendingShows() {
+    try {
+      const url = `${TRAKT_API_BASE}/shows/trending?limit=10&extended=full`;
+      const response = await fetch(url, { headers: traktHeaders });
+      const data = await response.json();
+      const shows = data.map(item => item.show);
+      const enriched = await Promise.all(shows.map(enrichItem));
+      updateSection("tv-shows-scroll", enriched);
+    } catch (error) {
+      console.error("Error fetching trending shows:", error);
+    }
+  }
+
+  async function fetchAnime() {
+    try {
+      const url = `${TRAKT_API_BASE}/search?query=anime&type=show&limit=10`;
+      const response = await fetch(url, { headers: traktHeaders });
+      const data = await response.json();
+      const shows = data.map(item => item.show);
+      const enriched = await Promise.all(shows.map(enrichItem));
+      updateSection("anime-scroll", enriched);
+    } catch (error) {
+      console.error("Error fetching anime:", error);
+    }
+  }
+
+  async function fetchWebSeries() {
+    try {
+      const url = `${TRAKT_API_BASE}/search?query=web%20series&type=show&limit=10`;
+      const response = await fetch(url, { headers: traktHeaders });
+      const data = await response.json();
+      const shows = data.map(item => item.show);
+      const enriched = await Promise.all(shows.map(enrichItem));
+      updateSection("web-series-scroll", enriched);
+    } catch (error) {
+      console.error("Error fetching web series:", error);
+    }
+  }
+
+  // ---------------------
+  // HERO CAROUSEL FUNCTIONS (Based on heroMovies)
+  // ---------------------
+  function showHeroItem(index) {
+    const movie = heroMovies[index];
+    if (!movie) return;
+    const hero = document.getElementById("hero");
+    const heroTitle = document.getElementById("hero-title");
+    const heroRating = document.getElementById("hero-rating");
+    const watchHero = document.getElementById("watch-hero");
+
+    const imageUrl = movie.omdbPoster || "fallback-image.jpg";
+    if (hero) hero.style.backgroundImage = `url(${imageUrl})`;
+    if (heroTitle) heroTitle.textContent = movie.omdbTitle || movie.title || "Unknown Title";
+    const ratingVal = movie.rating ? movie.rating.toFixed(1) : (movie.omdbRating || "N/A");
+    if (heroRating) heroRating.textContent = `Rating: ${ratingVal}`;
+    if (watchHero) {
+      watchHero.onclick = () => {
+        if (movie.ids && movie.ids.imdb) {
+          redirectToWatch(movie.ids.imdb, movie.omdbTitle || movie.title || "Unknown Title", movie.omdbPoster || "fallback-image.jpg");
+        }
+      };
+    }
+    // Update dot indicators.
+    const dots = document.querySelectorAll(".hero-dot");
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle("active", idx === index);
+    });
+    // Restart hero content animation if needed.
+    const heroContent = document.getElementById("hero-content");
+    if (heroContent) {
+      heroContent.style.animation = 'none';
+      setTimeout(() => { heroContent.style.animation = ''; }, 50);
+    }
+  }
+
+  function buildHeroDots() {
+    const dotsContainer = document.getElementById("hero-dots");
+    if (!dotsContainer) return;
+    dotsContainer.innerHTML = "";
+    heroMovies.forEach((_, idx) => {
+      const dot = document.createElement("div");
+      dot.classList.add("hero-dot");
+      if (idx === heroIndex) dot.classList.add("active");
+      dot.addEventListener("click", () => {
+        heroIndex = idx;
+        showHeroItem(heroIndex);
+        resetHeroInterval();
+      });
+      dotsContainer.appendChild(dot);
+    });
+  }
+
+  function resetHeroInterval() {
+    clearInterval(heroInterval);
+    heroInterval = setInterval(() => {
+      heroIndex = (heroIndex + 1) % heroMovies.length;
+      showHeroItem(heroIndex);
+    }, 5000);
+  }
+
+  // Swipe detection for hero carousel.
+  let touchStartX = 0;
+  let touchEndX = 0;
+  const swipeThreshold = 50;
+  const heroElement = document.getElementById("hero");
+  if (heroElement) {
+    heroElement.addEventListener("touchstart", (e) => { touchStartX = e.changedTouches[0].screenX; });
+    heroElement.addEventListener("touchend", (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const distance = touchEndX - touchStartX;
+      if (Math.abs(distance) > swipeThreshold) {
+        heroIndex = distance < 0 ? (heroIndex + 1) % heroMovies.length : (heroIndex - 1 + heroMovies.length) % heroMovies.length;
+        showHeroItem(heroIndex);
+        resetHeroInterval();
+      }
+    });
+  }
+
+  // ---------------------
+  // HORIZONTAL SECTIONS UPDATE
+  // ---------------------
+  // Each poster element calls redirectToWatch using the imdbID, title, and poster.
+  function updateSection(sectionId, items) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    section.innerHTML = "";
+    items.forEach(item => {
+      const div = document.createElement("div");
+      div.classList.add("scroll-item");
+      div.addEventListener("click", () => {
+        if(item.ids && item.ids.imdb) {
+          redirectToWatch(item.ids.imdb, item.omdbTitle || item.title || "Unknown Title", item.omdbPoster || "fallback-image.jpg");
+        }
+      });
+      const imageUrl = item.omdbPoster || "fallback-image.jpg";
+      const title = item.omdbTitle || item.title || item.name || "Unknown";
+      const ratingVal = item.rating ? item.rating.toFixed(1) : (item.omdbRating || "N/A");
+      div.innerHTML = `
+        <img src="${imageUrl}" alt="${title}" title="${title}">
+        <p style="font-size: 12px; text-align: center;">${title.length > 15 ? title.substring(0,15) + "..." : title}</p>
+        <p style="font-size: 10px; text-align: center;">Rating: ${ratingVal}</p>
+      `;
+      section.appendChild(div);
+    });
+  }
+
+  // ---------------------
+  // BOTTOM NAVIGATION: Hide/Show on Scroll
+  // ---------------------
+  let lastScrollTop = 0;
+  window.addEventListener('scroll', () => {
+    let st = window.pageYOffset || document.documentElement.scrollTop;
+    const nav = document.getElementById('bottom-nav');
+    if (nav) {
+      nav.style.transform = st > lastScrollTop ? 'translateY(100%)' : 'translateY(0)';
+    }
+    lastScrollTop = st <= 0 ? 0 : st;
+  });
+
+  // ---------------------
+  // INITIAL CALLS: Fetch Data for All Sections
+  // ---------------------
+  fetchTrendingMovies();
+  fetchTrendingShows();
+  fetchAnime();
+  fetchWebSeries();
+
+  // Optionally refresh data every minute.
+  setInterval(() => {
+    fetchTrendingMovies();
+    fetchTrendingShows();
+    fetchAnime();
+    fetchWebSeries();
+  }, 60000);
+});
+  </script>
+</body>
+</html>
