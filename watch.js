@@ -870,5 +870,75 @@ document.addEventListener('touchend', () => {
       }
     });
   });
+
+    // Toggle season selector visibility
+    function toggleSeasonContainer() {
+      const seasonSelector = document.getElementById('season-selector');
+      seasonSelector.style.display = seasonSelector.style.display === 'flex' ? 'none' : 'flex';
+    }
     
+    // Close video container and dark overlay
+    function closeVideo() {
+      document.getElementById('videoContainer').style.display = 'none';
+      document.getElementById('darkOverlay').style.display = 'none';
+    }
+    
+    // Incident: Handle first touch/click on the iframe overlay only once
+    const firstClickBlocker = document.getElementById('firstClickBlocker');
+    firstClickBlocker.addEventListener('click', function handleFirstTouch(event) {
+      // Replace the following line with your incident-handling code
+      console.log("Unknown link source touched. Incident triggered.");
+      // Remove the overlay so that further interactions go directly to the iframe
+      firstClickBlocker.parentNode.removeChild(firstClickBlocker);
+    }, { once: true });
+    
+    // Also listen for touch events on the blocker
+    firstClickBlocker.addEventListener('touchstart', function handleFirstTouch(event) {
+      console.log("Unknown link source touched via touch event. Incident triggered.");
+      firstClickBlocker.parentNode.removeChild(firstClickBlocker);
+    }, { once: true });
+    
+    // Prevent default right-click/context menu on the video container
+    document.getElementById('videoContainer').addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    
+    // Prevent long-press on touch devices from showing image preview for the video container
+    document.getElementById('videoContainer').addEventListener('touchstart', function(e) {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    });
+    
+    // Further JavaScript for toggling video container or handling iframe source changes would go here.
+        // Prevent default right-click/context menu on the video container
+    document.getElementById('iframeWrapper').addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    
+    // Prevent long-press on touch devices from showing image preview on the video container
+    document.getElementById('iframeWrapper').addEventListener('touchstart', function(e) {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    });
+    
+    // This overlay intercepts all clicks/touches and blocks them
+    const overlay = document.getElementById('iframeOverlay');
+    overlay.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("Blocked an interaction on the iframe.");
+      // If you want the overlay to remain permanently (never allow interaction),
+      // leave it in place. Otherwise, you could optionally remove it here.
+      // e.g., overlay.style.display = 'none';
+    });
+    
+    // Optional: Provide a button to allow user interaction (i.e. remove the overlay)
+    document.getElementById('enableIframeBtn').addEventListener('click', function() {
+      overlay.style.display = 'none';
+      console.log("User enabled interaction with the iframe.");
+      // Optionally hide or disable the button after removing the overlay.
+      this.style.display = 'none';
+    });
 
