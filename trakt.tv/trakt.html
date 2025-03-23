@@ -29,7 +29,18 @@
     body.bg-dark {
       background-color: #000;
       color: #fff;
+            -webkit-user-select: none; /* Chrome, Safari */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* IE10+ */
+      user-select: none;         /* Standard syntax */
     }
+    
+    /* Disable dragging for images */
+    img {
+      -webkit-user-drag: none;
+      cursor: default;
+    }
+    
     
       /* Hamburger Button inside Hero Section */
       .hamburger-btn {
@@ -391,6 +402,17 @@
   let heroInterval;           // Interval for auto-play carousel
 
   // ---------------------
+        // Prevent default right-click/context menu on the entire document
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Prevent long-press on touch devices from showing image preview
+    document.addEventListener('touchstart', function(e) {
+      if(e.touches.length > 1) {
+        e.preventDefault();
+      }
+    });
   // REDIRECT FUNCTION
   // ---------------------
   // When a poster image is clicked in any section, call this function.
