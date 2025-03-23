@@ -213,6 +213,18 @@
     .hero-dot.active {
       background: cyan;
     }
+        /* Dark blur/gradient at bottom of hero */
+    #hero::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 150px; /* Adjust height to your preference */
+      background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.8));
+      z-index: 11;
+      pointer-events: none;
+    }
 
     /* Horizontal Scroll Sections */
     .horizontal-scroll {
@@ -242,6 +254,24 @@
     }
     .scroll-item:hover {
       transform: scale(1.1);
+    }
+        /* Attractive gradient text style */
+    .stylish-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 600;
+      background: linear-gradient(45deg, #6a11cb, #2575fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+        /* ADDED: container background black */
+    .container.mt-4 {
+      background-color: #000; 
+      padding-top: 20px;
+      padding-bottom: 20px;
+      /* If there's any default margin from bootstrap, override it: */
+      margin-top: 0 !important;
     }
 
     /* Bottom Navigation Bar */
@@ -336,16 +366,18 @@
 
   <!-- MAIN CONTENT (Horizontal Scroll Sections) -->
   <div class="container mt-4">
-    <h3>Movies</h3>
+     <h3 class="stylish-text">Movies</h3>
     <div class="horizontal-scroll" id="movies-scroll"></div>
 
-    <h3>Anime</h3>
+    
+     <h3 class="stylish-text">Anime</h3>
     <div class="horizontal-scroll" id="anime-scroll"></div>
 
-    <h3>Web Series</h3>
+     <h3 class="stylish-text">Web Series</h3>
     <div class="horizontal-scroll" id="web-series-scroll"></div>
 
-    <h3>TV Shows</h3>
+    
+     <h3 class="stylish-text">TV Shows</h3>
     <div class="horizontal-scroll" id="tv-shows-scroll"></div>
   </div>
 
