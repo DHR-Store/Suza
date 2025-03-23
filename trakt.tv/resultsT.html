@@ -76,14 +76,14 @@
 
 <!-- Bottom Navigation -->
 <nav class="bottom-nav">
-    <a href="../moviesMod.html"><i class="bi bi-house-door-fill"></i></a>
-    <a href="searchMovies.html"><i class="bi bi-search"></i></a>
-    <a href="watchlistM.html"><i class="bi bi-bookmark-fill"></i></a>
-    <a href="settingsM.html"><i class="bi bi-gear-fill"></i></a>
+    <a href="trakt.html"><i class="bi bi-house-door-fill"></i></a>
+    <a href="searchT.html"><i class="bi bi-search"></i></a>
+    <a href="watchlistT.html"><i class="bi bi-bookmark-fill"></i></a>
+    <a href="settingsT.html"><i class="bi bi-gear-fill"></i></a>
 </nav>
 
 <script>
-    const API_KEY = "90b37ad0";
+    const API_KEY = "c244e183";
     const BASE_URL = "https://www.omdbapi.com/";
     let query = new URLSearchParams(window.location.search).get("query") || "Movie";
 
@@ -125,7 +125,7 @@
     }
 
     function redirectToWatch(imdbID, title, poster) {
-        window.location.href = `watchM.html?id=${imdbID}&title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
+        window.location.href = `watchT.html?id=${imdbID}&title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
     }
 
     loadMovies();
