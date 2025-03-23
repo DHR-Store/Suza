@@ -29,6 +29,10 @@
     body.bg-dark {
       background-color: #000;
       color: #fff;
+      webkit-user-select: none; /* Chrome, Safari */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* IE10+ */
+      user-select: none;         /* Standard syntax */
     }
     img {
       -webkit-user-drag: none;
@@ -435,6 +439,18 @@
     let touchEndX = 0;
     const swipeThreshold = 50; // Minimum distance (in pixels) to consider a swipe
 
+
+        // Prevent default right-click/context menu on the entire document
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Prevent long-press on touch devices from showing image preview
+    document.addEventListener('touchstart', function(e) {
+      if(e.touches.length > 1) {
+        e.preventDefault();
+      }
+    });
     // Fetch movies for the hero carousel
     async function fetchHeroMovies() {
       const categories = ["movie", "series", "anime", "bollywood", "hollywood", "korean", "chinese", "Hindi", "Tamil", "urdu", "Bhojpuri", "cultural"];
