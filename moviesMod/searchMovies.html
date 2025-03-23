@@ -28,8 +28,20 @@
       background-color: #121212;
       color: #ffffff;
       font-family: 'Poppins', sans-serif;
-      overflow: hidden; /* We'll manage scroll in the suggestions area */
+      overflow: hidden;
+           -webkit-user-select: none; /* Chrome, Safari */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* IE10+ */
+      user-select: none;         /* Standard syntax */
     }
+    
+    /* Disable dragging for images */
+    img {
+      -webkit-user-drag: none;
+      cursor: default;
+    }
+ /* We'll manage scroll in the suggestions area */
+    
 
     /* Fixed top search bar spanning full width */
     .search-box {
@@ -251,6 +263,19 @@
   </nav>
 
   <script>
+
+        // Prevent default right-click/context menu on the entire document
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Prevent long-press on touch devices from showing image preview
+    document.addEventListener('touchstart', function(e) {
+      if(e.touches.length > 1) {
+        e.preventDefault();
+      }
+    });
+    
     // Prevent zoom gestures on mobile devices (optional)
     document.addEventListener("gesturestart", function(e) {
       e.preventDefault();
