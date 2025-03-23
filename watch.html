@@ -19,6 +19,16 @@
       color: #f1f1f1;
       margin: 0;
       padding: 0;
+        -webkit-user-select: none; /* Chrome, Safari */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* IE10+ */
+      user-select: none;         /* Standard syntax */
+    }
+    
+    /* Disable dragging for images */
+    img {
+      -webkit-user-drag: none;
+      cursor: default;
     }
     
     /*********************************************
