@@ -117,7 +117,7 @@ function toggleSeasonContainer() {
 
 // Load movie details from OMDb
 function loadMovieDetails(title, callback) {
-  const API_KEY = "90b37ad0"; // Replace with your own OMDb API key
+  const API_KEY = "c244e183"; // Replace with your own OMDb API key
   fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&t=${encodeURIComponent(title)}`)
     .then(response => response.json())
     .then(data => {
