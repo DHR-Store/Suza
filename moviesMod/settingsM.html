@@ -17,7 +17,18 @@
             margin: 0;
             padding: 0;
             transition: 0.3s ease-in-out;
-        }
+                  -webkit-user-select: none; /* Chrome, Safari */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* IE10+ */
+      user-select: none;         /* Standard syntax */
+    }
+    
+    /* Disable dragging for images */
+    img {
+      -webkit-user-drag: none;
+      cursor: default;
+    }
+        
 
         header {
             background: #1f1f1f;
@@ -202,6 +213,17 @@
     </nav>
 
     <script>
+            // Prevent default right-click/context menu on the entire document
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Prevent long-press on touch devices from showing image preview
+    document.addEventListener('touchstart', function(e) {
+      if(e.touches.length > 1) {
+        e.preventDefault();
+      }
+    });
         // Dark Mode Toggle
         document.getElementById("toggle-darkmode").addEventListener("click", function () {
             document.body.classList.toggle("light-mode");
