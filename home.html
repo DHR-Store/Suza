@@ -58,6 +58,27 @@
       font-size: 1.8rem;
       color: #fff;
     }
+
+        /* News Button inside Hero Section */
+    .news-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      padding: 10px;
+      z-index: 30;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .news-btn:hover {
+      transform: scale(1.1);
+    }
+    .news-btn i {
+      font-size: 1.8rem;
+      color: #fff;
+    }
+    
     
     /* Offcanvas Sidebar Enhancements with Responsive Width */
     
@@ -316,6 +337,9 @@
   <div id="hero">
       <button class="hamburger-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasProviders" aria-controls="offcanvasProviders">
       <i class="bi bi-list"></i>
+      </button>
+      <button class="news-btn" type="button" onclick="window.location.href='news.html';">
+      <i class="bi bi-newspaper"></i>
       </button>
     <div id="hero-overlay"></div>
     <div id="hero-content">
