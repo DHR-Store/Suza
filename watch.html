@@ -556,6 +556,52 @@
   });
   observer.observe(document.body, { childList: true, subtree: true });
 })();
-</script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Block karne wale domains ya patterns ko define karein
+  const blockedPatterns = [
+    "todayswigcontagious.com"
+    // Aap yahan aur patterns add kar sakte hain
+  ];
+
+  // Function jo ek iframe ko check karta hai
+  function checkAndBlockIframe(iframe) {
+    const src = iframe.getAttribute("src");
+    if (src) {
+      for (let pattern of blockedPatterns) {
+        if (src.indexOf(pattern) !== -1) {
+          console.log("Blocked iframe with src:", src);
+          // Iframe ko block karne ke liye, aap uska src "about:blank" set kar sakte hain
+          iframe.src = "about:blank";
+          // Agar aap chahen to iframe element ko DOM se hata bhi sakte hain:
+          // iframe.parentNode.removeChild(iframe);
+          break;
+        }
+      }
+    }
+  }
+
+  // Initial check: Page load par maujood sabhi iframes ko check karein
+  document.querySelectorAll("iframe").forEach(checkAndBlockIframe);
+
+  // MutationObserver: Future mein add hone wale iframes ko bhi check karein
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      mutation.addedNodes.forEach(function(node) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.tagName.toLowerCase() === "iframe") {
+            checkAndBlockIframe(node);
+          } else {
+            // Agar naye node ke andar nested iframes hain, unhe bhi check karein
+            node.querySelectorAll && node.querySelectorAll("iframe").forEach(checkAndBlockIframe);
+          }
+        }
+      });
+    });
+  });
+  
+  observer.observe(document.body, { childList: true, subtree: true });
+});
+  </script>
+
 </body>
 </html>
