@@ -304,7 +304,7 @@
      * FETCH NEWS (Single Large Query)
      *************************************************************/
     async function fetchNews(query) {
-      const apiKey = "f31aa4467d00caf224e8daf13754f6dc";
+      const apiKey = "0b533b709abe1363a6b944c91afa584c";
       // We fetch a bigger max so we can simulate "infinite" loads
       const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=30&token=${apiKey}`;
       try {
@@ -384,7 +384,7 @@
       fallback.textContent = "";
 
       // We only fetch 10 for these
-      const apiKey = "f31aa4467d00caf224e8daf13754f6dc";
+      const apiKey = "0b533b709abe1363a6b944c91afa584c";
       const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=10&token=${apiKey}`;
 
       try {
