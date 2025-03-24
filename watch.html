@@ -454,5 +454,108 @@
   
   <!-- JavaScript file inclusion -->
   <script src="watch.js"></script>
+  <script>
+(function() {
+  // Allowed links: file names ya relative URLs
+  const allowedLinks = ['search.html', 'home.html', 'settings.html', 'watchlist.html'];
+
+  // Helper function: check if given URL is allowed
+  function isAllowed(url) {
+    try {
+      // Convert to absolute URL
+      const anchorURL = new URL(url, window.location.href);
+      // Extract filename (last segment of pathname)
+      const parts = anchorURL.pathname.split('/');
+      const fileName = parts.pop() || parts.pop(); // Handle trailing slash
+      return allowedLinks.includes(fileName);
+    } catch (e) {
+      // Agar URL parsing mein error aata hai, block kar dein
+      return false;
+    }
+  }
+
+  // Global event handler jo link clicks ko intercept karega
+  function blockLinkNavigation(event) {
+    const anchor = event.target.closest('a');
+    if (anchor) {
+      // Agar allowed link hai, to navigation allow karein
+      if (isAllowed(anchor.href)) {
+        console.log('Allowed navigation to:', anchor.href);
+        return; 
+      }
+      // Nahi to, prevent default navigation
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      console.log('Blocked navigation from:', anchor.href);
+      return false;
+    }
+  }
+
+  // List of events jo navigation trigger kar sakte hain
+  const eventsToBlock = ['click', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'auxclick'];
+  eventsToBlock.forEach(function(evtType) {
+    document.addEventListener(evtType, blockLinkNavigation, true);
+  });
+
+  // Override window.open aur location methods
+  window.open = function() {
+    console.log('Blocked window.open call');
+    return null;
+  };
+  window.location.assign = function(url) {
+    if (!isAllowed(url)) {
+      console.log('Blocked location.assign to:', url);
+      return;
+    }
+    console.log('Allowed location.assign to:', url);
+  };
+  window.location.replace = function(url) {
+    if (!isAllowed(url)) {
+      console.log('Blocked location.replace to:', url);
+      return;
+    }
+    console.log('Allowed location.replace to:', url);
+  };
+
+  // Context menu disable karen (right-click)
+  document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+    console.log('Context menu disabled');
+  }, true);
+
+  // Optional: Page load par existing anchors ka styling update kar dein
+  function updateAnchorStyles() {
+    document.querySelectorAll('a').forEach(function(anchor) {
+      if (!isAllowed(anchor.href)) {
+        // Non-allowed links ko visual feedback dene ke liye pointer events disable kar sakte hain
+        anchor.style.pointerEvents = 'none';
+      }
+    });
+  }
+  updateAnchorStyles();
+
+  // MutationObserver: Future mein add hone wale anchors ko bhi update karen
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      mutation.addedNodes.forEach(function(node) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.tagName.toLowerCase() === 'a') {
+            if (!isAllowed(node.href)) {
+              node.style.pointerEvents = 'none';
+            }
+          } else {
+            node.querySelectorAll && node.querySelectorAll('a').forEach(function(anchor) {
+              if (!isAllowed(anchor.href)) {
+                anchor.style.pointerEvents = 'none';
+              }
+            });
+          }
+        }
+      });
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
 </body>
 </html>
