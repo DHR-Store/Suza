@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search Results - Entertainment News</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+  <!-- Custom Styles -->
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+    }
+    h1, h2 {
+      color: #00ffff;
+    }
+    .spinner-container {
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .news-card {
+      background: #1c1c1c;
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      margin-bottom: 20px;
+    }
+    .news-card:hover {
+      transform: scale(1.02);
+    }
+    .news-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      cursor: pointer;
+    }
+    .news-card-body {
+      padding: 15px;
+    }
+    .news-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #00ffff;
+      margin-bottom: 10px;
+    }
+    .news-description {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .read-more-btn {
+      margin-top: 10px;
+    }
+    .back-btn {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-4">
+    <button class="btn btn-outline-info back-btn" onclick="window.history.back();">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+    <h1 class="mb-3">Search Results</h1>
+    <h2 id="searchTerm" class="mb-4"></h2>
+    <!-- Spinner -->
+    <div id="spinner" class="spinner-container">
+      <div class="spinner-border text-info" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <!-- News Results -->
+    <div id="news-results" class="row"></div>
+  </div>
+
+  <!-- Bootstrap JS Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Helper: get URL parameter by name
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    // Display search term in header
+    const query = getQueryParam("q") || "";
+    document.getElementById("searchTerm").textContent = query ? `Results for "${query}"` : "No search query provided.";
+
+    async function fetchNews() {
+      // Replace with your actual API key
+      const apiKey = "f31aa4467d00caf224e8daf13754f6dc";
+      const endpoint = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=20&token=${apiKey}`;
+      try {
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        return data.articles || [];
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        return [];
+      }
+    }
+
+    function renderNews(articles) {
+      const resultsContainer = document.getElementById("news-results");
+      resultsContainer.innerHTML = "";
+      if (articles.length === 0) {
+        resultsContainer.innerHTML = `<p class="text-center">No results found.</p>`;
+        return;
+      }
+      articles.forEach(article => {
+        const col = document.createElement("div");
+        col.className = "col-md-4";
+
+        const card = document.createElement("div");
+        card.className = "card news-card";
+
+        // Image: clicking will go to full article details page (newfull.html)
+        const img = document.createElement("img");
+        img.src = article.image || article.image_url || "fallback.jpg";
+        img.alt = article.title;
+        img.addEventListener("click", function() {
+          localStorage.setItem("selectedArticle", JSON.stringify(article));
+          window.location.href = "newfull.html";
+        });
+        card.appendChild(img);
+
+        // Card body
+        const cardBody = document.createElement("div");
+        cardBody.className = "card-body news-card-body";
+
+        const title = document.createElement("h5");
+        title.className = "news-title";
+        title.textContent = article.title;
+        cardBody.appendChild(title);
+
+        const description = document.createElement("p");
+        description.className = "news-description";
+        description.textContent = article.description || "";
+        cardBody.appendChild(description);
+
+        const readMoreBtn = document.createElement("button");
+        readMoreBtn.className = "btn btn-outline-info read-more-btn";
+        readMoreBtn.textContent = "Read More";
+        readMoreBtn.addEventListener("click", function() {
+          localStorage.setItem("selectedArticle", JSON.stringify(article));
+          window.location.href = "newfull.html";
+        });
+        cardBody.appendChild(readMoreBtn);
+
+        card.appendChild(cardBody);
+        col.appendChild(card);
+        resultsContainer.appendChild(col);
+      });
+    }
+
+    async function init() {
+      const spinner = document.getElementById("spinner");
+      const articles = await fetchNews();
+      spinner.style.display = "none";
+      renderNews(articles);
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

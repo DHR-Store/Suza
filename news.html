@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, maximum-scale=1.0, user-scalable=no" />
+  <title>Entertainment News - Infinite Scroll</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    h1, h2 {
+      color: #00ffff;
+    }
+    .section-title {
+      margin: 20px 0 10px;
+      padding-left: 10px;
+    }
+    /* Horizontal scroll container for carousels */
+    .h-scroll {
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: 10px;
+    }
+    .h-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    /* CARD with large left image and text on the right */
+    .news-card {
+      background: #1c1c1c;
+      border: none;
+      border-radius: 8px;
+      display: inline-block;
+      vertical-align: top;
+      margin-right: 10px;
+      min-width: 280px;
+      max-width: 400px;
+      transition: transform 0.3s ease;
+    }
+    .news-card:hover {
+      transform: scale(1.02);
+    }
+    /* Left image: 120px wide, auto height */
+    .left-img {
+      width: 120px; 
+      height: auto; 
+      object-fit: cover;
+      border-radius: 8px 0 0 8px;
+      cursor: pointer;
+      display: block;
+    }
+    /* Right side content */
+    .news-card .card-body {
+      padding: 0.75rem;
+    }
+    .news-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #00ffff;
+      margin-bottom: 5px;
+      white-space: normal;
+    }
+    .news-subtitle {
+      font-size: 0.75rem;
+      color: #b3b3b3;
+      margin-bottom: 5px;
+      white-space: normal;
+    }
+    .news-description {
+      font-size: 0.75rem;
+      color: #ccc;
+      margin-bottom: 8px;
+      white-space: normal;
+    }
+    .read-more-btn {
+      font-size: 0.7rem;
+      padding: 4px 8px;
+    }
+    .fallback-message {
+      color: #ccc;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+    /* Horizontal scrollable genre buttons container */
+    .genre-container {
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+    .genre-btn {
+      display: inline-block;
+      margin: 0 5px;
+      font-size: 0.8rem;
+      padding: 4px 8px;
+    }
+    .genre-btn.active {
+      background-color: #00ffff;
+      color: #000;
+    }
+    /* Floating Search Button */
+    .floating-search-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1050;
+      background-color: #00ffff;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .floating-search-btn:hover {
+      transform: scale(1.1);
+    }
+    .floating-search-btn i {
+      font-size: 1.5rem;
+      color: #000;
+    }
+    /* Adjust spacing on very small screens */
+    @media (max-width: 480px) {
+      .news-card {
+        width: 85%;
+      }
+      .left-img {
+        width: 100px; 
+      }
+      .news-title {
+        font-size: 0.85rem;
+      }
+      .news-subtitle,
+      .news-description,
+      .read-more-btn {
+        font-size: 0.7rem;
+      }
+    }
+    /* Sensor for infinite scroll */
+    #load-more-sensor {
+      height: 50px;
+      margin: 20px auto;
+      background: transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-3 px-2">
+    <h1 class="text-center">Entertainment News</h1>
+    
+    <!-- New Releases Section -->
+    <h2 class="section-title">New Releases</h2>
+    <div id="new-release-container" class="h-scroll"></div>
+    <div id="new-release-fallback" class="fallback-message"></div>
+    
+    <!-- Trending Section -->
+    <h2 class="section-title">Trending</h2>
+    <div id="trending-container" class="h-scroll"></div>
+    <div id="trending-fallback" class="fallback-message"></div>
+    
+    <!-- All Genres Section -->
+    <h2 class="section-title">All Genres</h2>
+    <div class="genre-container">
+      <button class="btn btn-outline-info genre-btn active" data-genre="">All</button>
+      <button class="btn btn-outline-info genre-btn" data-genre="Bollywood">Bollywood</button>
+      <button class="btn btn-outline-info genre-btn" data-genre="Hollywood">Hollywood</button>
+      <button class="btn btn-outline-info genre-btn" data-genre="Tollywood">Tollywood</button>
+      <button class="btn btn-outline-info genre-btn" data-genre="Chinese">Chinese</button>
+      <button class="btn btn-outline-info genre-btn" data-genre="Korean">Korean</button>
+      <button class="btn btn-outline-info genre-btn" data-genre="Japanese">Japanese</button>
+      <button class="btn btn-outline-info genre-btn" data-genre="Anime">Anime</button>
+      <button class="btn btn-outline-info genre-btn" data-genre="Bhojpuri">Bhojpuri</button>
+    </div>
+    <!-- Container for the "All Genres" horizontal scroll -->
+    <div id="genre-news-container" class="h-scroll"></div>
+    <div id="genre-fallback" class="fallback-message"></div>
+  </div>
+
+  <!-- LOAD MORE SENSOR FOR INFINITE SCROLL -->
+  <div id="load-more-sensor"></div>
+
+  <!-- Floating Search Button -->
+  <button class="floating-search-btn" data-bs-toggle="modal" data-bs-target="#searchModal">
+    <i class="bi bi-search"></i>
+  </button>
+
+  <!-- Search Modal -->
+  <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="searchForm" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="searchModalLabel">Search News</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="searchInput" class="form-control" placeholder="Enter search term" required>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    /*************************************************************
+     * GLOBALS & SETUP
+     *************************************************************/
+    let currentGenre = "";           // which genre is active
+    let articlesStore = [];          // store for all articles (simulated infinite)
+    let batchSize = 5;               // how many items to render per "page"
+    let currentBatch = 0;            // which batch index are we on?
+    let observer = null;             // intersection observer for load-more
+
+    // We'll do the same for "new releases" and "trending," but for simplicity
+    // let's just demonstrate infinite scrolling with the "All Genres" section.
+
+    /*************************************************************
+     * CREATE CARD
+     *************************************************************/
+    function createNewsCard(article) {
+      const card = document.createElement("div");
+      card.className = "card news-card";
+
+      const row = document.createElement("div");
+      row.className = "row g-0 align-items-stretch";
+
+      // Left column (image)
+      const colLeft = document.createElement("div");
+      colLeft.className = "col-auto";
+
+      const img = document.createElement("img");
+      img.src = article.image || article.image_url || "fallback.jpg";
+      img.alt = article.title || "No Title";
+      img.className = "left-img";
+      img.addEventListener("click", () => {
+        localStorage.setItem("selectedArticle", JSON.stringify(article));
+        window.location.href = "newfull.html";
+      });
+      colLeft.appendChild(img);
+
+      // Right column (text)
+      const colRight = document.createElement("div");
+      colRight.className = "col";
+
+      const cardBody = document.createElement("div");
+      cardBody.className = "card-body";
+
+      // Title
+      const title = document.createElement("h5");
+      title.className = "news-title";
+      title.textContent = article.title || "No Title";
+      cardBody.appendChild(title);
+
+      // Subtitle
+      const subtitle = document.createElement("p");
+      subtitle.className = "news-subtitle";
+      const sourceName = article.source?.name || "Unknown Source";
+      const published = article.publishedAt
+        ? new Date(article.publishedAt).toLocaleDateString()
+        : "";
+      subtitle.textContent = `${sourceName} • ${published}`;
+      cardBody.appendChild(subtitle);
+
+      // Description
+      const description = document.createElement("p");
+      description.className = "news-description";
+      description.textContent = article.description || "No description available.";
+      cardBody.appendChild(description);
+
+      // Read More button
+      const readMoreBtn = document.createElement("button");
+      readMoreBtn.className = "btn btn-outline-info read-more-btn";
+      readMoreBtn.textContent = "Read More";
+      readMoreBtn.addEventListener("click", () => {
+        localStorage.setItem("selectedArticle", JSON.stringify(article));
+        window.location.href = "newfull.html";
+      });
+      cardBody.appendChild(readMoreBtn);
+
+      colRight.appendChild(cardBody);
+      row.appendChild(colLeft);
+      row.appendChild(colRight);
+      card.appendChild(row);
+
+      return card;
+    }
+
+    /*************************************************************
+     * FETCH NEWS (Single Large Query)
+     *************************************************************/
+    async function fetchNews(query) {
+      const apiKey = "f31aa4467d00caf224e8daf13754f6dc";
+      // We fetch a bigger max so we can simulate "infinite" loads
+      const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=30&token=${apiKey}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return (data.articles && Array.isArray(data.articles)) ? data.articles : [];
+      } catch (error) {
+        console.error("Error fetching news for query:", query, error);
+        return [];
+      }
+    }
+
+    /*************************************************************
+     * RENDER BATCH
+     * Renders the next batch of articles from articlesStore
+     *************************************************************/
+    function renderNextBatch() {
+      const container = document.getElementById("genre-news-container");
+      const fallback = document.getElementById("genre-fallback");
+
+      const startIndex = currentBatch * batchSize;
+      const endIndex = startIndex + batchSize;
+      const batch = articlesStore.slice(startIndex, endIndex);
+
+      if (batch.length === 0) {
+        // no more articles
+        fallback.textContent = "No more articles.";
+        return;
+      }
+
+      batch.forEach(article => {
+        const card = createNewsCard(article);
+        // Inline-block wrapper for horizontal scroll
+        const wrapper = document.createElement("div");
+        wrapper.style.display = "inline-block";
+        wrapper.style.marginRight = "10px";
+        wrapper.appendChild(card);
+        container.appendChild(wrapper);
+      });
+
+      currentBatch++;
+    }
+
+    /*************************************************************
+     * GENRE LOAD
+     * Called whenever a user picks a new genre
+     *************************************************************/
+    async function loadGenre(genre) {
+      const container = document.getElementById("genre-news-container");
+      const fallback = document.getElementById("genre-fallback");
+      container.innerHTML = "";
+      fallback.textContent = "";
+      currentBatch = 0;
+      articlesStore = [];
+
+      const query = genre ? `entertainment ${genre} news` : "entertainment news";
+      const articles = await fetchNews(query);
+
+      if (articles.length === 0) {
+        fallback.textContent = "No news articles found.";
+        return;
+      }
+      // Store them
+      articlesStore = articles;
+      // Render the first batch
+      renderNextBatch();
+    }
+
+    /*************************************************************
+     * RENDER STATIC SECTIONS: New Releases & Trending
+     * (No infinite scroll for these)
+     *************************************************************/
+    async function renderSection(query, containerId, fallbackId) {
+      const container = document.getElementById(containerId);
+      const fallback = document.getElementById(fallbackId);
+      container.innerHTML = "";
+      fallback.textContent = "";
+
+      // We only fetch 10 for these
+      const apiKey = "f31aa4467d00caf224e8daf13754f6dc";
+      const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=10&token=${apiKey}`;
+
+      try {
+        const resp = await fetch(url);
+        const data = await resp.json();
+        const articles = data.articles || [];
+
+        if (articles.length > 0) {
+          articles.forEach(article => {
+            const card = createNewsCard(article);
+            const wrapper = document.createElement("div");
+            wrapper.style.display = "inline-block";
+            wrapper.style.marginRight = "10px";
+            wrapper.appendChild(card);
+            container.appendChild(wrapper);
+          });
+        } else {
+          fallback.textContent = "No news articles found.";
+        }
+      } catch (err) {
+        console.error("Error fetching section data:", err);
+        fallback.textContent = "Error loading articles.";
+      }
+    }
+
+    /*************************************************************
+     * OBSERVER FOR INFINITE SCROLL
+     *************************************************************/
+    function setupObserver() {
+      const sensor = document.getElementById("load-more-sensor");
+      observer = new IntersectionObserver(entries => {
+        const lastEntry = entries[0];
+        if (lastEntry.isIntersecting) {
+          // Load the next batch
+          renderNextBatch();
+        }
+      });
+      observer.observe(sensor);
+    }
+
+    /*************************************************************
+     * ON DOM LOAD
+     *************************************************************/
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Render the static sections first
+      await renderSection("new release entertainment news", "new-release-container", "new-release-fallback");
+      await renderSection("trending entertainment news", "trending-container", "trending-fallback");
+
+      // Setup genre filtering
+      document.querySelectorAll(".genre-btn").forEach(button => {
+        button.addEventListener("click", async function() {
+          document.querySelectorAll(".genre-btn").forEach(btn => btn.classList.remove("active"));
+          this.classList.add("active");
+          currentGenre = this.getAttribute("data-genre") || "";
+          await loadGenre(currentGenre);
+        });
+      });
+
+      // Load default genre (All)
+      currentGenre = "";
+      await loadGenre(currentGenre);
+
+      // Setup infinite scroll observer
+      setupObserver();
+    });
+
+    /*************************************************************
+     * SEARCH FORM
+     *************************************************************/
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const searchTerm = document.getElementById("searchInput").value.trim();
+      if (searchTerm) {
+        window.location.href = `newsresult.html?q=${encodeURIComponent(searchTerm)}`;
+      }
+    });
+  </script>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

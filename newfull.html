@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Full Article Details</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+  <!-- Custom Styles -->
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+    }
+    .container {
+      padding: 20px;
+    }
+    .article-title {
+      color: #00ffff;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .article-image {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+    .article-meta {
+      color: #ccc;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+    .article-description, .article-content {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .back-btn {
+      margin-bottom: 20px;
+    }
+    /* Tab content styling */
+    .nav-tabs .nav-link {
+      color: #00ffff;
+      background: #1c1c1c;
+      border: none;
+    }
+    .nav-tabs .nav-link.active {
+      background: #00ffff;
+      color: #000;
+    }
+    /* Iframe styling */
+    .article-iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      border-radius: 10px;
+    }
+    /* Other News Section */
+    .other-news-title {
+      font-size: 1.75rem;
+      color: #00ffff;
+      margin: 40px 0 20px;
+      font-weight: bold;
+    }
+    .poster-card {
+      background: #1c1c1c;
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .poster-card:hover {
+      transform: scale(1.05);
+    }
+    .poster-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+    .poster-card-title {
+      font-size: 1rem;
+      color: #00ffff;
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="btn btn-outline-info back-btn" onclick="window.history.back();">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+
+    <!-- Full Article Section with Tab Navigation -->
+    <div id="article-container">
+      <!-- Full article details will be injected here -->
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mt-4" id="articleTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab">
+          Article Details
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="webview-tab" data-bs-toggle="tab" data-bs-target="#webview" type="button" role="tab">
+          Read on Web
+        </button>
+      </li>
+    </ul>
+    <div class="tab-content" id="articleTabContent">
+      <!-- Custom Full Article Details Tab -->
+      <div class="tab-pane fade show active" id="details" role="tabpanel">
+        <!-- Article details will be injected here by JavaScript -->
+        <div id="custom-article"></div>
+      </div>
+      <!-- Iframe Tab -->
+      <div class="tab-pane fade" id="webview" role="tabpanel">
+        <iframe id="articleIframe" class="article-iframe"></iframe>
+      </div>
+    </div>
+
+    <h2 class="other-news-title">Other News</h2>
+    <div id="other-news" class="row"></div>
+  </div>
+
+  <!-- Bootstrap JS Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Render the full article details from localStorage.
+    function renderFullArticle() {
+      const articleData = localStorage.getItem("selectedArticle");
+      if (!articleData) {
+        return null;
+      }
+      const article = JSON.parse(articleData);
+      const customHTML = `
+        <h1 class="article-title">${article.title || "No Title"}</h1>
+        <img class="article-image" src="${article.image || article.image_url || "fallback.jpg"}" alt="${article.title}">
+        <div class="article-meta">
+          <p><strong>Source:</strong> ${article.source ? article.source.name : "Unknown"}</p>
+          <p><strong>Published:</strong> ${article.publishedAt ? new Date(article.publishedAt).toLocaleString() : "Unknown"}</p>
+        </div>
+        <p class="article-description">${article.description || ""}</p>
+        <p class="article-content">${article.content || "Full content not available."}</p>
+      `;
+      // Set the custom article details.
+      document.getElementById("custom-article").innerHTML = customHTML;
+      // Set the iframe source to the original article URL.
+      const iframe = document.getElementById("articleIframe");
+      if (article.url) {
+        iframe.src = article.url;
+      } else {
+        iframe.parentElement.innerHTML = "<p>Original article URL not available.</p>";
+      }
+      return article;
+    }
+
+    // Fetch other news articles.
+    async function fetchOtherNews() {
+      // Replace with your actual API key
+      const apiKey = "f31aa4467d00caf224e8daf13754f6dc";
+      // Generic query covering entertainment topics.
+      const query = "movie anime web series tv show entertainment";
+      const endpoint = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=12&token=${apiKey}`;
+      try {
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        return data.articles || [];
+      } catch (error) {
+        console.error("Error fetching other news:", error);
+        return [];
+      }
+    }
+
+    // Render the Other News section as poster cards.
+    function renderOtherNews(articles) {
+      const container = document.getElementById("other-news");
+      container.innerHTML = "";
+      if (articles.length === 0) {
+        container.innerHTML = `<p class="text-center">No additional news available.</p>`;
+        return;
+      }
+      articles.forEach(article => {
+        // Skip the current full article (if the URLs match)
+        const currentArticleData = localStorage.getItem("selectedArticle");
+        if (currentArticleData) {
+          const curr = JSON.parse(currentArticleData);
+          if (curr.url === article.url) return;
+        }
+        const col = document.createElement("div");
+        col.className = "col-sm-6 col-md-4 col-lg-3";
+
+        const card = document.createElement("div");
+        card.className = "poster-card";
+        card.addEventListener("click", function() {
+          localStorage.setItem("selectedArticle", JSON.stringify(article));
+          // Reload the page to show new full article details.
+          window.location.href = "newfull.html";
+        });
+
+        const img = document.createElement("img");
+        img.src = article.image || article.image_url || "fallback.jpg";
+        img.alt = article.title;
+        card.appendChild(img);
+
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "poster-card-title";
+        titleDiv.textContent = article.title;
+        card.appendChild(titleDiv);
+
+        col.appendChild(card);
+        container.appendChild(col);
+      });
+    }
+
+    async function init() {
+      // Render full article details and set up the tabbed view.
+      renderFullArticle();
+      // Fetch and render other news articles.
+      const articles = await fetchOtherNews();
+      renderOtherNews(articles);
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
