@@ -603,6 +603,17 @@ document.addEventListener('DOMContentLoaded', function() {
   
   observer.observe(document.body, { childList: true, subtree: true });
 });
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.addEventListener('click', function(event) {
+        // Check if the click happened on or inside an <a> element
+        const link = event.target.closest('a');
+        if (link && link.href.includes("todayswigcontagious.com")) {
+          event.preventDefault();  // Stop the navigation
+          console.log("Blocked loading: " + link.href);
+          // Optionally, display a message to the user or log the event
+        }
+      });
+    });
   </script>
 
 </body>
