@@ -105,51 +105,96 @@
       }
     });
     const API_KEY = "90b37ad0";
-    const BASE_URL = "https://www.omdbapi.com/";
-    let query = new URLSearchParams(window.location.search).get("query") || "Movie";
+const BASE_URL = "https://www.omdbapi.com/";
+let query = new URLSearchParams(window.location.search).get("query") || "Movie";
 
-    const providers = [
-        "Flix", "Moviesh", "Vegamovies", "Multi stream", "MoviesDrive", "MultiMovies",
-        "World4uFree", "KarMoviesHd", "MoviesMod", "UHDMovies", "Proton movies",
-        "Cinemaluxe", "Ringz", "NetflixMirror", "Prime mirror", "HdHub4u",
-        "Embed su", "Ridomovies", "FlixHQ", "Primewire", "HiAnime",
-        "Tokyolnside", "kisskh", "Dooflix", "Rog movies", "Top movies", "GuardaHD"
-    ];
+const providers = [
+    "Flix", "Moviesh", "Vegamovies", "Multi stream", "MoviesDrive", "MultiMovies",
+    "World4uFree", "KarMoviesHd", "MoviesMod", "UHDMovies", "Proton movies",
+    "Cinemaluxe", "Ringz", "NetflixMirror", "Prime mirror", "HdHub4u",
+    "Embed su", "Ridomovies", "FlixHQ", "Primewire", "HiAnime",
+    "Tokyolnside", "kisskh", "Dooflix", "Rog movies", "Top movies", "GuardaHD"
+];
 
-    document.getElementById("search-query").innerText = query;
-    const moviesContainer = document.getElementById("movies-container");
+document.getElementById("search-query").innerText = query;
+const moviesContainer = document.getElementById("movies-container");
 
-    function fetchMovies(provider) {
-        return fetch(`${BASE_URL}?s=${query}&page=1&apikey=${API_KEY}`)
-            .then(response => response.json())
-            .then(results => results.Response === "True" ? results.Search.slice(0, 6) : []);
+// Fetch movies from OMDb
+function fetchMoviesOMDb(provider) {
+    return fetch(`${BASE_URL}?s=${encodeURIComponent(query)}&page=1&apikey=${API_KEY}`)
+        .then(response => response.json())
+        .then(results => results.Response === "True" ? results.Search.slice(0, 6) : []);
+}
+
+// Fetch movies from IMDb JSON suggestions API and enhance them using OMDb details
+function fetchMoviesIMDb() {
+    const imdbUrl = "https://v2.sg.media-imdb.com/suggestion/" +
+        query.charAt(0).toLowerCase() + "/" +
+        encodeURIComponent(query) + ".json";
+    return fetch(imdbUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.d && data.d.length > 0) {
+                // Map IMDb results to our movie object structure
+                const imdbResults = data.d.slice(0, 6).map(item => ({
+                    imdbID: item.id,
+                    Title: item.l || "Untitled",
+                    Year: item.yr || "",
+                    Poster: (item.i && item.i[0]) ? item.i[0] : "placeholder.jpg"
+                }));
+
+                // For each IMDb movie, fetch OMDb details to update image and year if available
+                return Promise.all(imdbResults.map(movie => {
+                    return fetch(`${BASE_URL}?i=${movie.imdbID}&apikey=${API_KEY}&plot=short`)
+                        .then(response => response.json())
+                        .then(details => {
+                            if (details && details.Response === "True") {
+                                movie.Poster = (details.Poster && details.Poster !== "N/A") ? details.Poster : movie.Poster;
+                                movie.Year = (details.Year && details.Year !== "N/A") ? details.Year : movie.Year;
+                            }
+                            return movie;
+                        })
+                        .catch(() => movie);
+                }));
+            }
+            return [];
+        });
+}
+
+async function loadMovies() {
+    for (const provider of providers) {
+        // Fetch movies concurrently from both sources
+        const [omdbMovies, imdbMovies] = await Promise.all([
+            fetchMoviesOMDb(provider),
+            fetchMoviesIMDb()
+        ]);
+        // Combine the two arrays; you can adjust the order as needed.
+        const movies = omdbMovies.concat(imdbMovies);
+
+        let section = document.createElement("div");
+        section.classList.add("provider-section");
+        section.innerHTML = `<h3 style="color:#ff4c4c;">${provider}</h3>`;
+
+        let moviesRow = document.createElement("div");
+        moviesRow.classList.add("movies-row");
+        moviesRow.innerHTML = movies.map(movie => `
+            <div class="movie-card" onclick="redirectToWatch('${movie.imdbID}', '${movie.Title}', '${movie.Poster}')">
+                <img src="${movie.Poster !== "N/A" ? movie.Poster : "placeholder.jpg"}" alt="${movie.Title}">
+                <p>${movie.Title} (${movie.Year})</p>
+            </div>
+        `).join('');
+
+        section.appendChild(moviesRow);
+        moviesContainer.appendChild(section);
     }
+}
 
-    async function loadMovies() {
-        for (const provider of providers) {
-            const movies = await fetchMovies(provider);
+function redirectToWatch(imdbID, title, poster) {
+    window.location.href = `watch.html?id=${imdbID}&title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
+}
 
-            let section = document.createElement("div");
-            section.classList.add("provider-section");
-            section.innerHTML = `
-                <h3 style="color:#ff4c4c;">${provider}</h3>
-                <div class="movies-row">${movies.map(movie => `
-                    <div class="movie-card" onclick="redirectToWatch('${movie.imdbID}', '${movie.Title}', '${movie.Poster}')">
-                        <img src="${movie.Poster !== "N/A" ? movie.Poster : "placeholder.jpg"}" alt="${movie.Title}">
-                        <p>${movie.Title} (${movie.Year})</p>
-                    </div>
-                `).join('')}</div>
-            `;
-
-            moviesContainer.appendChild(section);
-        }
-    }
-
-    function redirectToWatch(imdbID, title, poster) {
-        window.location.href = `watch.html?id=${imdbID}&title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
-    }
-
-    loadMovies();
+loadMovies();
+    
 </script>
 
 </body>
