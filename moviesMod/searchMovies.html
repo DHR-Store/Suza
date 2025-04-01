@@ -356,106 +356,178 @@
     }
 
     // Listen for input changes to fetch live suggestions
-    $("#searchInput").on("input", showSuggestions);
+    // Listen for input changes to fetch live suggestions
+$("#searchInput").on("input", showSuggestions);
 
-    // Show suggestions in a full-width container
-    function showSuggestions() {
-      const query = $("#searchInput").val().trim();
-      const suggestionsContainer = $("#suggestionsContainer");
-      const historyContainer = $("#historyContainer");
+// Show suggestions in a full-width container
+function showSuggestions() {
+  const query = $("#searchInput").val().trim();
+  const suggestionsContainer = $("#suggestionsContainer");
+  const historyContainer = $("#historyContainer");
 
-      // If no query, hide suggestions, show history
-      if (!query) {
-        suggestionsContainer.hide().empty();
-        historyContainer.show();
-        return;
-      }
+  // If no query, hide suggestions and show history
+  if (!query) {
+    suggestionsContainer.hide().empty();
+    historyContainer.show();
+    return;
+  }
 
-      // Hide history while suggestions are visible
-      historyContainer.hide();
+  // Hide history while suggestions are visible and clear previous suggestions
+  historyContainer.hide();
+  suggestionsContainer.empty();
 
-      // First fetch a list of results from the search endpoint
-      $.ajax({
-        url: "https://www.omdbapi.com/",
-        data: {
-          apikey: "90b37ad0", // Replace with your OMDb API key
-          s: query
-        },
-        dataType: "json",
-        success: function(response) {
-          suggestionsContainer.empty();
+  // --- OMDb API suggestions ---
+  $.ajax({
+    url: "https://www.omdbapi.com/",
+    data: {
+      apikey: "90b37ad0", // Replace with your OMDb API key
+      s: query
+    },
+    dataType: "json",
+    success: function(response) {
+      if (response.Response === "True" && response.Search.length > 0) {
+        const searchResults = response.Search.slice(0, 5); // Limit to first 5 results
 
-          if (response.Response === "True" && response.Search.length > 0) {
-            // Show the container
-            suggestionsContainer.show();
+        searchResults.forEach(item => {
+          const imdbID = item.imdbID;
+          const title = item.Title || "Untitled";
+          const year = item.Year || "";
+          const type = item.Type || "";
+          const poster = (item.Poster && item.Poster !== "N/A")
+            ? item.Poster
+            : "https://via.placeholder.com/70x100?text=No+Image";
 
-            // Limit to the first 5 suggestions
-            const searchResults = response.Search.slice(0, 5);
+          // Fetch additional details (short plot) for each OMDb result
+          $.ajax({
+            url: "https://www.omdbapi.com/",
+            data: {
+              apikey: "90b37ad0", // Replace with your OMDb API key
+              i: imdbID,
+              plot: "short"
+            },
+            dataType: "json",
+            success: function(details) {
+              const plot = (details.Plot && details.Plot !== "N/A")
+                ? details.Plot
+                : "No plot available.";
 
-            // For each result, we do a second request to get short plot
-            searchResults.forEach(item => {
-              const imdbID = item.imdbID;
-              const title = item.Title || "Untitled";
-              const year = item.Year || "";
-              const type = item.Type || "";
-              const poster = (item.Poster && item.Poster !== "N/A")
-                ? item.Poster
-                : "https://via.placeholder.com/70x100?text=No+Image";
+              // Create suggestion item UI
+              const suggestionItem = $(`
+                <div class="suggestion-item">
+                  <img src="${poster}" alt="${title} Poster">
+                  <div class="suggestion-info">
+                    <div class="suggestion-title">${title}</div>
+                    <div class="suggestion-meta">${type.toUpperCase()} • ${year}</div>
+                    <div class="suggestion-plot">${plot}</div>
+                  </div>
+                </div>
+              `);
 
-              // Fetch additional details (short plot) for each item
-              $.ajax({
-                url: "https://www.omdbapi.com/",
-                data: {
-                  apikey: "90b37ad0", // Replace with your OMDb API key
-                  i: imdbID,
-                  plot: "short"
-                },
-                dataType: "json",
-                success: function(details) {
-                  const plot = (details.Plot && details.Plot !== "N/A")
-                    ? details.Plot
-                    : "No plot available.";
-
-                  // Create suggestion item
-                  const suggestionItem = $(`
-                    <div class="suggestion-item">
-                      <img src="${poster}" alt="${title} Poster">
-                      <div class="suggestion-info">
-                        <div class="suggestion-title">${title}</div>
-                        <div class="suggestion-meta">${type.toUpperCase()} • ${year}</div>
-                        <div class="suggestion-plot">${plot}</div>
-                      </div>
-                    </div>
-                  `);
-
-                  // On click: fill input and perform search
-                  suggestionItem.click(() => {
-                    $("#searchInput").val(title);
-                    suggestionsContainer.hide().empty();
-                    performSearch();
-                  });
-
-                  // Append to container
-                  suggestionsContainer.append(suggestionItem);
-                },
-                error: function(err) {
-                  console.error("Error fetching item details:", err);
-                }
+              suggestionItem.click(() => {
+                $("#searchInput").val(title);
+                suggestionsContainer.hide().empty();
+                performSearch();
               });
-            });
-          } else {
-            // No valid results
-            suggestionsContainer.hide().empty();
-            historyContainer.show();
-          }
-        },
-        error: function(err) {
-          console.error("Error fetching search results:", err);
-          suggestionsContainer.hide().empty();
-          historyContainer.show();
-        }
-      });
+
+              suggestionsContainer.append(suggestionItem);
+              suggestionsContainer.show();
+            },
+            error: function(err) {
+              console.error("Error fetching OMDb item details:", err);
+            }
+          });
+        });
+      }
+    },
+    error: function(err) {
+      console.error("Error fetching OMDb search results:", err);
     }
+  });
+
+  // --- IMDb JSON suggestions with similar UI ---
+  // Construct the IMDb suggestions URL based on the query's first letter
+  const imdbUrl = "https://v2.sg.media-imdb.com/suggestion/" +
+    query.charAt(0).toLowerCase() + "/" +
+    encodeURIComponent(query) + ".json";
+
+  $.ajax({
+    url: imdbUrl,
+    dataType: "json",
+    success: function(data) {
+      if (data && data.d && data.d.length > 0) {
+        const imdbResults = data.d.slice(0, 5); // Limit to first 5 results
+
+        imdbResults.forEach(item => {
+          const imdbID = item.id;
+          const title = item.l || "Untitled";
+          // Use IMDb's year if available; we'll override with OMDb details if provided.
+          const imdbYear = item.yr ? item.yr : "";
+          // Use IMDb's poster as fallback; OMDb details may override it.
+          const imdbPoster = (item.i && item.i[0])
+            ? item.i[0]
+            : "https://via.placeholder.com/70x100?text=No+Image";
+
+          // Use the OMDb API to fetch extra details so that IMDb suggestions mimic the OMDb UI
+          $.ajax({
+            url: "https://www.omdbapi.com/",
+            data: {
+              apikey: "90b37ad0", // Replace with your OMDb API key
+              i: imdbID,
+              plot: "short"
+            },
+            dataType: "json",
+            success: function(details) {
+              // Determine poster: if OMDb returns a valid image, use it, else fallback to IMDb poster
+              const poster = (details && details.Poster && details.Poster !== "N/A")
+                ? details.Poster
+                : imdbPoster;
+              // Use the year from OMDb if available; otherwise, use IMDb's year
+              const year = (details && details.Year && details.Year !== "N/A")
+                ? details.Year
+                : imdbYear;
+              // Get type and plot details from OMDb
+              const type = (details && details.Type)
+                ? details.Type.toUpperCase()
+                : "";
+              const plot = (details && details.Plot && details.Plot !== "N/A")
+                ? details.Plot
+                : "No plot available.";
+
+              // Create suggestion item with the same UI as OMDb suggestions
+              const suggestionItem = $(`
+                <div class="suggestion-item">
+                  <img src="${poster}" alt="${title} Poster">
+                  <div class="suggestion-info">
+                    <div class="suggestion-title">${title}</div>
+                    <div class="suggestion-meta">${type}${type && year ? " • " : ""}${year}</div>
+                    <div class="suggestion-plot">${plot}</div>
+                  </div>
+                </div>
+              `);
+
+              suggestionItem.click(() => {
+                $("#searchInput").val(title);
+                suggestionsContainer.hide().empty();
+                performSearch();
+              });
+
+              suggestionsContainer.append(suggestionItem);
+              suggestionsContainer.show();
+            },
+            error: function(err) {
+              console.error("Error fetching IMDb details via OMDb:", err);
+            }
+          });
+        });
+      }
+    },
+    error: function(err) {
+      console.error("Error fetching IMDb suggestions:", err);
+    }
+  });
+}
+
+                  
 
     // Hide suggestions when clicking outside the search box
     $(document).click(function(e) {
