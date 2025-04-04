@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Read Manga</title>
+  <!-- Bootstrap Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    /* Container for manga page */
+    #readerContainer {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    /* Manga page image styling */
+    #mangaImage {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      margin: auto;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      transition: transform 0.3s ease-in-out;
+    }
+    /* Floating button common style */
+    .fab {
+      position: fixed;
+      background: transparent;
+      border: none;
+      color: skyblue;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      transition: background 0.3s;
+    }
+    .fab:hover {
+      background: rgba(255, 75, 43, 1);
+    }
+    /* Back button - top left */
+    #backBtn {
+      top: 20px;
+      left: 20px;
+    }
+    /* Zoom in button - top right */
+    #zoomInBtn {
+      top: 20px;
+      right: 20px;
+    }
+    /* Zoom out button - below zoom in */
+    #zoomOutBtn {
+      top: 80px;
+      right: 20px;
+    }
+    /* Prev page button - bottom left */
+    #prevPage {
+      bottom: 65px;
+      left: 20px;
+    }
+    /* Next page button - bottom right */
+    #nextPage {
+      bottom: 65px;
+      right: 20px;
+    }
+    /* Page info display - top center */
+    #pageInfo {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 16px;
+      color: #fff;
+      z-index: 100;
+    }
+    /* Chapter title display - above page info */
+    #chapterTitle {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20px;
+      color: #fff;
+      z-index: 100;
+    }
+            /* Bottom Navigation Bar */
+    nav.navbar {
+      background: transparent;
+      backdrop-filter: blur(8px);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #444;
+      transition: transform 0.3s ease;
+    }
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease, color 0.3s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .nav-link i {
+      font-size: 24px;
+    }
+    .nav-link:hover {
+      color: cyan;
+      transform: scale(1.1);
+    }
+    .nav-link.active {
+      color: cyan;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="readerContainer">
+    <img id="mangaImage" src="" alt="Manga Page" />
+    <div id="pageInfo">Page 1 / 1</div>
+    <div id="chapterTitle">Chapter Title</div>
+    <!-- Floating Buttons -->
+    <button id="backBtn" class="fab" title="Back">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <button id="zoomInBtn" class="fab" title="Zoom In">
+      <i class="bi bi-zoom-in"></i>
+    </button>
+    <button id="zoomOutBtn" class="fab" title="Zoom Out">
+      <i class="bi bi-zoom-out"></i>
+    </button>
+    <button id="prevPage" class="fab" title="Previous">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button id="nextPage" class="fab" title="Next">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+      <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="manga.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
+      <a href="favour.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br></a>
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
+    </div>
+  </nav>
+
+  <audio id="flipSound" src="flip-page-105778.mp3" preload="auto"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    // Read query parameters: chapterId, mangaId, title
+    const params = new URLSearchParams(window.location.search);
+    const chapterId = params.get("chapterId");
+    const mangaId = params.get("mangaId"); // if needed
+    const chapterTitleText = params.get("title") || "Chapter";
+    document.getElementById("chapterTitle").textContent = decodeURIComponent(chapterTitleText);
+
+    const mangaImage = document.getElementById("mangaImage");
+    const pageInfo = document.getElementById("pageInfo");
+    const flipSound = document.getElementById("flipSound");
+
+    const backBtn = document.getElementById("backBtn");
+    const zoomInBtn = document.getElementById("zoomInBtn");
+    const zoomOutBtn = document.getElementById("zoomOutBtn");
+    const prevPageBtn = document.getElementById("prevPage");
+    const nextPageBtn = document.getElementById("nextPage");
+
+    let currentPages = [];
+    let currentPageIndex = 0;
+    let preloadedImages = {};
+    let isFlipping = false;
+    let currentZoom = 1;
+
+    async function fetchChapter() {
+      try {
+        const response = await axios.get(`https://api.mangadex.org/at-home/server/${chapterId}`);
+        const baseUrl = response.data.baseUrl;
+        const chapterData = response.data.chapter;
+        currentPages = chapterData.data.map(page => `${baseUrl}/data/${chapterData.hash}/${page}`);
+        preloadPages();
+        updatePage();
+      } catch (err) {
+        console.error("Error loading chapter pages:", err);
+        document.getElementById("chapterTitle").textContent = "Error loading pages.";
+      }
+    }
+
+    function preloadPages() {
+      currentPages.forEach((url, index) => {
+        const img = new Image();
+        img.src = url;
+        preloadedImages[index] = img;
+      });
+    }
+
+    function updatePage() {
+      if (currentPages.length === 0 || isFlipping) return;
+      isFlipping = true;
+      // Animate page flip
+      mangaImage.style.transform = `translate(-50%, -50%) scaleX(0) scale(${currentZoom})`;
+      setTimeout(() => {
+        mangaImage.src = preloadedImages[currentPageIndex].src;
+        pageInfo.textContent = `Page ${currentPageIndex + 1} / ${currentPages.length}`;
+        mangaImage.style.transform = `translate(-50%, -50%) scaleX(1) scale(${currentZoom})`;
+        flipSound.currentTime = 0;
+        flipSound.play();
+        prevPageBtn.disabled = currentPageIndex === 0;
+        nextPageBtn.disabled = currentPageIndex === currentPages.length - 1;
+        setTimeout(() => {
+          isFlipping = false;
+        }, 300);
+      }, 150);
+    }
+
+    backBtn.onclick = () => {
+      window.location.href = `index.html?id=${mangaId}`;
+    };
+
+    zoomInBtn.onclick = () => {
+      currentZoom += 0.1;
+      mangaImage.style.transform = `translate(-50%, -50%) scaleX(1) scale(${currentZoom})`;
+    };
+
+    zoomOutBtn.onclick = () => {
+      currentZoom = Math.max(0.5, currentZoom - 0.1);
+      mangaImage.style.transform = `translate(-50%, -50%) scaleX(1) scale(${currentZoom})`;
+    };
+
+    prevPageBtn.onclick = () => {
+      if (isFlipping || currentPageIndex === 0) return;
+      currentPageIndex--;
+      updatePage();
+    };
+
+    nextPageBtn.onclick = () => {
+      if (isFlipping || currentPageIndex === currentPages.length - 1) return;
+      currentPageIndex++;
+      updatePage();
+    };
+
+    // Swipe gestures for mobile devices
+    let touchStartX = 0;
+    mangaImage.addEventListener("touchstart", (event) => {
+      touchStartX = event.touches[0].clientX;
+    });
+    mangaImage.addEventListener("touchend", (event) => {
+      const touchEndX = event.changedTouches[0].clientX;
+      if (touchStartX > touchEndX + 50) {
+        nextPageBtn.click();
+      } else if (touchStartX < touchEndX - 50) {
+        prevPageBtn.click();
+      }
+    });
+
+    fetchChapter();
+  </script>
+</body>
+</html>

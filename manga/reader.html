@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manga Details</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background-color: #1c1c1c;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    /* Hero section with cover image */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.8) 90%);
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 20px;
+    }
+    .hero-content h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .fav-btn {
+      background: none;
+      border: 2px solid #ff4b2b;
+      color: #ff4b2b;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+    .fav-btn:hover {
+      background: #ff4b2b;
+      color: #fff;
+    }
+    .fav-btn.favourited {
+      background: #ff4b2b;
+      color: #fff;
+      border-color: #ff4b2b;
+    }
+    .fav-btn.favourited:hover {
+      background: #d63c1e;
+      border-color: #d63c1e;
+    }
+    /* Manga details */
+    .manga-details {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    .manga-details h2 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .detail-item {
+      margin: 5px 0;
+    }
+    /* Chapters list */
+    #chapterList {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    #chapterList h2 {
+      margin-bottom: 10px;
+    }
+    .chapter-item {
+      background: #333;
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .chapter-item:hover {
+      background: #444;
+      transform: scale(1.02);
+    }
+    /* Toast container (Bootstrap 5) */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1055;
+    }
+            /* Bottom Navigation Bar */
+    nav.navbar {
+      background: transparent;
+      backdrop-filter: blur(8px);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #444;
+      transition: transform 0.3s ease;
+    }
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease, color 0.3s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .nav-link i {
+      font-size: 24px;
+    }
+    .nav-link:hover {
+      color: cyan;
+      transform: scale(1.1);
+    }
+    .nav-link.active {
+      color: cyan;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero" id="heroSection">
+    <div class="hero-content">
+      <h1 id="mangaTitle">Manga Title</h1>
+      <button class="fav-btn" id="favouriteButton" onclick="toggleFavourite()">
+        <i class="bi bi-heart"></i> Favourite
+      </button>
+    </div>
+  </div>
+  <div class="manga-details">
+    <h2>Details</h2>
+    <p class="detail-item" id="releaseDate"><strong>Release Date:</strong> Loading...</p>
+    <p class="detail-item" id="studio"><strong>Studio:</strong> Loading...</p>
+    <p class="detail-item" id="synopsis"><strong>Synopsis:</strong> Loading...</p>
+  </div>
+  <div id="chapterList">
+    <h2>Chapters</h2>
+    <p>Loading chapters...</p>
+  </div>
+
+  <div class="toast-container">
+    <div id="favToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          Manga added to favourites!
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+    <div id="alreadyFavToast" class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          Manga is already in favourites.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+    <div id="removedFavToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          Manga removed from favourites.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+      <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="manga.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
+      <a href="favour.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br></a>
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
+    </div>
+  </nav>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+        // Hide/Show bottom navigation based on scroll direction
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', () => {
+      let st = window.pageYOffset || document.documentElement.scrollTop;
+      const nav = document.getElementById('bottom-nav');
+      if (st > lastScrollTop) {
+        // Scrolling down: hide nav
+        nav.style.transform = 'translateY(100%)';
+      } else {
+        // Scrolling up: show nav
+        nav.style.transform = 'translateY(0)';
+      }
+      lastScrollTop = st <= 0 ? 0 : st;
+    });
+    // Get mangaId from URL (or use a default for testing)
+    const params = new URLSearchParams(window.location.search);
+    const mangaId = params.get("id") || "00000000-0000-0000-0000-000000000000";
+
+    const heroSection = document.getElementById("heroSection");
+    const mangaTitleEl = document.getElementById("mangaTitle");
+    const releaseDateEl = document.getElementById("releaseDate");
+    const studioEl = document.getElementById("studio");
+    const synopsisEl = document.getElementById("synopsis");
+    const chapterListDiv = document.getElementById("chapterList");
+    const favouriteButton = document.getElementById("favouriteButton");
+
+    // Function to check if the current manga is in favourites
+    function isMangaFavourited() {
+      const favourites = JSON.parse(localStorage.getItem("favouriteManga") || "[]");
+      return favourites.some(item => item.mangaId === mangaId);
+    }
+
+    // Function to update the favourite button's appearance
+    function updateFavouriteButton() {
+      if (isMangaFavourited()) {
+        favouriteButton.classList.add("favourited");
+        favouriteButton.innerHTML = '<i class="bi bi-heart-fill"></i> Favourited';
+      } else {
+        favouriteButton.classList.remove("favourited");
+        favouriteButton.innerHTML = '<i class="bi bi-heart"></i> Favourite';
+      }
+    }
+
+    // Fetch Manga Details & Cover
+    async function fetchMangaInfo() {
+      try {
+        const response = await axios.get(`https://api.mangadex.org/manga/${mangaId}`);
+        const data = response.data.data;
+        const attr = data.attributes;
+        // Title
+        mangaTitleEl.textContent = attr.title.en || attr.title.jp || "Untitled Manga";
+        // Release Date
+        releaseDateEl.innerHTML = `<strong>Release Date:</strong> ${attr.year || "Unknown"}`;
+        // Studio (Using a placeholder or links data)
+        const possibleStudio = attr.links?.alen || "Unknown Studio";
+        studioEl.innerHTML = `<strong>Studio:</strong> ${possibleStudio}`;
+        // Synopsis
+        let description = "No synopsis available.";
+        if (attr.description && attr.description.en) {
+          description = attr.description.en;
+        }
+        synopsisEl.innerHTML = `<strong>Synopsis:</strong> ${description}`;
+        // Fetch cover image
+        if (data.relationships) {
+          const coverRel = data.relationships.find(rel => rel.type === "cover_art");
+          if (coverRel) {
+            const coverId = coverRel.id;
+            const coverRes = await axios.get(`https://api.mangadex.org/cover/${coverId}`);
+            const coverFileName = coverRes.data.data.attributes.fileName;
+            const coverUrl = `https://uploads.mangadex.org/covers/${mangaId}/${coverFileName}.256.jpg`;
+            heroSection.style.backgroundImage = `url('${coverUrl}')`;
+          }
+        }
+        // Update favourite button appearance after fetching manga info
+        updateFavouriteButton();
+      } catch (error) {
+        console.error("Error fetching manga info:", error);
+      }
+    }
+
+    // Fetch list of chapters
+    async function fetchChapters() {
+      try {
+        const response = await axios.get(`https://api.mangadex.org/manga/${mangaId}/feed`, {
+          params: {
+            'translatedLanguage[]': 'en',
+            'order[chapter]': 'asc',
+            limit: 100
+          }
+        });
+        const chapters = response.data.data;
+        if (!chapters || chapters.length === 0) {
+          chapterListDiv.innerHTML = "<h2>Chapters</h2><p>No chapters found.</p>";
+          return;
+        }
+        chapterListDiv.innerHTML = "<h2>Chapters</h2>";
+        chapters.forEach(chapter => {
+          const div = document.createElement("div");
+          div.className = "chapter-item";
+          const chapterNum = chapter.attributes.chapter || "Unknown";
+          const chapterTitle = chapter.attributes.title || "";
+          div.textContent = `Chapter ${chapterNum} ${chapterTitle ? "- " + chapterTitle : ""}`;
+          // Redirect to read.html with query parameters for chapterId, mangaId, and chapter title
+          div.onclick = () => {
+            const chapterId = chapter.id;
+            const title = encodeURIComponent(`Chapter ${chapterNum}`);
+            window.location.href = `read.html?chapterId=${chapterId}&mangaId=${mangaId}&title=${title}`;
+          };
+          chapterListDiv.appendChild(div);
+        });
+      } catch (error) {
+        console.error("Error fetching chapters:", error);
+        chapterListDiv.innerHTML = "<h2>Chapters</h2><p>Error loading chapters.</p>";
+      }
+    }
+
+    // Toggle manga favourite status in localStorage and show a Bootstrap toast notification
+    function toggleFavourite() {
+      let favourites = JSON.parse(localStorage.getItem("favouriteManga") || "[]");
+      const mangaIndex = favourites.findIndex(item => item.mangaId === mangaId);
+
+      if (mangaIndex === -1) {
+        // Add to favourites
+        favourites.push({ mangaId: mangaId, title: mangaTitleEl.textContent });
+        localStorage.setItem("favouriteManga", JSON.stringify(favourites));
+        showToast("Manga added to favourites!", "favToast");
+        updateFavouriteButton();
+      } else {
+        // Remove from favourites
+        favourites.splice(mangaIndex, 1);
+        localStorage.setItem("favouriteManga", JSON.stringify(favourites));
+        showToast("Manga removed from favourites.", "removedFavToast");
+        updateFavouriteButton();
+      }
+    }
+
+    // Function to show a Bootstrap toast notification with the provided message and toast ID
+    function showToast(message, toastId) {
+      const toastEl = document.getElementById(toastId);
+      toastEl.querySelector(".toast-body").textContent = message;
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+      toast.show();
+    }
+
+    // Initial fetch calls
+    fetchMangaInfo();
+    fetchChapters();
+  </script>
+</body>
+</html>

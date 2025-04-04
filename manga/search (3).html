@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manga Search</title>
+  <!-- Bootstrap Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+      <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #000;
+    }
+    .hero {
+      background: url('https://example.com/hero-image.jpg') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+      min-height: 300px;
+      min-width: 220px;
+      position: relative;
+      padding: 5px;
+    }
+    #searchForm {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+      position: relative;
+      width: 90%;
+      max-width: 400px;
+    }
+    .input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    #titleInput {
+      padding: 8px 40px 8px 8px; /* extra space for clear icon */
+      width: 100%;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .clear-icon {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      cursor: pointer;
+      color: #999;
+      display: none;
+      z-index: 2;
+    }
+    /* Search button with bootstrap icon */
+    .search-btn {
+      background: #ff4b2b;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 10px;
+      right: 10px;
+      transition: background 0.3s ease;
+      display: fixed;
+      align-items: center;
+      justify-content: center;
+    }
+    .search-btn:hover {
+      background: #e73e1a;
+    }
+    /* Suggestions list styling with fade-in animation */
+    #suggestions {
+      list-style-type: none;
+      margin: 10px 0 0;
+      padding: 0;
+      width: 100%;
+      background: #000;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      overflow: hidden;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    #suggestions li {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #suggestions li:last-child {
+      border-bottom: none;
+    }
+    #suggestions li:hover {
+      background: #f0f0f0;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* History list styling */
+    #historyContainer {
+      margin-top: 15px;
+      width: 90%;
+      max-width: 400px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      overflow: hidden;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    #historyContainer h4 {
+      margin: 10px;
+      font-size: 18px;
+      color: #333;
+    }
+    #historyList {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    #historyList li {
+      padding: 8px 10px;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #historyList li:hover {
+      background: #f9f9f9;
+    }
+    .delete-history {
+      color: #ff4b2b;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .clear-history-btn {
+      display: block;
+      margin: 10px auto;
+      background: #ccc;
+      color: #333;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .clear-history-btn:hover {
+      background: #bbb;
+    }
+    /* Responsive styling for Android/mobile */
+    @media (max-width: 480px) {
+      #titleInput {
+        font-size: 14px;
+        padding: 8px 35px 8px 8px;
+      }
+      .search-btn {
+        padding: 8px;
+        margin-left: 5px;
+      }
+      .clear-icon {
+        right: 35px;
+      }
+    }
+            /* Bottom Navigation Bar */
+    nav.navbar {
+      background: transparent;
+      backdrop-filter: blur(8px);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #444;
+      transition: transform 0.3s ease;
+    }
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease, color 0.3s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .nav-link i {
+      font-size: 24px;
+    }
+    .nav-link:hover {
+      color: cyan;
+      transform: scale(1.1);
+    }
+    .nav-link.active {
+      color: cyan;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <form id="searchForm">
+      <div class="input-group">
+        <input type="text" id="titleInput" placeholder="Search Manga..." autocomplete="off" required>
+        <i class="bi bi-x-circle-fill clear-icon" id="clearInput"></i>
+        <button type="submit" class="search-btn">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+      <ul id="suggestions"></ul>
+    </form>
+    <div id="historyContainer" style="display:none;">
+      <h4>Search History</h4>
+      <ul id="historyList"></ul>
+      <button class="clear-history-btn" id="clearHistoryBtn">Clear History</button>
+    </div>
+  </div>
+      <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="manga.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
+      <a href="favour.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br></a>
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
+    </div>
+  </nav>
+
+
+  <!-- Axios for API calls -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+      // Wait until the DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the current file name from the URL (default to home.html if empty)
+      var path = window.location.pathname.split("/").pop();
+      if (path === '') {
+        path = 'search.html';
+      }
+      
+      // Select all nav links inside the navbar
+      var navLinks = document.querySelectorAll('nav.navbar .nav-link');
+      
+      // Loop through each nav link and add active class if href matches current path
+      navLinks.forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href === path) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    });
+  
+    const searchForm = document.getElementById('searchForm');
+    const titleInput = document.getElementById('titleInput');
+    const suggestionsList = document.getElementById('suggestions');
+    const clearInputIcon = document.getElementById('clearInput');
+    const historyContainer = document.getElementById('historyContainer');
+    const historyList = document.getElementById('historyList');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+    // Load search history from localStorage
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem('searchHistory')) || [];
+      historyList.innerHTML = '';
+      if (history.length > 0) {
+        historyContainer.style.display = 'block';
+        history.forEach((query, index) => {
+          const li = document.createElement('li');
+          li.textContent = query;
+          li.addEventListener('click', () => {
+            titleInput.value = query;
+          });
+          const deleteIcon = document.createElement('i');
+          deleteIcon.className = 'bi bi-x delete-history';
+          deleteIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteHistoryItem(index);
+          });
+          li.appendChild(deleteIcon);
+          historyList.appendChild(li);
+        });
+      } else {
+        historyContainer.style.display = 'none';
+      }
+    }
+
+    // Save search query in localStorage
+    function saveHistory(query) {
+      let history = JSON.parse(localStorage.getItem('searchHistory')) || [];
+      // Avoid duplicate consecutive entries
+      if (history[history.length - 1] !== query) {
+        history.push(query);
+        localStorage.setItem('searchHistory', JSON.stringify(history));
+      }
+      loadHistory();
+    }
+
+    // Delete a single history item
+    function deleteHistoryItem(index) {
+      let history = JSON.parse(localStorage.getItem('searchHistory')) || [];
+      history.splice(index, 1);
+      localStorage.setItem('searchHistory', JSON.stringify(history));
+      loadHistory();
+    }
+
+    // Clear all history
+    clearHistoryBtn.addEventListener('click', () => {
+      localStorage.removeItem('searchHistory');
+      loadHistory();
+    });
+
+    // Simple debounce function to limit API calls
+    function debounce(func, delay) {
+      let timer;
+      return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(this, args), delay);
+      }
+    }
+
+    // Fetch and display search suggestions as user types
+    titleInput.addEventListener('input', debounce(async function(e) {
+      const query = e.target.value.trim();
+      suggestionsList.innerHTML = '';
+      clearInputIcon.style.display = query ? 'block' : 'none';
+      if (query.length < 2) return;
+      try {
+        const response = await axios.get('https://api.mangadex.org/manga', {
+          params: { title: query, limit: 5, 'includes[]': 'cover_art' }
+        });
+        const mangas = response.data.data;
+        mangas.forEach(manga => {
+          const title = (manga.attributes.title && manga.attributes.title.en) || 'No Title Available';
+          const li = document.createElement('li');
+          li.textContent = title;
+          li.addEventListener('click', () => {
+            titleInput.value = title;
+            suggestionsList.innerHTML = '';
+          });
+          suggestionsList.appendChild(li);
+        });
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      }
+    }, 300));
+
+    // Clear input field when clear icon is clicked
+    clearInputIcon.addEventListener('click', () => {
+      titleInput.value = '';
+      clearInputIcon.style.display = 'none';
+      suggestionsList.innerHTML = '';
+    });
+
+    // On form submission, fetch manga results, save history, and redirect to result.html
+    searchForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const query = titleInput.value.trim();
+      if (!query) return;
+      saveHistory(query);
+      try {
+        const response = await axios.get('https://api.mangadex.org/manga', {
+          params: { title: query, 'includes[]': 'cover_art' }
+        });
+        // Save results in sessionStorage for the results page
+        sessionStorage.setItem("mangaResults", JSON.stringify(response.data.data));
+        window.location.href = 'result.html';
+      } catch (error) {
+        console.error("Error fetching manga:", error);
+      }
+    });
+
+    // Load history on page load
+    window.addEventListener('load', loadHistory);
+  </script>
+</body>
+</html>
