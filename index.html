@@ -13,12 +13,12 @@
   <title>FILMU</title>
   <!-- Force a fixed desktop width -->
   <meta name="viewport" content="width=1024, initial-scale=1.0">
-    <style>
+      <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      /* Remove overflow hidden so scroll events can be captured */
+      /* Allow scrolling for detecting scroll events */
       background: #000;
     }
     /* The iframe is set to the viewport height */
@@ -52,19 +52,33 @@
   <script>
     // Define the URLs for toggling
     const originalURL = "https://tv.filmu.fun/";
-    const alternativeURL = "inde.html"; // Change to your desired link
+    const alternativeURL = "inde.html"; // Android friendly page without desktop mode
 
     const iframe = document.getElementById('mainFrame');
     const btn = document.getElementById('toggleBtn');
+    const viewportMeta = document.querySelector('meta[name="viewport"]');
 
-    // Toggle iframe src and button text on click
+    // Function to update viewport meta content
+    function updateViewport(forDesktop) {
+      if(forDesktop) {
+        // For Filmu: force desktop mode
+        viewportMeta.setAttribute("content", "width=1024, initial-scale=1.0");
+      } else {
+        // For home.html: use device width for Android display
+        viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0");
+      }
+    }
+
+    // Toggle iframe src, button text, and viewport on click
     btn.addEventListener('click', function() {
-      if (iframe.src === originalURL) {
+      if (iframe.src === originalURL || iframe.src === originalURL + "/") {
         iframe.src = alternativeURL;
         btn.textContent = "Filmu";
+        updateViewport(false);
       } else {
         iframe.src = originalURL;
         btn.textContent = "Suza";
+        updateViewport(true);
       }
     });
 
@@ -79,7 +93,7 @@
         // Scrolling up - show the button
         btn.style.opacity = 1;
       }
-      lastScrollTop = st <= 0 ? 0 : st; // Ensure we never get a negative value
+      lastScrollTop = st <= 0 ? 0 : st;
     });
   </script>
 </body>
