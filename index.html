@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>FILMU</title>
   <!-- Force a fixed desktop width -->
-  <meta name="viewport" content="width=1024, initial-scale=1.0">
+  <meta name="viewport" content="width=1024, initial-scale=1.0 maximum-scale=1.0, user-scalable=no">
       <style>
     html, body {
       margin: 0;
@@ -62,10 +62,10 @@
     function updateViewport(forDesktop) {
       if(forDesktop) {
         // For Filmu: force desktop mode
-        viewportMeta.setAttribute("content", "width=1024, initial-scale=1.0");
+        viewportMeta.setAttribute("content", "width=1024, initial-scale=1.0 maximum-scale=1.0, user-scalable=no ");
       } else {
         // For home.html: use device width for Android display
-        viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0");
+        viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no");
       }
     }
 
