@@ -13,23 +13,74 @@
   <title>FILMU</title>
   <!-- Force a fixed desktop width -->
   <meta name="viewport" content="width=1024, initial-scale=1.0">
-  <style>
+    <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden;
+      /* Remove overflow hidden so scroll events can be captured */
       background: #000;
     }
-    /* Style the iframe to occupy the full display size */
+    /* The iframe is set to the viewport height */
     iframe {
       width: 100%;
-      height: 100%;
+      height: 100vh;
       border: none;
+    }
+    /* Floating toggle button styling */
+    .toggle-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      padding: 10px 15px;
+      background-color: #fff;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      font-size: 16px;
+      transition: opacity 0.3s ease;
     }
   </style>
 </head>
 <body>
-  <iframe src="https://tv.filmu.fun/"></iframe>
+  <iframe id="mainFrame" src="https://tv.filmu.fun/"></iframe>
+  <!-- Floating button with text -->
+  <button id="toggleBtn" class="toggle-btn">Suza</button>
+
+  <script>
+    // Define the URLs for toggling
+    const originalURL = "https://tv.filmu.fun/";
+    const alternativeURL = "inde.html"; // Change to your desired link
+
+    const iframe = document.getElementById('mainFrame');
+    const btn = document.getElementById('toggleBtn');
+
+    // Toggle iframe src and button text on click
+    btn.addEventListener('click', function() {
+      if (iframe.src === originalURL) {
+        iframe.src = alternativeURL;
+        btn.textContent = "Filmu";
+      } else {
+        iframe.src = originalURL;
+        btn.textContent = "Suza";
+      }
+    });
+
+    // Implement scroll detection to show/hide the button
+    let lastScrollTop = 0;
+    window.addEventListener("scroll", function() {
+      let st = window.pageYOffset || document.documentElement.scrollTop;
+      if (st > lastScrollTop) {
+        // Scrolling down - hide the button
+        btn.style.opacity = 0;
+      } else {
+        // Scrolling up - show the button
+        btn.style.opacity = 1;
+      }
+      lastScrollTop = st <= 0 ? 0 : st; // Ensure we never get a negative value
+    });
+  </script>
 </body>
 </html>
