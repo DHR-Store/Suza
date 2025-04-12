@@ -1,17 +1,20 @@
-<!DOCTYPE html>
+       <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manga Home</title>
+  <!-- Bootstrap Icons CDN -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
-
+  
   <style>
-        /* Custom Fonts */
+    /* Custom Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 
     * {
       font-family: 'Poppins', sans-serif;
@@ -23,8 +26,8 @@
 
     body.bg-dark {
       background-color: #000;
-      color: #fff; /* Changed text color to white for dark background */
-       -webkit-user-select: none; /* Chrome, Safari */
+      color: #000;
+      -webkit-user-select: none; /* Chrome, Safari */
       -moz-user-select: none;    /* Firefox */
       -ms-user-select: none;     /* IE10+ */
       user-select: none;         /* Standard syntax */
@@ -149,7 +152,7 @@
     .manga-card button:hover {
       background: #e73e1a;
     }
-        /* Bottom Navigation Bar */
+    /* Bottom Navigation Bar */
     nav.navbar {
       background: transparent;
       backdrop-filter: blur(8px);
@@ -184,29 +187,36 @@
     }
   </style>
 </head>
-<body class="bg-dark">
+<body class="bg-dark text-light">
 
+  <!-- Hero Section with Trending Manga Carousel -->
   <section class="hero">
     <div class="carousel-nav">
       <button id="prevBtn">&#8249;</button>
       <button id="nextBtn">&#8250;</button>
     </div>
     <div class="trending-carousel" id="trendingCarousel">
-      </div>
+      <!-- Trending manga slides will be injected here via API call -->
+    </div>
   </section>
 
+  <!-- Recommendations Section -->
   <section class="recommendations">
     <h2>War sci-fi</h2>
     <div class="cards" id="recommendedCards">
-      </div>
+      <!-- Recommended manga cards will be injected here -->
+    </div>
   </section>
-
-   <section class="recommendations">
+  
+  <section class="recommendations">
     <h2>High school</h2>
     <div class="cards" id="highCards">
-      </div>
+      <!-- Additional recommended manga cards can be injected here -->
+    </div>
   </section>
-    <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+  
+  <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
     <div class="container-fluid d-flex justify-content-around">
       <a href="manga.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
       <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
@@ -215,20 +225,19 @@
     </div>
   </nav>
 
-
+  <!-- Axios for API calls -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
-      // Wait until the DOM is loaded
+    // Wait until the DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
-      // Get the current file name from the URL (default to home.html if empty)
+      // Get the current file name from the URL (default to manga.html if empty)
       var path = window.location.pathname.split("/").pop();
       if (path === '') {
         path = 'manga.html';
       }
-
+      
       // Select all nav links inside the navbar
       var navLinks = document.querySelectorAll('nav.navbar .nav-link');
-
       // Loop through each nav link and add active class if href matches current path
       navLinks.forEach(function(link) {
         var href = link.getAttribute('href');
@@ -239,8 +248,8 @@
         }
       });
     });
-
-      // Hide/Show bottom navigation based on scroll direction
+  
+    // Hide/Show bottom navigation based on scroll direction
     let lastScrollTop = 0;
     window.addEventListener('scroll', () => {
       let st = window.pageYOffset || document.documentElement.scrollTop;
@@ -254,35 +263,28 @@
       }
       lastScrollTop = st <= 0 ? 0 : st;
     });
-    // Helper function to build cover art URL
+    
+    // Helper function to obtain cover image URL from Jikan API data
     function getCoverUrl(manga) {
-      const cover = manga.relationships?.find(rel => rel.type === 'cover_art');
-      if (cover?.attributes?.fileName) {
-        return `https://uploads.mangadex.org/covers/${manga.id}/${cover.attributes.fileName}`;
-      }
-      return 'https://via.placeholder.com/1200x600?text=No+Cover';
+      // Jikan returns images under manga.images.jpg.image_url
+      return manga.images?.jpg?.image_url || 'https://via.placeholder.com/1200x600?text=No+Cover';
     }
-
+    
     // Read button function: redirect to reader.html with manga id in query string
     function readManga(mangaId) {
       window.location.href = `reader.html?id=${mangaId}`;
     }
-
-    // Trending Manga Carousel
+    
+    // Load trending manga using Jikan’s Top Manga endpoint
     async function loadTrendingManga() {
       try {
-        // Use order[followedCount]=desc to simulate trending; adjust limit as needed
-        const response = await axios.get('https://api.mangadex.org/manga', {
-          params: {
-            limit: 10,
-            'order[followedCount]': 'desc',
-            'includes[]': 'cover_art'
-          }
+        const response = await axios.get('https://api.jikan.moe/v4/top/manga', {
+          params: { page: 1, limit: 10 }
         });
         const trendingMangas = response.data.data;
         const carousel = document.getElementById('trendingCarousel');
         trendingMangas.forEach(manga => {
-          const title = manga.attributes.title.en || 'No Title Available';
+          const title = manga.title || 'No Title Available';
           const coverUrl = getCoverUrl(manga);
           // Create a slide for each manga
           const slide = document.createElement('div');
@@ -291,7 +293,7 @@
             <img src="${coverUrl}" alt="${title} Cover">
             <div class="slide-content">
               <h2>${title}</h2>
-              <button onclick="readManga('${manga.id}')">Read</button>
+              <button onclick="readManga('${manga.mal_id}')">Read</button>
             </div>
           `;
           carousel.appendChild(slide);
@@ -301,37 +303,36 @@
         console.error("Error loading trending manga:", error);
       }
     }
-
-    // Recommended Manga: fetch data for specific titles
-
+    
+    // Load recommended manga by searching for specific titles using Jikan
     async function loadRecommendedManga() {
+      // Recommended titles can be adjusted as needed
       const recommendedTitles = [
         "Solo Leveling",
         "Black Clover",
-        "One punch",
-        "Dragon ball",
+        "One Punch Man",
+        "Dragon Ball",
         "Attack on Titan"
       ];
       const recommendedCardsContainer = document.getElementById('recommendedCards');
       for (const titleQuery of recommendedTitles) {
         try {
-          const res = await axios.get('https://api.mangadex.org/manga', {
+          const res = await axios.get('https://api.jikan.moe/v4/manga', {
             params: {
-              title: titleQuery,
-              limit: 1,
-              'includes[]': 'cover_art'
+              q: titleQuery,
+              limit: 1
             }
           });
           if (res.data.data.length > 0) {
             const manga = res.data.data[0];
-            const title = manga.attributes.title.en || titleQuery;
+            const title = manga.title || titleQuery;
             const coverUrl = getCoverUrl(manga);
             const card = document.createElement('div');
             card.className = 'manga-card';
             card.innerHTML = `
               <img src="${coverUrl}" alt="${title} Cover">
               <h3>${title}</h3>
-              <button onclick="readManga('${manga.id}')">Read</button>
+              <button onclick="readManga('${manga.mal_id}')">Read</button>
             `;
             recommendedCardsContainer.appendChild(card);
           }
@@ -340,40 +341,37 @@
         }
       }
     }
-
-
-
-
+    
     // Carousel functionality
     let currentSlide = 0;
     function initializeCarousel() {
       const carousel = document.getElementById('trendingCarousel');
       const slides = carousel.querySelectorAll('.manga-slide');
       if (slides.length === 0) return;
-
+      
       // Update carousel offset based on currentSlide index
       function updateCarousel() {
         const offset = -currentSlide * 100;
         carousel.style.transform = `translateX(${offset}%)`;
       }
-
+  
       document.getElementById('prevBtn').addEventListener('click', () => {
         currentSlide = (currentSlide === 0) ? slides.length - 1 : currentSlide - 1;
         updateCarousel();
       });
-
+  
       document.getElementById('nextBtn').addEventListener('click', () => {
         currentSlide = (currentSlide + 1) % slides.length;
         updateCarousel();
       });
-
+  
       // Auto-slide every 5 seconds
       setInterval(() => {
         currentSlide = (currentSlide + 1) % slides.length;
         updateCarousel();
       }, 5000);
     }
-
+    
     // Load trending and recommended manga when the DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
       loadTrendingManga();
@@ -381,4 +379,4 @@
     });
   </script>
 </body>
-</html>
+</html>       
