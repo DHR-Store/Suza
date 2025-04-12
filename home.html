@@ -509,7 +509,7 @@
     });
     // Fetch movies for the hero carousel
     async function fetchHeroMovies() {
-      const categories = ["minecraft", "Zero", "Highest 2 lowest", "Ne zha 2", "kesari chapter 2", "Ground Zero", "batman", "Hindi", "Tamil", "urdu", "Bhojpuri", "cultural"];
+      const categories = ["2025", "2024", "jdrama", "Chinese 2025", "Animation", "Ground Zero", "Marvel", "bollywood 2025", "Tollywood 2025", "K drama", "Bhojpuri", "cultural"];
       const randomCategory = categories[Math.floor(Math.random() * categories.length)];
       try {
         const response = await fetch(`https://www.omdbapi.com/?s=${randomCategory}&apikey=${API_KEY}`);
