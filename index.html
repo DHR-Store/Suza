@@ -63,7 +63,7 @@
     function updateViewport(forDesktop) {
       if (forDesktop) {
         // Set to desktop display dimensions.
-        viewportMeta.setAttribute("content", "width=1024, initial-scale=1.0");
+        viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
       } else {
         // Set to device width for Android (mobile friendly).
         viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
