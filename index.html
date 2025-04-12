@@ -10,24 +10,21 @@
  <link rel="icon" href="https://tv.filmu.fun/" type="image/png">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no"/>
-  <title>FILMU</title>
+  <title>SUZA&FILMU</title>
   <!-- Force a fixed desktop width -->
 
-      <style>
+        <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      /* Allow scrolling for detecting scroll events */
       background: #000;
     }
-    /* The iframe is set to the viewport height */
     iframe {
       width: 100%;
       height: 100vh;
       border: none;
     }
-    /* Floating toggle button styling */
     .toggle-btn {
       position: fixed;
       bottom: 20px;
@@ -45,53 +42,66 @@
   </style>
 </head>
 <body>
+  <!-- Initially load the Android-friendly page -->
   <iframe id="mainFrame" src="inde.html"></iframe>
-  <!-- Floating button with text -->
+  <!-- Toggle button initially labeled "Filmu" -->
   <button id="toggleBtn" class="toggle-btn">Filmu</button>
 
   <script>
-    // Define the URLs for toggling
-    const originalURL = "inde.html";
-    const alternativeURL = "https://tv.filmu.fun/"; // Android friendly page without desktop mode
-
+    // URLs for the two pages:
+    const originalURL = "https://tv.filmu.fun/";  // Filmu page (desktop mode)
+    const alternativeURL = "inde.html";            // Android-friendly page
+    
+    // Initially, we load Android friendly page so we start in non-desktop mode.
+    let isDesktopMode = false;
+    
     const iframe = document.getElementById('mainFrame');
     const btn = document.getElementById('toggleBtn');
     const viewportMeta = document.querySelector('meta[name="viewport"]');
 
-    // Function to update viewport meta content
+    // Update viewport settings based on mode.
     function updateViewport(forDesktop) {
-      if(forDesktop) {
-        // For Filmu: force desktop mode
-        viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no");
-      } else {
-        // For home.html: use device width for Android display
+      if (forDesktop) {
+        // Set to desktop display dimensions.
         viewportMeta.setAttribute("content", "width=1024, initial-scale=1.0");
+      } else {
+        // Set to device width for Android (mobile friendly).
+        viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
       }
     }
-
-    // Toggle iframe src, button text, and viewport on click
+    
+    // Ensure the initial viewport is set correctly.
+    updateViewport(isDesktopMode);
+    
+    // Toggle the iframe content, button text, and viewport mode on click.
     btn.addEventListener('click', function() {
-      if (iframe.src === originalURL || iframe.src === originalURL + "/") {
+      if (isDesktopMode) {
+        // Switch to Android-friendly view.
         iframe.src = alternativeURL;
-        btn.textContent = "Suza";
-        updateViewport(false);
-      } else {
-        iframe.src = originalURL;
         btn.textContent = "Filmu";
+        updateViewport(false);
+        isDesktopMode = false;
+      } else {
+        // Switch to Filmu (desktop) view.
+        iframe.src = originalURL;
+        btn.textContent = "Suza";
         updateViewport(true);
+        isDesktopMode = true;
       }
     });
-
-    // Implement scroll detection to show/hide the button
+    
+    // Hide the toggle button on scroll down. Also disable its pointer events when hidden.
     let lastScrollTop = 0;
     window.addEventListener("scroll", function() {
-      let st = window.pageYOffset || document.documentElement.scrollTop;
+      const st = window.pageYOffset || document.documentElement.scrollTop;
       if (st > lastScrollTop) {
-        // Scrolling down - hide the button
+        // User is scrolling down – hide button and disable click functionality.
         btn.style.opacity = 0;
+        btn.style.pointerEvents = "none";
       } else {
-        // Scrolling up - show the button
+        // Scrolling up – show button and re-enable its functionality.
         btn.style.opacity = 1;
+        btn.style.pointerEvents = "auto";
       }
       lastScrollTop = st <= 0 ? 0 : st;
     });
