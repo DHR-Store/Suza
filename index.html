@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no"/>
   <title>FILMU</title>
   <!-- Force a fixed desktop width -->
-  <meta name="viewport" content="width=1024, initial-scale=1.0">
+
       <style>
     html, body {
       margin: 0;
@@ -45,14 +45,14 @@
   </style>
 </head>
 <body>
-  <iframe id="mainFrame" src="https://tv.filmu.fun/"></iframe>
+  <iframe id="mainFrame" src="inde.html"></iframe>
   <!-- Floating button with text -->
-  <button id="toggleBtn" class="toggle-btn">Suza</button>
+  <button id="toggleBtn" class="toggle-btn">Filmu</button>
 
   <script>
     // Define the URLs for toggling
-    const originalURL = "https://tv.filmu.fun/";
-    const alternativeURL = "inde.html"; // Android friendly page without desktop mode
+    const originalURL = "inde.html";
+    const alternativeURL = "https://tv.filmu.fun/"; // Android friendly page without desktop mode
 
     const iframe = document.getElementById('mainFrame');
     const btn = document.getElementById('toggleBtn');
@@ -62,10 +62,10 @@
     function updateViewport(forDesktop) {
       if(forDesktop) {
         // For Filmu: force desktop mode
-        viewportMeta.setAttribute("content", "width=1024, initial-scale=1.0");
+        viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no");
       } else {
         // For home.html: use device width for Android display
-        viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no");
+        viewportMeta.setAttribute("content", "width=1024, initial-scale=1.0");
       }
     }
 
@@ -73,11 +73,11 @@
     btn.addEventListener('click', function() {
       if (iframe.src === originalURL || iframe.src === originalURL + "/") {
         iframe.src = alternativeURL;
-        btn.textContent = "Filmu";
+        btn.textContent = "Suza";
         updateViewport(false);
       } else {
         iframe.src = originalURL;
-        btn.textContent = "Suza";
+        btn.textContent = "Filmu";
         updateViewport(true);
       }
     });
