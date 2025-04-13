@@ -81,9 +81,6 @@
 <body>
 
   <div class="video-container" id="videoContainer">
-     <button id="fullscreenBtn" title="Enter Fullscreen">
-      <i id="fullscreenIcon" class="bi bi-arrows-fullscreen"></i>
-     </button>
     <iframe
       src="http://www.yupptv.com/yupptvnew/channels/aajtak/live/embed"
       frameborder="0"
@@ -110,7 +107,7 @@
     </ul>
   </div>
   <script>
-    // Handle orientation and fullscreen functions
+      // Handle orientation and fullscreen functions
     const fullscreenButton = document.getElementById('fullscreenBtn');
     const videoContainer = document.getElementById('videoContainer');
     const fullscreenIcon = document.getElementById('fullscreenIcon');
@@ -196,8 +193,8 @@
     // Function to fetch upcoming shows from Yupptv and update the schedule list
     async function loadUpcomingShows() {
       const scheduleContainer = document.getElementById('upcomingSchedule');
-      // Replace the URL below with the actual Yupptv API endpoint for upcoming Zee News shows.
-      const apiUrl = 'http://www.yupptv.com/yupptvnew/channels/aajtak/newshow'; 
+      // Use the secure URL for the ABP News endpoint.
+      const apiUrl = 'https://www.yupptv.com/yupptvnew/channels/aajtak/newshow';
 
       try {
         const response = await fetch(apiUrl);
@@ -206,15 +203,7 @@
         }
         const data = await response.json();
 
-        // Assuming the API returns a JSON object with an array "upcomingShows"
-        // For example:
-        // {
-        //   "upcomingShows": [
-        //     { "time": "6:00 PM - 7:00 PM", "title": "Prime Time News Bulletin" },
-        //     { "time": "7:00 PM - 8:00 PM", "title": "DNA (Daily News & Analysis)" },
-        //     ...
-        //   ]
-        // }
+        // Assuming the API returns an object with an array "upcomingShows"
         if (data.upcomingShows && Array.isArray(data.upcomingShows) && data.upcomingShows.length > 0) {
           scheduleContainer.innerHTML = ''; // Clear placeholder text
 
@@ -232,8 +221,9 @@
       }
     }
 
-    // Call the function once the page has loaded
+    // Call the function once the page has loaded.
     document.addEventListener('DOMContentLoaded', loadUpcomingShows);
+
   </script>
 
 </body>
