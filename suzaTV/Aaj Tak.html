@@ -81,6 +81,9 @@
 <body>
 
   <div class="video-container" id="videoContainer">
+     <button id="fullscreenBtn" title="Enter Fullscreen">
+      <i id="fullscreenIcon" class="bi bi-arrows-fullscreen"></i>
+     </button>
     <iframe
       src="http://www.yupptv.com/yupptvnew/channels/aajtak/live/embed"
       frameborder="0"
@@ -194,7 +197,7 @@
     async function loadUpcomingShows() {
       const scheduleContainer = document.getElementById('upcomingSchedule');
       // Replace the URL below with the actual Yupptv API endpoint for upcoming Zee News shows.
-      const apiUrl = 'http://www.yupptv.com/yupptvnew/channels/zee-news/newshow'; 
+      const apiUrl = 'http://www.yupptv.com/yupptvnew/channels/aajtak/newshow'; 
 
       try {
         const response = await fetch(apiUrl);
