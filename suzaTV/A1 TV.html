@@ -82,7 +82,7 @@
 
   <div class="video-container" id="videoContainer">
     <iframe
-      src="http://www.yupptv.com/yupptvnew/channels/a1-tv/live/embed"
+      src="https://www.yupptv.com/yupptvnew/channels/a1-tv/live/embed"
       frameborder="0"
       allowfullscreen
       sandbox="allow-scripts allow-same-origin allow-presentation"
@@ -106,6 +106,7 @@
       <li>Loading schedule...</li>
     </ul>
   </div>
+  
   <script>
     // Handle orientation and fullscreen functions
     const fullscreenButton = document.getElementById('fullscreenBtn');
@@ -139,9 +140,9 @@
       try {
           if (videoContainer.requestFullscreen) {
             await videoContainer.requestFullscreen();
-          } else if (videoContainer.webkitRequestFullscreen) { /* Safari */
+          } else if (videoContainer.webkitRequestFullscreen) {
             await videoContainer.webkitRequestFullscreen();
-          } else if (videoContainer.msRequestFullscreen) { /* IE11 */
+          } else if (videoContainer.msRequestFullscreen) {
             await videoContainer.msRequestFullscreen();
           }
       } catch (err) {
@@ -154,9 +155,9 @@
       try {
           if (document.exitFullscreen) {
             await document.exitFullscreen();
-          } else if (document.webkitExitFullscreen) { /* Safari */
+          } else if (document.webkitExitFullscreen) {
             await document.webkitExitFullscreen();
-          } else if (document.msExitFullscreen) { /* IE11 */
+          } else if (document.msExitFullscreen) {
             await document.msExitFullscreen();
           }
       } catch (err) {
@@ -164,13 +165,14 @@
       }
     }
 
-    fullscreenButton.addEventListener('click', () => {
-      if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-        goFullscreen();
-      } else {
-        exitFullscreen();
-      }
-    });
+    // If you have a fullscreen button in your HTML, uncomment the next lines and ensure the corresponding elements exist.
+    // fullscreenButton.addEventListener('click', () => {
+    //   if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+    //     goFullscreen();
+    //   } else {
+    //     exitFullscreen();
+    //   }
+    // });
 
     function handleFullscreenChange() {
         const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
@@ -193,8 +195,8 @@
     // Function to fetch upcoming shows from Yupptv and update the schedule list
     async function loadUpcomingShows() {
       const scheduleContainer = document.getElementById('upcomingSchedule');
-      // Replace the URL below with the actual Yupptv API endpoint for upcoming Zee News shows.
-      const apiUrl = 'http://www.yupptv.com/yupptvnew/channels/zee-news/newshow'; 
+      // Update the API URL to the correct, secure A1-TV endpoint if available.
+      const apiUrl = 'https://www.yupptv.com/yupptvnew/channels/a1-tv/newshow'; 
 
       try {
         const response = await fetch(apiUrl);
@@ -203,15 +205,6 @@
         }
         const data = await response.json();
 
-        // Assuming the API returns a JSON object with an array "upcomingShows"
-        // For example:
-        // {
-        //   "upcomingShows": [
-        //     { "time": "6:00 PM - 7:00 PM", "title": "Prime Time News Bulletin" },
-        //     { "time": "7:00 PM - 8:00 PM", "title": "DNA (Daily News & Analysis)" },
-        //     ...
-        //   ]
-        // }
         if (data.upcomingShows && Array.isArray(data.upcomingShows) && data.upcomingShows.length > 0) {
           scheduleContainer.innerHTML = ''; // Clear placeholder text
 
