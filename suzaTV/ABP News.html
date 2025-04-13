@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ABP NEWS</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      background-color: #111;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .content-section {
+      padding: 20px;
+      max-width: 960px;
+      margin: 15px auto;
+      background-color: #000;
+      border-radius: 5px;
+    }
+    .content-section h2 {
+      color: #ff0000;
+      border-bottom: 1px solid #555;
+      padding-bottom: 5px;
+      margin-top: 0;
+    }
+    .content-section img {
+      border-radius: 20px;
+      width: 80px;
+      height: 80px;
+    }
+    .content-section p, .content-section ul {
+      color: #ccc;
+      line-height: 1.6;
+    }
+    .content-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .content-section li {
+      padding: 5px 0;
+      border-bottom: 1px dotted #444;
+    }
+    .content-section li:last-child {
+      border-bottom: none;
+    }
+    /* Styling for upcoming schedule list */
+    .schedule-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #444;
+    }
+    .schedule-list li:last-child {
+      border-bottom: none;
+    }
+    .schedule-time {
+      font-weight: bold;
+      color: #ff0000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="video-container" id="videoContainer">
+    <iframe
+      src="http://www.yupptv.com/yupptvnew/channels/abp-news/live/embed"
+      frameborder="0"
+      allowfullscreen
+      sandbox="allow-scripts allow-same-origin allow-presentation"
+      title="ABP News Live Stream">
+    </iframe>
+  </div>
+
+  <div class="content-section">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/ABP_News_logo.svg/330px-ABP_News_logo.svg.png" alt="zee-news"/>
+    <h2>About ABP News</h2>
+    <p>
+      ABP News is an Indian Hindi-language free-to-air television news channel owned by ABP Group. Initially launched as Star News in 1998, it was later acquired by the Bengali media group Anand Bazar Patrika (ABP). It won the Best Hindi News Channel award[1] in the 21st edition of the Indian Television Academy Awards in 2022. The channel has been accused by protestors for being partial and supporting the ideology of the ruling government.
+    </p>
+  </div>
+
+  <!-- Upcoming Schedule Section -->
+  <div class="content-section">
+    <h2>Upcoming Shows</h2>
+    <ul id="upcomingSchedule" class="schedule-list">
+      <!-- Schedule items will be populated here -->
+      <li>Loading schedule...</li>
+    </ul>
+  </div>
+  <script>
+    // Handle orientation and fullscreen functions
+    const fullscreenButton = document.getElementById('fullscreenBtn');
+    const videoContainer = document.getElementById('videoContainer');
+    const fullscreenIcon = document.getElementById('fullscreenIcon');
+
+    async function lockOrientation() {
+      try {
+        if (screen.orientation && typeof screen.orientation.lock === 'function') {
+          await screen.orientation.lock('landscape');
+        }
+      } catch (error) {
+        if (error.name !== 'NotSupportedError' && error.name !== 'SecurityError') {
+          console.error("Could not lock screen orientation:", error);
+        }
+      }
+    }
+
+    function unlockOrientation() {
+      try {
+         if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+            screen.orientation.unlock();
+         }
+      } catch (error) {
+          // Silently fail if unlock isn't supported
+      }
+    }
+
+    async function goFullscreen() {
+      await lockOrientation();
+      try {
+          if (videoContainer.requestFullscreen) {
+            await videoContainer.requestFullscreen();
+          } else if (videoContainer.webkitRequestFullscreen) { /* Safari */
+            await videoContainer.webkitRequestFullscreen();
+          } else if (videoContainer.msRequestFullscreen) { /* IE11 */
+            await videoContainer.msRequestFullscreen();
+          }
+      } catch (err) {
+          console.error("Error entering fullscreen:", err);
+          unlockOrientation();
+      }
+    }
+
+    async function exitFullscreen() {
+      try {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) { /* Safari */
+            await document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) { /* IE11 */
+            await document.msExitFullscreen();
+          }
+      } catch (err) {
+           console.error("Error exiting fullscreen:", err);
+      }
+    }
+
+    fullscreenButton.addEventListener('click', () => {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        goFullscreen();
+      } else {
+        exitFullscreen();
+      }
+    });
+
+    function handleFullscreenChange() {
+        const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+        if (isFullscreen) {
+            fullscreenIcon.classList.remove('bi-arrows-fullscreen');
+            fullscreenIcon.classList.add('bi-fullscreen-exit');
+            fullscreenButton.setAttribute('title', 'Exit Fullscreen');
+        } else {
+            fullscreenIcon.classList.remove('bi-fullscreen-exit');
+            fullscreenIcon.classList.add('bi-arrows-fullscreen');
+            fullscreenButton.setAttribute('title', 'Enter Fullscreen');
+            unlockOrientation();
+        }
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+    // Function to fetch upcoming shows from Yupptv and update the schedule list
+    async function loadUpcomingShows() {
+      const scheduleContainer = document.getElementById('upcomingSchedule');
+      // Replace the URL below with the actual Yupptv API endpoint for upcoming Zee News shows.
+      const apiUrl = 'http://www.yupptv.com/yupptvnew/channels/zee-news/newshow'; 
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
+        const data = await response.json();
+
+        // Assuming the API returns a JSON object with an array "upcomingShows"
+        // For example:
+        // {
+        //   "upcomingShows": [
+        //     { "time": "6:00 PM - 7:00 PM", "title": "Prime Time News Bulletin" },
+        //     { "time": "7:00 PM - 8:00 PM", "title": "DNA (Daily News & Analysis)" },
+        //     ...
+        //   ]
+        // }
+        if (data.upcomingShows && Array.isArray(data.upcomingShows) && data.upcomingShows.length > 0) {
+          scheduleContainer.innerHTML = ''; // Clear placeholder text
+
+          data.upcomingShows.forEach(show => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="schedule-time">${show.time}:</span> <span class="schedule-title">${show.title}</span>`;
+            scheduleContainer.appendChild(li);
+          });
+        } else {
+          scheduleContainer.innerHTML = '<li>No upcoming shows available at the moment.</li>';
+        }
+      } catch (error) {
+        console.error("Error fetching upcoming shows:", error);
+        scheduleContainer.innerHTML = '<li>Error loading schedule. Please try again later.</li>';
+      }
+    }
+
+    // Call the function once the page has loaded
+    document.addEventListener('DOMContentLoaded', loadUpcomingShows);
+  </script>
+
+</body>
+</html>

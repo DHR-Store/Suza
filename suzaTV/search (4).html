@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TV Channel Search</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body {
+      background: #000;
+      font-family: Arial, sans-serif;
+    }
+    .search-container {
+      margin-top: 2rem;
+    }
+    .card-custom {
+      transition: transform 0.2s ease-in-out;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .card-custom:hover {
+      transform: scale(1.02);
+    }
+    .card-img-top {
+      object-fit: contain;
+      height: 150px;
+      background: #fff;
+      padding: 1rem;
+    }
+    .no-results {
+      font-size: 1.2rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .card-footer {
+      background-color: transparent;
+      border-top: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Main Container -->
+  <div class="container search-container">
+    <!-- Search Input -->
+   
+    <div class="row justify-content-center mb-4">
+      <div class="col-md-6">
+        <div class="input-group">
+          <input type="text" id="searchInput" class="form-control" placeholder="Search channels" />
+          <span class="input-group-text bg-primary text-white">
+            <i class="bi bi-search"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+    <!-- Results Grid -->
+    <div id="searchResults" class="row g-3"></div>
+    <!-- Recently Used Channels (optional) -->
+     <div class="mt-5">
+   <h5>Recently Used</h5>
+   <div id="recentlyUsedList" class="d-flex flex-wrap gap-2"></div>
+   <button id="clearRecents" class="btn btn-sm btn-secondary mt-2">Clear History</button>
+ </div>
+ </div>
+ 
+
+  <!-- JavaScript: Channel Data, Local Storage & Search Handling -->
+  <script>
+    // TV Channels Data (grouped by genre) with a "website" property added.
+    const tvChannels = {
+      news: [
+        { 
+          name: "Zee News", 
+          card: "Extra details about Zee News.", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/rhihqo.png",
+          website: "https://zeenews.india.com"
+        },
+        { 
+          name: "ndtv profit", 
+          card: "Extra details about ndtv.", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/ndtv-1738054183644.png",
+          website: "https://profit.ndtv.com"
+        },
+        { 
+          name: "ABP News", 
+          card: "Extra details about ABP news", 
+          image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/ABP_News_logo.svg/330px-ABP_News_logo.svg.png",
+          website: "https://www.abplive.com"
+        },
+        { 
+          name: "Aaj Tak", 
+          card: "Extra details about Aaj tak", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/nqbgpo.png",
+          website: "https://aajtak.intoday.in"
+        },
+        { 
+          name: "R Bharat", 
+          card: "Extra details about R bharat", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/lnnuqu.png",
+          website: "https://www.rbharat.com"
+        },
+        { 
+          name: "TV9", 
+          card: "Extra details about TV9", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/rhgutv.png",
+          website: "https://www.tv9.com"
+        },
+        { 
+          name: "IndiaTV", 
+          card: "Extra details about IndiaTV", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/india-tv.png",
+          website: "https://www.indiatvnews.com"
+        },
+        { 
+          name: "News Nation", 
+          card: "Extra details about News Nation", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/news-nation.png",
+          website: "https://www.newsnation.in"
+        },
+        // ... add other news channels as needed.
+      ],
+      kids: [
+        { 
+          name: "Kids Song", 
+          card: "Fun and educational shows for kids!", 
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_UDMrrgXv2ftbfh6biY8qBDPPEXc3V6ySYAERIlo19zXzsV9AKeewtI4&s=10",
+          website: "https://kidssong.com"
+        },
+        { 
+          name: "Cartoon", 
+          card: "Cartoons and animated adventures.", 
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLytHtoYVWt-1rn99F3zwXp8TLsM8Cpn6imw&usqp=CAU",
+          website: "https://www.cartoonnetwork.com"
+        },
+        { 
+          name: "Kiddo", 
+          card: "kiddo cartoon", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/kiddo-1706870458750.png",
+          website: "https://www.kiddo.com"
+        }
+      ],
+      music: [
+        { 
+          name: "9xm", 
+          card: "9xm hits and live performances.", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/9xm-1605958350966.png",
+          website: "https://www.9xm.in"
+        },
+        { 
+          name: "Mastiii", 
+          card: "Concerts and music videos streaming.", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/1708092659037.png",
+          website: "https://www.mastiii.com"
+        }
+      ],
+      dd: [
+        { 
+          name: "DD India", 
+          card: "DD India", 
+          image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/dd-india-1701853358871.png",
+          website: "https://ddindia.gov.in"
+        },
+        { 
+          name: "DDkishan", 
+          card: "Special documentaries and events.", 
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1rlhkpd6FAIS_lKbOA44-nGMsmleXwe_fAw&s",
+          website: "https://ddkishan.gov.in"
+        }
+      ],
+      student: [
+        { 
+          name: "IIT Jee", 
+          card: "Educational content and exam tips.", 
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfi4HfYCTBDc7yP1otRlF5ua0GX9pVDTflgA&s",
+          website: "https://www.iitjee.com"
+        },
+        { 
+          name: "Neet", 
+          card: "Learning and inspirational shows.", 
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfi4HfYCTBDc7yP1otRlF5ua0GX9pVDTflgA&s",
+          website: "https://www.neet.com"
+        }
+      ],
+      sport: [
+        { 
+          name: "Sport Channel 1", 
+          card: "Live sports and match highlights.", 
+          image: "images/sport1.jpg",
+          website: "https://www.sportchannel1.com"
+        },
+        { 
+          name: "Sport Channel 2", 
+          card: "Daily sports updates and analysis.", 
+          image: "images/sport2.jpg",
+          website: "https://www.sportchannel2.com"
+        }
+      ]
+    };
+
+    /********************************************
+     * Local Storage Handling for Recents       *
+     ********************************************/
+    const RECENT_STORAGE_KEY = 'recentChannels';
+
+    function addRecentChannel(channel) {
+      const channelObj = (typeof channel === 'string')
+        ? { name: channel, htmlFile: channel + ".html" }
+        : channel;
+      let recents = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY)) || [];
+      // Remove any existing entry that matches
+      recents = recents.filter(item => item.htmlFile !== channelObj.htmlFile);
+      recents.unshift(channelObj);
+      recents = recents.slice(0, 5);
+      localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(recents));
+      renderRecentlyUsed();
+    }
+
+    function renderRecentlyUsed() {
+      const container = document.getElementById("recentlyUsedList");
+      container.innerHTML = "";
+      const recents = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY)) || [];
+      recents.forEach(channel => {
+        const btn = document.createElement("button");
+        btn.className = "btn btn-outline-secondary btn-sm";
+        btn.innerText = channel.name;
+        btn.onclick = () => window.location.href = channel.htmlFile;
+        container.appendChild(btn);
+      });
+    }
+
+    document.getElementById("clearRecents").addEventListener("click", () => {
+      localStorage.removeItem(RECENT_STORAGE_KEY);
+      renderRecentlyUsed();
+    });
+
+    // Initial recents render.
+    renderRecentlyUsed();
+
+    /********************************************
+     * TV Channel Card Navigation               *
+     ********************************************/
+    function openTvShowDetails(channel, genre) {
+      addRecentChannel(channel);
+      const specialRedirects = {
+        "zee news": "Zee News.html",
+        "ndtv profit": "ndtv profit.html",
+        "abp news": "ABP News.html",
+        "aaj tak": "Aaj Tak.html",
+        "r bharat": "R Bharat.html",
+        "tv9": "TV9.html",
+        "indiatv": "IndiaTV.html",
+        "news nation": "News Nation.html",
+        "gnt": "GNT.html",
+        "hindi khabar": "Hindi Khabar.html",
+        "sudarshan news": "Sudarshan News.html",
+        "ndtv mp": "NDTV MP.html",
+        "news 11": "News 11.html",
+        "ndtv rajasthan": "NDTV Rajasthan.html",
+        "inh": "inh.html",
+        "total tv": "Total TV.html",
+        "news1india": "News1India.html",
+        "kht": "KHT.html",
+        "bharat samachar": "Bharat Samachar.html",
+        "smbc": "SMBC.html",
+        "india voice": "India Voice.html",
+        "jantantra tv": "Jantantra TV.html",
+        "jan tv": "Jan TV.html",
+        "apn news": "APN News.html",
+        "bansal news": "Bansal News.html",
+        "kashish news": "Kashish News.html",
+        "a1 tv": "A1 TV.html",
+        "network 10": "Network 10.html",
+        "zee business": "Zee Buisness.html",
+        "iit jee": "IIT Jee.html",
+        "kids song": "Kids Song.html",
+        "cartoon": "Cartoon.html",
+        "dd india": "DD India.html",
+        "ddkishan": "DDkishan.html",
+        "kiddo": "Kiddo.html",
+        "9xm": "9xm.html",
+        "mastiii": "Mastiii.html",
+        "neet": "Neet.html"
+      };
+      const channelLower = channel.name.toLowerCase();
+      if (specialRedirects[channelLower]) {
+        window.location.href = specialRedirects[channelLower] + "?channel=" + encodeURIComponent(channel.name);
+      } else {
+        window.location.href = genre + ".html?channel=" + encodeURIComponent(channel.name);
+      }
+    }
+
+    /********************************************
+     * Search Functionality                     *
+     ********************************************/
+    // Combine all channels into one array with the associated genre.
+    let allChannels = [];
+    Object.keys(tvChannels).forEach(genre => {
+      tvChannels[genre].forEach(channel => {
+        allChannels.push({ ...channel, genre });
+      });
+    });
+
+    // Function to render search results
+    function renderSearchResults(filteredChannels) {
+      const resultsContainer = document.getElementById("searchResults");
+      resultsContainer.innerHTML = "";
+      if (filteredChannels.length === 0) {
+        resultsContainer.innerHTML = '<div class="no-results">No channels found!</div>';
+        return;
+      }
+      filteredChannels.forEach(channel => {
+        const col = document.createElement("div");
+        col.className = "col-md-4 col-lg-3";
+        // Create a clickable card; note that the "Visit Website" button is inside a card-footer.
+        col.innerHTML = `
+          <div class="card card-custom h-100">
+            <img src="${channel.image}" class="card-img-top" alt="${channel.name}" />
+            <div class="card-body" onclick='openTvShowDetails(${JSON.stringify(channel)}, "${channel.genre}")'>
+              <h5 class="card-title">${channel.name}</h5>
+              <p class="card-text">${channel.card}</p>
+            </div>
+            <div class="card-footer text-center">
+              <a href="${channel.website}" target="_blank" class="btn btn-primary btn-sm">Visit Website</a>
+            </div>
+          </div>
+        `;
+        resultsContainer.appendChild(col);
+      });
+    }
+
+    // Initial load: Show all channels
+    renderSearchResults(allChannels);
+
+    // Filter channels as the user types
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", (event) => {
+      const query = event.target.value.toLowerCase().trim();
+      const filtered = query
+        ? allChannels.filter(channel => channel.name.toLowerCase().includes(query))
+        : allChannels;
+      renderSearchResults(filtered);
+    });
+  </script>
+
+  <!-- Bootstrap JS Bundle (optional for some components) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

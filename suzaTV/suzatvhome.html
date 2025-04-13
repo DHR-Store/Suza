@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Suza TV</title>
+    <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+  <style>
+  
+/* Overall Dark Theme - Responsive for Android */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 10px;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.5;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Ensure it scales properly on different Android screen sizes */
+@media (max-width: 768px) {
+  body {
+    padding: 8px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 6px;
+    font-size: 14px;
+  }
+}
+    header {
+      padding: 20px;
+      text-align: center;
+      background: #111;
+      color: #fff;
+    }
+#/* Fixed hero section that stays at the top */
+#heroSection {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: white;  /* Adjust background color as needed */
+  padding: 16px;
+  z-index: 1000;
+}
+
+/* Horizontal scroll container with touch support */
+#heroScroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+/* Each slide is set up to snap into place */
+.hero-slide {
+  flex: 0 0 auto;
+  width: 300px;
+  margin-right: 16px;
+  text-align: center;
+  scroll-snap-align: center;
+}
+
+/* Uniform image size and styling */
+.hero-slide img {
+  width: 300px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Hero dots styles */
+#heroDots {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.hero-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #bbb;
+  border-radius: 50%;
+  margin: 0 4px;
+  cursor: pointer;
+}
+
+.hero-dot.active {
+  background-color: #717171;
+}
+    /* Genre Icon Row (just below hero) */
+    .genre-icons {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      background: #111;
+      border-bottom: 1px solid #333;
+    }
+    .genre-icon {
+      margin: 0 10px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .genre-icon img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+    .genre-icon span {
+      display: block;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    /* Genres Horizontal Scroll (buttons) */
+    .genres {
+      display: flex;
+      overflow-x: auto;
+      padding: 15px;
+      background: #111;
+      border-bottom: 1px solid #333;
+    }
+    .genre-item {
+      flex: 0 0 auto;
+      margin-right: 15px;
+      padding: 10px 20px;
+      background: #222;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s;
+      color: #fff;
+    }
+    .genre-item:hover {
+      background: #444;
+    }
+    /* Recently Used Channels Section */
+    .info-section {
+      padding: 20px;
+      background: #111;
+      margin: 20px;
+      border: 1px solid #333;
+      border-radius: 4px;
+    }
+    .info-section h3 {
+      margin-top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .info-list {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+    .info-item {
+      background: #222;
+      margin: 5px;
+      padding: 10px;
+      border-radius: 4px;
+      flex: 0 0 auto;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    #clearRecents {
+      margin-left: 15px;
+      padding: 5px 10px;
+      cursor: pointer;
+      background: #f44336;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+    }
+    /* TV Channel Cards Container (Grid: 3 per row) */
+    #tvChannelSection {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+      padding: 5px;
+      background: #000;
+    }
+    .tv-card {
+      width: 100%;
+      background: #222;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.2s;
+      padding: 10px;
+    }
+    .tv-card:hover {
+      transform: scale(1.05);
+    }
+    .tv-card img {
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .tv-card h4 {
+      margin: 0;
+      font-size: 16px;
+      color: #fff;
+    }
+     .card-container {
+            display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      padding: 10px;
+      background: #000;
+     }
+        .card {
+            width: 100px;
+            height: 20vh;
+      background: #222;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.2s;
+      padding: 10px;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card img {
+            width: 100%;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 10px;
+        }
+        .card-title {
+            margin: 8px;
+      font-size: 16px;
+      color: #fff;
+        }
+
+    /* Scrollbar tyling for horizontal scrolling containers */
+    ::-webkit-scrollbar {
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #111;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #888;
+    }
+        /* Bottom Navigation Bar */
+    nav.navbar {
+      background: transparent;
+      backdrop-filter: blur(8px);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #444;
+      transition: transform 0.3s ease;
+    }
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease, color 0.3s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .nav-link i {
+      font-size: 24px;
+    }
+    .nav-link:hover {
+      color: cyan;
+      transform: scale(1.1);
+    }
+    .nav-link.active {
+      color: cyan;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  
+
+<div id="heroSection">
+  <div id="heroScroll"></div>
+  <div id="heroDots"></div>
+</div>
+
+
+  <!-- Genres Horizontal Scroll (buttons) -->
+  <section class="genres">
+    <div class="genre-item" data-genre="news">News</div>
+    <div class="genre-item" data-genre="kids">Kids</div>
+    <div class="genre-item" data-genre="music">Music</div>
+    <div class="genre-item" data-genre="dd">DD</div>
+    <div class="genre-item" data-genre="student">Student Special</div>
+    <div class="genre-item" data-genre="sport">Sport</div>
+  </section>
+
+  <!-- Recently Used Channels Section -->
+  <section class="info-section" id="recentlyUsedSection">
+    <h3>
+      Recently Used Channels
+      <button id="clearRecents">
+  <i class="bi bi-trash"></i>
+</button>
+    </h3>
+    <div class="info-list" id="recentlyUsedList">
+      <!-- Recently used channels appear here -->
+    </div>
+  </section>
+
+  <!-- TV Channel Cards Container (Grid: 3 per row) -->
+  <section id="tvChannelSection">
+    <div class="card-container">
+        <div class="card" onclick="location.href='Aaj Tak.html'">
+            <img src="https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/nqbgpo.png" alt="Aaj Tak">
+            <div class="card-title">Aaj Tak</div>
+        </div>
+        <div class="card" onclick="location.href='R Bharat.html'">
+            <img src="https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/lnnuqu.png" alt="R.bharat">
+            <div class="card-title">R.Bharat</div>
+        </div>
+        <div class="card" onclick="location.href='TV9.html'">
+            <img src="https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/rhgutv.png" alt="TV9">
+            <div class="card-title">TV9</div>
+            </div>
+             <div class="card" onclick="location.href='IndiaTV.html'">
+            <img src="https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/india-tv.png" alt=indiaTv>
+            <div class="card-title">IndiaTV</div>
+        </div>
+        <!-- Add more cards as needed -->
+         <div class="card" onclick="location.href='News Nation.html'">
+            <img src="https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/news-nation.png" alt=indiaTv>
+            <div class="card-title">NewsNation</div>
+        </div>
+        
+    </div>
+    <!-- Cards will be dynamically inserted here -->
+  </section>
+    <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="ho.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
+      <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br></a>
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
+    </div>
+  </nav>
+
+
+
+  <script>
+    /********************************************
+     * Dynamic TV Show Info (Hero Section)       *
+     ********************************************/
+    function fetchTVShowInfo() {
+  const shows = [
+    { title: "Aaj Tak", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/banner/common/mobile/page/banners/banners-banner-nxbbtb3521d.jpeg", link: "Aaj Tak.html" },
+    { title: "Comedy Blast", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV1ASOXFwKLRKe2w2hjosatqgacvqp4nRKq4Q5JjJBNI8h6B3lmrsjKuuM&s=10", link: "comedy.html" },
+    { title: "Zee News", image: "https://akamaividz2.zee5.com/image/upload/w_1170,h_658,c_scale/resources/0-9-zeenews/list/1170x658withlogo4f46c0d87b44459fb517a3f81f5cf754.jpg", link: "Zee News.html" },
+    { title: "ndtv profit", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRA7yZ9gjL00ZhAJAIXftZWV0-WjZ_0vGzWEO5UnhEwQdQdYjIaUpLcjeLk&s=10", link: "ndtv profit.html" },
+    { title: "Discovery", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnQy6BEDlLITSRkE_qsta49cXwhSo0EU4CXnWW5wm4vZbr91FgttbzH_u7&s=10", link: "show5.html" },
+    { title: "turito", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxGekqqvmSZPDgrrxVh1EgWTzmgep5FFqmc90Xt2BkIBPI8x5mXGKZMEcY&s=10", link: "IIT Jee.html" }
+  ];
+
+  const container = document.getElementById("heroScroll");
+  const dotsContainer = document.getElementById("heroDots");
+
+  // Create slides and dots for each show
+  shows.forEach((show, index) => {
+    // Create slide element
+    const card = document.createElement("div");
+    card.className = "hero-slide";
+    card.innerHTML = `
+      <a href="${show.link}" style="text-decoration: none; color: inherit;">
+        <img src="${show.image}" alt="${show.title}" />
+        <h4>${show.title}</h4>
+      </a>
+    `;
+    container.appendChild(card);
+
+    // Create corresponding hero dot
+    const dot = document.createElement("span");
+    dot.className = "hero-dot";
+    dot.dataset.index = index;
+    dot.addEventListener("click", () => {
+      goToSlide(index);
+    });
+    dotsContainer.appendChild(dot);
+  });
+
+  // Function to scroll to a particular slide based on its index
+  function goToSlide(index) {
+    const slide = container.querySelector('.hero-slide');
+    if (!slide) return;
+    const slideWidth = slide.offsetWidth + 16; // slide width plus right margin
+    container.scrollTo({ left: index * slideWidth, behavior: 'smooth' });
+    updateDots(index);
+  }
+
+  // Update the active dot styling
+  function updateDots(activeIndex) {
+    const dots = document.querySelectorAll(".hero-dot");
+    dots.forEach((dot, index) => {
+      if (index === activeIndex) {
+        dot.classList.add("active");
+      } else {
+        dot.classList.remove("active");
+      }
+    });
+  }
+
+  // Listen for scroll events to update the active dot based on scroll position
+  container.addEventListener('scroll', function() {
+    const slide = container.querySelector('.hero-slide');
+    if (!slide) return;
+    const slideWidth = slide.offsetWidth + 16;
+    const activeIndex = Math.round(container.scrollLeft / slideWidth);
+    updateDots(activeIndex);
+  });
+
+  // Auto-rotate slides every 5 seconds
+  let currentIndex = 0;
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % shows.length;
+    goToSlide(currentIndex);
+  }, 5000);
+}
+
+fetchTVShowInfo();
+    /********************************************
+     * TV Channel Data per Genre with Images     *
+     ********************************************/
+    const tvChannels = {
+  news: [
+    { name: "Zee News", card: "Extra details about Zee News.", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/rhihqo.png" },
+    { name: "ndtv profit", card: "Extra details about ndtv.", image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/ndtv-1738054183644.png" },
+    { name: "ABP News", card: "Extra details about ABP news", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/ABP_News_logo.svg/330px-ABP_News_logo.svg.png" },
+    { name: "Aaj Tak", card: "Extra details about Aaj tak", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/nqbgpo.png" },
+    { name: "R Bharat", card: "Extra details about R bharat", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/lnnuqu.png" },
+    { name: "TV9", card: "Extra details about TV9", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/rhgutv.png" },
+    { name: "IndiaTV", card: "Extra details about IndiaTV", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/india-tv.png" },
+    { name: "News Nation", card: "Extra details about News Nation", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/news-nation.png" },
+    { name: "GNT", card: "Extra details about GNT", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/czbixn.png" },
+    { name: "Hindi Khabar", card: "Extra details about Hindi Khabar", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/hindi-khabar.png" },
+    { name: "Sudarshan News", card: "Extra details about Sudarshan News", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/sudarshan-news.png" },
+    { name: "NDTV MP", card: "Extra details about NDTV Madhya Pradesh", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/zhhvxq.png" },
+    { name: "News 11", card: "Extra details about News 11", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/news-11-bharat.png" },
+    { name: "NDTV Rajasthan", card: "Extra details about NDTV Rajasthan", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/ehlmdz.png" },
+    { name: "INH", card: "Extra details about INH", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/gbrcig.png" },
+    { name: "Total TV", card: "Extra details about Total TV", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/total-tv.png" },
+    { name: "News1India", card: "Extra details about News1India", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/eyfyem.png" },
+    { name: "KHT", card: "Extra details about KHT", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/qfurxt.png" },
+    { name: "Bharat Samachar", card: "Extra details about Bharat Samachar", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/edjdac.png" },
+    { name: "SMBC", card: "Extra details about SMBC", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/rwtjzv.png" },
+    { name: "India Voice", card: "Extra details about India Voice", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/erinhf.png" },
+    { name: "Jantantra TV", card: "Extra details about Jantantr TV", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/xdmemv.png" },
+    { name: "Jan TV", card: "Extra details about Jan TV", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/yjsmtt.png" },
+    { name: "APN News", card: "Extra details about APN News", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/chfztu.png" },
+    { name: "Bansal News", card: "Extra details about Bansal News", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/bansal-news.png" },
+    { name: "Kashish News", card: "Extra details about Kashish News", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/kashish-news.png" },
+    { name: "A1 TV", card: "Extra details about A1 TV", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/a1-tv.png" },
+    { name: "Network 10", card: "Extra details about Network 10", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/network-10.png" },
+    { name: "Zee Business", card: "Extra details about Zee Business", image: "https://d229kpbsb5jevy.cloudfront.net/yuppfast/content/common/channel/logos/gmdzdx.png" }
+  ],
+      kids: [
+        { name: "Kids Song", card: "Fun and educational shows for kids!", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_UDMrrgXv2ftbfh6biY8qBDPPEXc3V6ySYAERIlo19zXzsV9AKeewtI4&s=10" },
+        { name: "Cartoon", card: "Cartoons and animated adventures.", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLytHtoYVWt-1rn99F3zwXp8TLsM8Cpn6imw&usqp=CAU" },
+        { name: "Kiddo", card: "kiddo cartoon", image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/kiddo-1706870458750.png"}
+      ],
+      music: [
+        { name: "9xm", card: "9xm hits and live performances.", image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/9xm-1605958350966.png" },
+        { name: "Mastiii", card: "Concerts and music videos streaming.", image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/1708092659037.png" }
+      ],
+      dd: [
+        { name: "DD India", card: "DD India", image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/dd-india-1701853358871.png" },
+        { name: "DDkishan", card: "Special documentaries and events.", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1rlhkpd6FAIS_lKbOA44-nGMsmleXwe_fAw&s" }
+      ],
+      student: [
+        { name: "IIT Jee", card: "Educational content and exam tips.",image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfi4HfYCTBDc7yP1otRlF5ua0GX9pVDTflgA&s" },
+        { name: "Neet", card: "Learning and inspirational shows.", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfi4HfYCTBDc7yP1otRlF5ua0GX9pVDTflgA&s" }
+      ],
+      sport: [
+        { name: "Sport Channel 1", card: "Live sports and match highlights.", image: "images/sport1.jpg" },
+        { name: "Sport Channel 2", card: "Daily sports updates and analysis.", image: "images/sport2.jpg" }
+      ]
+    };
+
+
+/********************************************
+ * Local Storage Handling for Recently Used *
+ ********************************************/
+const RECENT_STORAGE_KEY = 'recentChannels';
+
+/**
+ * Adds a recent channel.
+ * You can pass either a string (channel name) or an object with properties:
+ * - name: the display name for the channel
+ * - htmlFile: the HTML file to open.
+ *
+ * If a string is provided, the function creates an object where
+ * the htmlFile is computed as "<channel name>.html".
+ */
+function addRecentChannel(channel) {
+  // Determine if channel is a string or an object.
+  let channelObj = (typeof channel === 'string')
+    ? { name: channel, htmlFile: channel + ".html" }
+    : channel;
+
+  let recents = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY)) || [];
+
+  // Remove any existing entry with the same HTML file.
+  recents = recents.filter(item => item.htmlFile !== channelObj.htmlFile);
+
+  // Add new channel at the beginning.
+  recents.unshift(channelObj);
+
+  // Limit to 5 items.
+  if (recents.length > 5) {
+    recents = recents.slice(0, 5);
+  }
+  
+  localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(recents));
+  renderRecentlyUsed();
+}
+
+/**
+ * Renders the list of recently used channels.
+ * Each channel is displayed by its name and clicking it opens the associated HTML file.
+ */
+function renderRecentlyUsed() {
+  const container = document.getElementById("recentlyUsedList");
+  container.innerHTML = "";
+
+  const recents = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY)) || [];
+  
+  recents.forEach(channel => {
+    const div = document.createElement("div");
+    div.className = "info-item";
+    div.innerText = channel.name;
+    div.onclick = () => {
+      window.location.href = channel.htmlFile;
+    };
+    container.appendChild(div);
+  });
+}
+
+// Initial render to display any stored channels.
+renderRecentlyUsed();
+
+    // Clear recent history functionality.
+    document.getElementById("clearRecents").addEventListener("click", () => {
+      localStorage.removeItem(RECENT_STORAGE_KEY);
+      renderRecentlyUsed();
+    });
+
+    /********************************************
+     * TV Channel Card Click Handling            *
+     * and Redirection to Dedicated HTML Files   *
+     ********************************************/
+    function openTvShowDetails(channel, genre) {
+      addRecentChannel(channel.name, genre);
+      const specialRedirects = {
+  "zee news": "Zee News.html",
+  "ndtv profit": "ndtv profit.html",
+  "abp news": "ABP News.html",
+  "aaj tak": "Aaj Tak.html",
+  "r bharat": "R Bharat.html",
+  "tv9": "TV9.html",
+  "indiatv": "IndiaTV.html",
+  "news nation": "News Nation.html",
+  "gnt": "GNT.html",
+  "hindi khabar": "Hindi Khabar.html",
+  "sudarshan news": "Sudarshan News.html",
+  "ndtv mp": "NDTV MP.html",
+  "news 11": "News 11.html",
+  "ndtv rajasthan": "NDTV Rajasthan.html",
+  "inh": "inh.html",
+  "total tv": "Total TV.html",
+  "news1india": "News1India.html",
+  "kht": "KHT.html",
+  "bharat samachar": "Bharat Samachar.html",
+  "smbc": "SMBC.html",
+  "india voice": "India Voice.html",
+  "jantantra tv": "Jantantra TV.html",
+  "jan tv": "Jan TV.html",
+  "apn news": "APN News.html",
+  "bansal news": "Bansal News.html",
+  "kashish news": "Kashish News.html",
+  "a1 tv": "A1 TV.html",
+  "network 10": "Network 10.html",
+  "zee business": "Zee Buisness.html",
+  "iit jee": "IIT Jee.html",
+  "kids song": "Kids Song.html",
+  "cartoon": "Cartoon.html",
+  "dd india": "DD India.html",
+  "ddkishan": "DDkishan.html",
+  "kiddo": "Kiddo.html",
+  "9xm": "9xm.html",
+  "mastiii": "Mastiii.html",
+  "neet": "Neet.html"
+};
+      const channelLower = channel.name.toLowerCase();
+      if (specialRedirects[channelLower]) {
+        window.location.href = specialRedirects[channelLower] + "?channel=" + encodeURIComponent(channel.name);
+      } else {
+        window.location.href = genre + ".html?channel=" + encodeURIComponent(channel.name);
+      }
+    }
+
+    /********************************************
+     * Render TV Channel Cards for a Genre        *
+     ********************************************/
+    function renderTVChannels(genre) {
+      const container = document.getElementById("tvChannelSection");
+      container.innerHTML = "";
+      if (tvChannels[genre]) {
+        tvChannels[genre].forEach(channel => {
+          const card = document.createElement("div");
+          card.className = "tv-card";
+          const img = document.createElement("img");
+          img.src = channel.image;
+          img.alt = channel.name;
+          const title = document.createElement("h4");
+          title.innerText = channel.name;
+          card.appendChild(img);
+          card.appendChild(title);
+          card.onclick = () => openTvShowDetails(channel, genre);
+          container.appendChild(card);
+        });
+      } else {
+        container.innerHTML = "<p>No TV channels available for this genre.</p>";
+      }
+    }
+
+    /********************************************
+     * Genre Click Event Listeners               *
+     ********************************************/
+    // For both genre buttons and icons.
+    const genreButtons = document.querySelectorAll(".genre-item, .genre-icon");
+    genreButtons.forEach(item => {
+      item.addEventListener("click", () => {
+        const genre = item.getAttribute("data-genre");
+        renderTVChannels(genre);
+      });
+    });
+    
+        // Wait until the DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the current file name from the URL (default to home.html if empty)
+      var path = window.location.pathname.split("/").pop();
+      if (path === '') {
+        path = 'ho.html';
+      }
+      
+      // Select all nav links inside the navbar
+      var navLinks = document.querySelectorAll('nav.navbar .nav-link');
+      
+      // Loop through each nav link and add active class if href matches current path
+      navLinks.forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href === path) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    });
+    
+    // Hide/Show bottom navigation based on scroll direction
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', () => {
+      let st = window.pageYOffset || document.documentElement.scrollTop;
+      const nav = document.getElementById('bottom-nav');
+      if (st > lastScrollTop) {
+        // Scrolling down: hide nav
+        nav.style.transform = 'translateY(100%)';
+      } else {
+        // Scrolling up: show nav
+        nav.style.transform = 'translateY(0)';
+      }
+      lastScrollTop = st <= 0 ? 0 : st;
+    });
+  </script>
+</body>
+</html>

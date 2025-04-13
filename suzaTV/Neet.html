@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neet channel</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      background-color: #111;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .content-section {
+      padding: 20px;
+      max-width: 960px;
+      margin: 15px auto;
+      background-color: #000;
+      border-radius: 5px;
+    }
+    .content-section h2 {
+      color: #ff0000;
+      border-bottom: 1px solid #555;
+      padding-bottom: 5px;
+      margin-top: 0;
+    }
+    .content-section img {
+      border-radius: 20px;
+      width: 80px;
+      height: 80px;
+    }
+    .content-section p, .content-section ul {
+      color: #ccc;
+      line-height: 1.6;
+    }
+    .content-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .content-section li {
+      padding: 5px 0;
+      border-bottom: 1px dotted #444;
+    }
+     .content-section li:last-child {
+        border-bottom: none;
+     }
+  </style>
+</head>
+<body>
+
+
+  <div class="video-container" id="videoContainer">
+    <iframe
+      src="https://www.yupptv.com/yupptvnew/channels/neet-crash-course/live/embed"
+      frameborder="0"
+      allowfullscreen
+      sandbox="allow-scripts allow-same-origin allow-presentation"
+      title="turito">
+    </iframe>
+    </div>
+
+  <div class="content-section">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfi4HfYCTBDc7yP1otRlF5ua0GX9pVDTflgA&s" alt="turito"/>
+    <h2>About Turito</h2>
+    
+    <p>
+      Recognizing the Discrepancies in our Education system and the complications involved in providing it to everyone at affordable pricing, Turito embarked into the stream of Online Coaching with the Top-Notch Faculty. Our aim is to bring a balance in the realm of Live Online Learning as today, only few students or coaching centres have access to the best teachers. We at Turito want to ensure, all the aspiring students across various countries get access to the Top Rankers’ Faculty at an affordable price.
+    </p>
+  </div>
+
+  <div class="content-section">
+    <h2>loading.... </h2>
+
+  </div>
+
+  <script>
+    const fullscreenButton = document.getElementById('fullscreenBtn');
+    const videoContainer = document.getElementById('videoContainer');
+    const fullscreenIcon = document.getElementById('fullscreenIcon');
+
+    // Function to attempt locking screen to landscape
+    async function lockOrientation() {
+      try {
+        // Check if screen.orientation and lock method exist
+        if (screen.orientation && typeof screen.orientation.lock === 'function') {
+          await screen.orientation.lock('landscape');
+          // console.log("Screen orientation lock requested: landscape.");
+        } else {
+          // console.log("Screen Orientation API or lock() method not supported.");
+        }
+      } catch (error) {
+        // Log error only if it's not the expected NotSupportedError or SecurityError
+        if (error.name !== 'NotSupportedError' && error.name !== 'SecurityError') {
+             console.error("Could not lock screen orientation:", error);
+        } else {
+            // console.log("Orientation lock failed (likely due to device settings or browser restrictions).");
+        }
+      }
+    }
+
+    // Function to unlock screen orientation
+    function unlockOrientation() {
+      try {
+         if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+            screen.orientation.unlock();
+            // console.log("Screen orientation unlocked.");
+         }
+      } catch (error) {
+          // console.error("Could not unlock screen orientation:", error);
+          // Silently fail if unlock isn't supported or needed
+      }
+    }
+
+    // Function to enter fullscreen
+    async function goFullscreen() {
+      await lockOrientation(); // Attempt to lock orientation first
+
+      try {
+          if (videoContainer.requestFullscreen) {
+            await videoContainer.requestFullscreen();
+          } else if (videoContainer.webkitRequestFullscreen) { /* Safari */
+            await videoContainer.webkitRequestFullscreen();
+          } else if (videoContainer.msRequestFullscreen) { /* IE11 */
+            await videoContainer.msRequestFullscreen();
+          }
+      } catch (err) {
+          console.error("Error entering fullscreen:", err);
+          // If fullscreen failed, unlock orientation immediately
+          unlockOrientation();
+      }
+    }
+
+    // Function to exit fullscreen
+    async function exitFullscreen() {
+       // No need to call unlockOrientation() here,
+       // the 'fullscreenchange' handler takes care of it reliably.
+      try {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) { /* Safari */
+            await document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) { /* IE11 */
+            await document.msExitFullscreen();
+          }
+      } catch (err) {
+           console.error("Error exiting fullscreen:", err);
+      }
+    }
+
+    // Toggle fullscreen on button click
+    fullscreenButton.addEventListener('click', () => {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) { // Check across prefixes
+        goFullscreen(); // No need for .catch here as it's handled inside goFullscreen
+      } else {
+        exitFullscreen(); // No need for .catch here as it's handled inside exitFullscreen
+      }
+    });
+
+    // Update icon based on actual fullscreen state changes
+    function handleFullscreenChange() {
+        const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement); // Check across prefixes
+
+        if (isFullscreen) {
+            // Entered fullscreen
+            fullscreenIcon.classList.remove('bi-arrows-fullscreen');
+            fullscreenIcon.classList.add('bi-fullscreen-exit');
+            fullscreenButton.setAttribute('title', 'Exit Fullscreen');
+        } else {
+            // Exited fullscreen
+            fullscreenIcon.classList.remove('bi-fullscreen-exit');
+            fullscreenIcon.classList.add('bi-arrows-fullscreen');
+            fullscreenButton.setAttribute('title', 'Enter Fullscreen');
+            unlockOrientation(); // Ensure orientation is unlocked when fullscreen is exited
+        }
+    }
+
+    // Listen for standard and vendor-prefixed fullscreen change events
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+  </script>
+
+</body>
+</html>
