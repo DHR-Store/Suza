@@ -195,6 +195,10 @@
             <span><i class="bi bi-music-note"></i>SUZA-Music-Player</span>
             <i class="bi bi-chevron-right"></i>
         </div>
+        <div class="setting-item" id="SUZA-TV">
+            <span><i class="bi bi-tv"></i>SUZA-TV</span>
+            <i class="bi bi-chevron-right"></i>
+        </div>
     </div>
 
     <!-- Privacy Policy Modal -->
@@ -211,7 +215,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('aboutModal')">&times;</span>
             <h2>About</h2>
-            <p>Made by <strong>Gojo Satoru</strong></p>
+            <p>view <strong>GitHub</strong></p>
         </div>
     </div>
 
@@ -276,6 +280,9 @@
 });
         document.getElementById("SUZA").addEventListener("click", function () {
     window.location.href = "home.html";
+});
+        document.getElementById("SUZA-TV").addEventListener("click", function () {
+    window.location.href = "suzaTV/suzatvhome.html";
 });
             
       // Wait until the DOM is loaded
