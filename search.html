@@ -563,7 +563,36 @@ function showSuggestions() {
       }
     });
   });
-    
+    function performSearch() {
+    const query = $("#searchInput").val().trim();
+    if (!query) return;
+
+    // Load or init search history
+    let history = JSON.parse(localStorage.getItem("searchHistory")) || [];
+    // Remove if it already exists, then add to front
+    history = history.filter(item => item !== query);
+    history.unshift(query);
+    localStorage.setItem("searchHistory", JSON.stringify(history));
+
+    // Redirect to your results page
+    window.location.href = `results.html?query=${encodeURIComponent(query)}`;
+  }
+
+  // Call performSearch when the Enter (search) key is pressed
+  $("#searchInput").on("keydown", function(e) {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      // Prevent the default action if needed (like form submission)
+      e.preventDefault();
+      performSearch();
+    }
+  });
+
+  // Rest of your existing code...
+  
+  // Show suggestions as before
+  $("#searchInput").on("input", showSuggestions);
+
+  // ... (rest of your code remains unchanged)
     
   </script>
 </body>
