@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+a<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -310,6 +310,7 @@ body {
     <div class="genre-item" data-genre="news">News</div>
     <div class="genre-item" data-genre="kids">Kids</div>
     <div class="genre-item" data-genre="music">Music</div>
+    <div class="genre-item" data-genre="tv">TV Show</div>
     <div class="genre-item" data-genre="dd">DD</div>
     <div class="genre-item" data-genre="student">Student Special</div>
     <div class="genre-item" data-genre="sport">Sport</div>
@@ -493,6 +494,9 @@ fetchTVShowInfo();
         { name: "9xm", card: "9xm hits and live performances.", image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/9xm-1605958350966.png" },
         { name: "Mastiii", card: "Concerts and music videos streaming.", image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/1708092659037.png" }
       ],
+      tv: [
+        { name: "Sony Pal", card: "all Sony Pal content here", image: "https://static.wikia.nocookie.net/logopedia/images/e/ec/SONY_PAL_LOGO.png/revision/latest?cb=20221023220705"}
+      
       dd: [
         { name: "DD India", card: "DD India", image: "https://d229kpbsb5jevy.cloudfront.net/bott/content/channels/logos/dd-india-1701853358871.png" },
         { name: "DDkishan", card: "Special documentaries and events.", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1rlhkpd6FAIS_lKbOA44-nGMsmleXwe_fAw&s" }
@@ -622,7 +626,8 @@ renderRecentlyUsed();
   "neet": "Neet.html",
   "ndtv india": "ndtv India.html",
   "cartooN": "cartooN.html",
-  "tata ipl": "TATA IPL.html"
+  "tata ipl": "TATA IPL.html",
+  "sony pal": "Sony Pal.html"
 };
       const channelLower = channel.name.toLowerCase();
       if (specialRedirects[channelLower]) {
