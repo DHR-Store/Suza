@@ -328,6 +328,13 @@
   color: cyan;
   font-weight: bold;
           }
+        #notification {
+      position: fixed;
+      bottom: 40px;
+      right: 20px;
+      z-index: 1050;
+      min-width: 255px;
+        }
   </style>
 </head>
 
@@ -414,6 +421,17 @@
       <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
     </div>
   </nav>
+      <!-- Notification card -->
+  <div id="notification" class="alert alert-success alert-dismissible fade show" role="alert">
+    <!-- Bootstrap TV icon -->
+    <i class="bi bi-tv"></i> 
+    SUZA TV for watch your favourite News and TV Show channel
+    <!-- Button that navigates to hh.html -->
+    <button type="button" class="btn btn-light btn-sm" id="try-btn">Try</button>
+    <!-- Close button for the alert -->
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  
 
     <!-- Bootstrap JS Bundle (includes Popper) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -721,6 +739,25 @@ async function fetchHeroMovies() {
       updateSection("web-series-scroll", "series");
       updateSection("tv-shows-scroll", "drama");
     }, 60000);
+         // When the page loads, start the timeout to auto-dismiss the notification after 5 seconds.
+    window.addEventListener("load", function() {
+      setTimeout(function() {
+        var notification = document.getElementById("notification");
+        if (notification) {
+          // Use Bootstrap's alert API to close the notification gracefully.
+          var alertInstance = bootstrap.Alert.getInstance(notification);
+          if (!alertInstance) {
+            alertInstance = new bootstrap.Alert(notification);
+          }
+          alertInstance.close();
+        }
+      }, 4000); // 5000 milliseconds = 5 seconds
+    });
+    
+    // Add click event for the Try button to open 'hh.html'
+    document.getElementById("try-btn").addEventListener("click", function() {
+      window.location.href = "suzatv/suzatvhome.html";
+    });
   </script>
 </body>
 </html>
