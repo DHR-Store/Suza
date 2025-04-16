@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Discovery</title>
+  <!-- Include Bootstrap CSS and Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #000; /* Dark background */
+      color: #fff;
+    }
+    /* Responsive grid layout for video cards */
+    .playlist-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 8px;
+      padding: 10px;
+    }
+    .video-item {
+      cursor: pointer;
+      text-align: center;
+    }
+    /* Responsive image size for thumbnails */
+    .video-item img {
+      width: 100%;
+      max-width: 149px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      transition: transform 0.2s;
+      display: block;
+      margin: 0 auto;
+    }
+    .video-item img:hover {
+      transform: scale(1.05);
+    }
+    /* Truncate video title text */
+    .video-item p {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 149px;
+      margin: 0.5rem auto 0;
+    }
+    /* Full-screen overlay for video playback */
+    .video-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    .video-overlay iframe {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+    }
+    /* Controls container (Bootstrap buttons with icons) */
+    .controls {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 1010;
+      display: flex;
+      gap: 10px;
+      transition: opacity 0.3s ease;
+    }
+    .controls.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .controls button {
+      margin-left: 10px;
+    }
+    /* Media query adjustments for smaller screens */
+    @media (max-width: 600px) {
+      .playlist-container {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      }
+      .video-item img {
+        max-width: 100px;
+      }
+      .video-item p {
+        max-width: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="playlist-container" id="playlist"></div>
+  <!-- Container for the Load More button -->
+  <div id="loadMoreContainer" class="text-center my-3"></div>
+
+  <div class="video-overlay" id="videoOverlay">
+    <div class="controls" id="controls">
+      <!-- Toggle Mini Mode Button -->
+      <button id="miniBtn" class="btn btn-secondary" title="Toggle Mini Mode">
+        <i class="bi bi-arrows-angle-contract"></i>
+      </button>
+      <!-- Picture-in-Picture Button -->
+      <button id="pipBtn" class="btn btn-secondary" title="Picture in Picture">
+        <i class="bi bi-picture-in-picture"></i>
+      </button>
+      <!-- Exit Button -->
+      <button id="exitBtn" class="btn btn-secondary" title="Exit Fullscreen">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <!-- YouTube IFrame Player -->
+    <iframe id="player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <!-- Include the YouTube IFrame API script -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    // Configuration – replace with your own API key and playlist id.
+    const API_KEY = 'AIzaSyBTpP0-7enNqizPGetb_2G5Km_pKdguNF8';
+    const PLAYLIST_ID = 'PLzufeTFnhupzpgANBPaZD2B4hqOj5lC3F';
+    const MAX_RESULTS = 50; // Number of items to load per API call
+
+    const playlistContainer = document.getElementById('playlist');
+    const loadMoreContainer = document.getElementById('loadMoreContainer');
+    const videoOverlay = document.getElementById('videoOverlay');
+    const playerIframe = document.getElementById('player');
+    const exitBtn = document.getElementById('exitBtn');
+    const pipBtn = document.getElementById('pipBtn');
+    const miniBtn = document.getElementById('miniBtn');
+    const controls = document.getElementById('controls');
+
+    let isMini = false;
+    let hideControlsTimer = null;
+    const CONTROLS_HIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
+    let nextPageToken = ""; // To hold the token for the next page of results
+
+    // Fetch playlist items using the YouTube Data API v3.
+    async function fetchPlaylistItems(pageToken = "") {
+      let endpoint = `https://www.googleapis.com/youtube/v3/playlistItems?` +
+                     `part=snippet&maxResults=${MAX_RESULTS}&playlistId=${PLAYLIST_ID}&key=${API_KEY}`;
+      if (pageToken) {
+        endpoint += `&pageToken=${pageToken}`;
+      }
+      try {
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        // Append new items to the playlist container.
+        displayPlaylist(data.items);
+        // Update nextPageToken and manage the Load More button.
+        nextPageToken = data.nextPageToken || "";
+        updateLoadMoreButton();
+      } catch (error) {
+        console.error('Error fetching playlist data:', error);
+      }
+    }
+
+    // Render each video as a clickable item in the grid.
+    function displayPlaylist(items) {
+      items.forEach(item => {
+        const videoId = item.snippet.resourceId.videoId;
+        const title = item.snippet.title;
+        // Truncate title to show only up to 50 characters.
+        const truncatedTitle = title.length > 50 ? title.slice(0, 50) + "..." : title;
+        const thumbnail = item.snippet.thumbnails.medium.url;
+
+        const videoDiv = document.createElement('div');
+        videoDiv.classList.add('video-item');
+        videoDiv.innerHTML = `
+          <img src="${thumbnail}" alt="${title}">
+          <p>${truncatedTitle}</p>
+        `;
+        videoDiv.addEventListener('click', () => playVideo(videoId));
+        playlistContainer.appendChild(videoDiv);
+      });
+    }
+
+    // Manage the display of the Load More button.
+    function updateLoadMoreButton() {
+      // Clear container first.
+      loadMoreContainer.innerHTML = "";
+      if (nextPageToken) {
+        const button = document.createElement('button');
+        button.className = 'btn btn-secondary';
+        button.title = 'Load more videos';
+        // Using a Bootstrap icon for the button.
+        button.innerHTML = '<i class="bi bi-arrow-down-circle"></i>';
+        button.addEventListener('click', () => {
+          fetchPlaylistItems(nextPageToken);
+        });
+        loadMoreContainer.appendChild(button);
+      }
+    }
+
+    // Function to play the selected video.
+    function playVideo(videoId) {
+      playerIframe.src = `https://www.youtube.com/embed/${videoId}?playsinline=1&autoplay=1`;
+      // Reset overlay to full screen for new video
+      videoOverlay.style.position = '';
+      videoOverlay.style.top = '0';
+      videoOverlay.style.left = '0';
+      videoOverlay.style.width = '100%';
+      videoOverlay.style.height = '100%';
+      isMini = false;
+      miniBtn.innerHTML = '<i class="bi bi-arrows-angle-contract"></i>';
+
+      videoOverlay.style.display = 'flex';
+      // Ensure controls are visible when starting playback.
+      showControls();
+
+      // Optionally request full screen
+      if (videoOverlay.requestFullscreen) {
+        videoOverlay.requestFullscreen();
+      } else if (videoOverlay.webkitRequestFullscreen) {
+        videoOverlay.webkitRequestFullscreen();
+      } else if (videoOverlay.msRequestFullscreen) {
+        videoOverlay.msRequestFullscreen();
+      }
+    }
+
+    // Exit full-screen and hide the overlay.
+    function exitFullscreen() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+      videoOverlay.style.display = 'none';
+      playerIframe.src = '';
+    }
+
+    // Toggle Picture-in-Picture mode.
+    async function togglePictureInPicture() {
+      try {
+        if (document.pictureInPictureElement) {
+          await document.exitPictureInPicture();
+        } else if (playerIframe.requestPictureInPicture) {
+          await playerIframe.requestPictureInPicture();
+        } else {
+          alert('Picture-in-Picture is not supported in this browser for the embedded video.');
+        }
+      } catch (err) {
+        console.error('Error with Picture-in-Picture:', err);
+      }
+    }
+
+    // Toggle between full overlay and mini floating window.
+    function toggleMiniMode() {
+      if (!isMini) {
+        // Exit fullscreen mode if active.
+        if (document.fullscreenElement) {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+        // Change the video overlay to a small floating window.
+        videoOverlay.style.position = 'fixed';
+        // Adjust these values as needed for best placement on Android
+        videoOverlay.style.top = '450px';
+        videoOverlay.style.left = '165px';
+        videoOverlay.style.width = '180px';
+        videoOverlay.style.height = '180px';
+        videoOverlay.style.zIndex = '1050';
+        isMini = true;
+        miniBtn.innerHTML = '<i class="bi bi-fullscreen"></i>';
+        // Start timer to hide controls after a delay.
+        resetControlsHideTimer();
+      } else {
+        // Restore to full window.
+        videoOverlay.style.position = '';
+        videoOverlay.style.top = '0';
+        videoOverlay.style.left = '0';
+        videoOverlay.style.width = '100vw';
+        videoOverlay.style.height = '100vh';
+        isMini = false;
+        miniBtn.innerHTML = '<i class="bi bi-arrows-angle-contract"></i>';
+        // Ensure controls remain visible in full mode.
+        showControls();
+        clearHideControlsTimer();
+      }
+    }
+
+    // Show the control buttons.
+    function showControls() {
+      controls.classList.add('show');
+    }
+
+    // Clear any existing timer.
+    function clearHideControlsTimer() {
+      if (hideControlsTimer) {
+        clearTimeout(hideControlsTimer);
+        hideControlsTimer = null;
+      }
+    }
+
+    // Reset the timer that hides the controls.
+    function resetControlsHideTimer() {
+      clearHideControlsTimer();
+      // Only start timer in mini mode.
+      if (isMini) {
+        hideControlsTimer = setTimeout(() => {
+          controls.classList.remove('show');
+        }, CONTROLS_HIDE_DELAY);
+      }
+    }
+
+    // Event listeners.
+    exitBtn.addEventListener('click', exitFullscreen);
+    pipBtn.addEventListener('click', togglePictureInPicture);
+    miniBtn.addEventListener('click', () => {
+      showControls();
+      resetControlsHideTimer();
+      toggleMiniMode();
+    });
+
+    // Show controls on overlay click (except when clicking the control buttons).
+    videoOverlay.addEventListener('click', (e) => {
+      if (e.target.closest('.controls')) return;
+      if (isMini) {
+        showControls();
+        resetControlsHideTimer();
+      }
+    });
+
+    // Listen for full-screen change events.
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement && !isMini) {
+        videoOverlay.style.display = 'none';
+        playerIframe.src = '';
+      }
+    });
+
+    // Initialize the playlist when the page loads.
+    fetchPlaylistItems();
+
+    // Optional: Listen for orientation changes on mobile devices.
+    window.addEventListener("orientationchange", () => {
+      console.log("Orientation changed to: ", window.orientation);
+    });
+  </script>
+</body>
+</html>

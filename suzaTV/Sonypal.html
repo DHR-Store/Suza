@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Sony Entertainment Channels</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #000; /* Black background */
+      font-family: Arial, sans-serif;
+      color: #fff;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .channel {
+      width: calc(33.333% - 10px); /* Three per row with gap adjustment */
+      margin-bottom: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+    }
+    .channel:hover {
+      transform: scale(1.05);
+    }
+    .channel img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 5px;
+    }
+    .channel-name {
+      margin-top: 10px;
+      font-size: 1rem;
+    }
+    /* Responsive for smaller screens */
+    @media (max-width: 480px) {
+      .channel {
+        width: calc(50% - 10px); /* Two per row for very small devices */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Channel 1 -->
+    <div class="channel" onclick="window.location.href='oldtmkoc.html'">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSb5uro0WoIa5dgyb4qJ3vZqagAtdyRXRJQjaTEZVQXgF1KACnGmF2_Sy2L&s=10" alt="Sony Entertainment Television Logo">
+      <div class="channel-name">TMKOC</div>
+      </div>
+          <div class="channel" onclick="window.location.href='CID.html'">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbqAWSGW7koZOnVBRTiSgIGVk6LX0fHb3nXbsVuXq8K7umSA6FG5Vn0PY&s=10" alt="Sony Entertainment Television Logo">
+      <div class="channel-name">CID</div>
+    </div>
+    <div class="channel" onclick="window.location.href='Baalveer old.html'">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiG84FIzcLDZpvYcFQn_OndI94wKIPYYdn3ZER_fw62yzTmpfbMUoXR1mM&s=10" alt="Sony Entertainment Television Logo">
+      <div class="channel-name">Baalveer 1</div>
+    </div>
+      <div class="channel" onclick="window.location.href='Baalveer new.html'">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJDLUpjwBWmqZSaQwfJ8jvYaCUp35i7k9UgnrHU1x85n8w4_f16645HJ8&s=10" alt="Sony Entertainment Television Logo">
+      <div class="channel-name">Baalveer 2</div>
+    </div>
+    
+      <div class="channel" onclick="window.location.href='Ek rista aisa bhi.html'">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPXfwDUOn0qYugzBHy8_6azXAhv8k1Aax0dflSLLGZeY7T4K9TQg0uibE&s=10" alt="Sony Entertainment Television Logo">
+      <div class="channel-name">Ek rista Aisa bhi</div>
+    </div>
+  </div>
+</body>
+</html>
