@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manga Home</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+
+  <style>
+    /* Custom Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    /* Using a specific weight for bold elements if needed */
+    /* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap'); */ /* Example if needed */
+
+    * {
+      font-family: 'Poppins', sans-serif;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body.bg-dark {
+      background-color: #121212; /* Slightly softer black often used in dark modes */
+      color: #e0e0e0; /* Light grey for better readability than pure white */
+      -webkit-user-select: none; /* Chrome, Safari */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* IE10+ */
+      user-select: none;         /* Standard syntax */
+    }
+    /* Hero Section & Carousel Styling */
+    .hero {
+      position: relative;
+      height: 60vh; /* Consider using vh or aspect-ratio */
+      background: #000; /* Fallback color */
+      color: white;
+      overflow: hidden;
+    }
+    .trending-carousel {
+      display: flex;
+      transition: transform 0.5s ease-in-out; /* Smoother transition */
+      width: 100%;
+      height: 100%;
+    }
+    .manga-slide {
+      min-width: 100%;
+      height: 100%;
+      position: relative;
+      text-align: center;
+      background: #222; /* Background while image loads */
+    }
+    .manga-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.6; /* Slightly less opaque for better text contrast */
+    }
+    .manga-slide .slide-content {
+      position: absolute;
+      bottom: 40px; /* Increased spacing */
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7); /* Darker overlay */
+      padding: 15px 30px; /* More padding */
+      border-radius: 8px; /* Slightly larger radius */
+      max-width: 90%; /* Prevent text from touching edges */
+    }
+    .manga-slide h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.5em, 4vw, 2.2em); /* Responsive font size */
+      font-weight: 600;
+    }
+    .manga-slide button {
+      padding: 10px 18px; /* Larger button */
+      font-size: 1em;
+      font-weight: 600;
+      background: #ff4b2b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+     .manga-slide button:hover {
+         background-color: #e73e1a;
+     }
+    /* Carousel Navigation */
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+      z-index: 2;
+      padding: 0 10px; /* Add some padding */
+    }
+    .carousel-nav button {
+      background: rgba(0, 0, 0, 0.6);
+      border: none;
+      color: white;
+      font-size: 2.5em; /* Larger icons */
+      padding: 5px 12px; /* Adjust padding for size */
+      cursor: pointer;
+      border-radius: 50%;
+      /* margin: 0 10px; */ /* Padding on parent is better */
+      line-height: 1; /* Ensure icon is centered vertically */
+       transition: background-color 0.2s ease;
+    }
+    .carousel-nav button:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    /* Recommendations Section */
+    .recommendations {
+      padding: 25px 15px; /* More vertical padding */
+      background-color: #121212; /* Match body background */
+    }
+    .recommendations h2 {
+      text-align: left; /* Align section titles left */
+      margin-bottom: 15px;
+      padding-left: 5px; /* Align with card padding */
+      font-size: 1.5em;
+      font-weight: 600;
+      color: #e0e0e0;
+    }
+    .cards {
+      display: flex;
+      /* flex-direction: row; */ /* Default */
+      gap: 15px; /* Slightly less gap */
+      overflow-x: auto;
+      padding: 10px 5px; /* Add padding for scrollbar space and visual */
+      /* Hide scrollbar visually but keep functionality */
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .cards::-webkit-scrollbar { /* Chrome, Safari, Opera */
+        display: none;
+    }
+    .manga-card {
+      min-width: 180px; /* Adjust card width */
+      max-width: 180px;
+      background: #2a2a2a; /* Darker card background */
+      border-radius: 8px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
+      text-align: left; /* Align text left */
+      overflow: hidden;
+      transition: transform 0.2s ease-out;
+      flex-shrink: 0;
+      color: #e0e0e0;
+    }
+    .manga-card:hover {
+      transform: translateY(-5px); /* Lift effect on hover */
+      box-shadow: 0px 6px 12px rgba(0,0,0,0.4);
+    }
+    .manga-card img {
+      width: 100%;
+      height: 250px; /* Adjust height */
+      object-fit: cover;
+      display: block; /* Remove potential bottom space */
+    }
+     .card-content { /* Wrapper for text */
+         padding: 10px;
+     }
+    .manga-card h3 {
+      /* padding: 10px; */ /* Moved to card-content */
+      font-size: 1em; /* Adjust font size */
+      margin: 0 0 8px 0; /* Add margin bottom */
+      font-weight: 600;
+      /* Truncate long titles */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .manga-card button {
+      padding: 6px 12px;
+      font-size: 0.9em; /* Smaller font size */
+      background: #ff4b2b;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      /* margin-bottom: 10px; */ /* Moved to card-content */
+      display: block; /* Make button take full width */
+      width: 100%;
+      text-align: center;
+      transition: background-color 0.2s ease;
+    }
+    .manga-card button:hover {
+      background: #e73e1a;
+    }
+
+    /* Bottom Navigation Bar */
+    nav.navbar {
+      background: rgba(30, 30, 30, 0.85); /* Darker transparent background */
+      backdrop-filter: blur(10px);
+      position: fixed;
+      bottom: 0;
+      left: 0; /* Ensure it starts from the left edge */
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0; /* Adjust padding */
+      border-top: 1px solid #444;
+      transition: transform 0.3s ease-in-out; /* Smoother transition */
+      z-index: 1000; /* Ensure it's above other content */
+    }
+    .nav-link {
+      text-align: center;
+      color: #b0b0b0; /* Dimmer inactive color */
+      transition: transform 0.2s ease, color 0.2s ease;
+      padding: 5px;
+      border-radius: 8px;
+      font-size: 12px; /* Smaller text if needed */
+      text-decoration: none; /* Remove underline */
+      flex-grow: 1; /* Ensure items take up equal space */
+    }
+    .nav-link i {
+      font-size: 22px; /* Adjust icon size */
+      margin-bottom: 2px; /* Space between icon and text (if any) */
+    }
+    .nav-link:hover {
+      color: #ffffff; /* White on hover */
+      /* transform: scale(1.1); */ /* Scaling can cause layout shifts, maybe avoid */
+    }
+    .nav-link.active {
+      color: cyan; /* Keep cyan for active */
+      font-weight: bold; /* Make active link bold */
+    }
+    /* Add space at the bottom of the body to prevent content from being hidden by the nav bar */
+    body {
+        padding-bottom: 70px; /* Adjust based on nav bar height */
+    }
+  </style>
+</head>
+<body class="bg-dark text-light">
+
+  <section class="hero">
+    <div class="carousel-nav">
+      <button id="prevBtn" aria-label="Previous Slide">&#8249;</button>
+      <button id="nextBtn" aria-label="Next Slide">&#8250;</button>
+    </div>
+    <div class="trending-carousel" id="trendingCarousel">
+      <div class="manga-slide"><div class="slide-content"><h2>Loading Trending...</h2></div></div>
+    </div>
+  </section>
+
+  <section class="recommendations">
+    <h2>War sci-fi</h2>
+    <div class="cards" id="recommendedCards">
+      <p style="padding-left: 10px;">Loading recommendations...</p>
+    </div>
+  </section>
+
+   <section class="recommendations">
+    <h2>High school</h2>
+    <div class="cards" id="highCards">
+      <p style="padding-left: 10px;">Loading recommendations...</p>
+    </div>
+  </section>
+
+    <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="index.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br>Home</a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br>Search</a>
+      <a href="favour.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br>Favorites</a>
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i><br>Settings</a>
+    </div>
+  </nav>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    // Wait until the DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        activateCurrentNavLink(); // Set active link
+        loadTrendingManga();
+        loadRecommendedManga();
+        // *** TODO: Add a function call here to load 'high school' manga if needed ***
+        // loadHighSchoolManga();
+    });
+
+    // Function to set the active state on the correct nav link
+    function activateCurrentNavLink() {
+        var pathSegments = window.location.pathname.split('/');
+        var filename = pathSegments.pop() || 'index.html'; // Get filename, default to index.html if path ends in /
+
+        // If you didn't rename manga.html to index.html, adjust the default:
+        // var filename = pathSegments.pop() || 'manga.html';
+
+        var navLinks = document.querySelectorAll('nav.navbar .nav-link');
+
+        navLinks.forEach(function(link) {
+            var linkHref = link.getAttribute('href');
+            // Check if the link's href ends with the current filename
+            // This handles cases where href might have relative paths './'
+             if (linkHref && linkHref.endsWith(filename)) {
+                 link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+
+      // Hide/Show bottom navigation based on scroll direction
+    let lastScrollTop = 0;
+    const nav = document.getElementById('bottom-nav');
+    window.addEventListener('scroll', () => {
+      // Add a small threshold to prevent hiding on minor scrolls
+      const scrollThreshold = 5;
+      let st = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (Math.abs(st - lastScrollTop) <= scrollThreshold) {
+          return; // Ignore minor scrolls
+      }
+
+      if (st > lastScrollTop && st > nav.offsetHeight) { // Only hide if scrolled down past nav height
+        // Scrolling down: hide nav
+        nav.style.transform = 'translateY(100%)';
+      } else {
+        // Scrolling up or near top: show nav
+        nav.style.transform = 'translateY(0)';
+      }
+      // For Mobile or negative scrolling (pull-down refresh), ensure nav is shown
+      lastScrollTop = st <= 0 ? 0 : st;
+    }, { passive: true }); // Use passive listener for better scroll performance
+
+
+    // Helper function to build cover art URL
+    function getCoverUrl(manga) {
+      const cover = manga.relationships?.find(rel => rel.type === 'cover_art');
+      if (cover?.attributes?.fileName) {
+        // Construct the URL for a medium-quality cover
+        return `https://uploads.mangadex.org/covers/${manga.id}/${cover.attributes.fileName}.512.jpg`;
+      }
+      // Fallback placeholder image
+      return 'https://via.placeholder.com/180x250/CCCCCC/FFFFFF?text=No+Cover';
+    }
+
+    // Read button function: redirect to reader.html with manga id in query string
+    // *** Ensure reader.html is in the same directory ***
+    function readManga(mangaId) {
+        if (!mangaId) {
+            console.error("Manga ID is missing.");
+            return;
+        }
+      window.location.href = `reader.html?id=${mangaId}`;
+    }
+
+    // Sanitize text function (basic example)
+    function sanitizeHTML(str) {
+        const temp = document.createElement('div');
+        temp.textContent = str;
+        return temp.innerHTML;
+    }
+
+
+    // Trending Manga Carousel
+    async function loadTrendingManga() {
+      const carousel = document.getElementById('trendingCarousel');
+      carousel.innerHTML = ''; // Clear loading indicator
+      try {
+        const response = await axios.get('https://api.mangadex.org/manga', {
+          params: {
+            limit: 7, // Limit to a reasonable number for carousel
+            'order[followedCount]': 'desc',
+            'includes[]': 'cover_art',
+            'contentRating[]': ['safe', 'suggestive'] // Optional: filter content rating
+          }
+        });
+        const trendingMangas = response.data.data;
+        if (trendingMangas.length === 0) {
+             carousel.innerHTML = '<div class="manga-slide"><div class="slide-content"><h2>No Trending Manga Found</h2></div></div>';
+             return;
+        }
+
+        trendingMangas.forEach(manga => {
+          const title = manga.attributes.title.en || Object.values(manga.attributes.title)[0] || 'No Title Available'; // Fallback title logic
+          const coverUrl = getCoverUrl(manga);
+          // Create a slide for each manga
+          const slide = document.createElement('div');
+          slide.className = 'manga-slide';
+          // Use textContent for safety, or sanitize if HTML is needed
+          slide.innerHTML = `
+            <img src="${coverUrl}" alt="${sanitizeHTML(title)} Cover" loading="lazy">
+            <div class="slide-content">
+              <h2>${sanitizeHTML(title)}</h2>
+              <button onclick="readManga('${manga.id}')">Read Now</button>
+            </div>
+          `;
+          carousel.appendChild(slide);
+        });
+        initializeCarousel();
+      } catch (error) {
+        console.error("Error loading trending manga:", error);
+        carousel.innerHTML = '<div class="manga-slide"><div class="slide-content"><h2>Could not load trending manga</h2></div></div>';
+      }
+    }
+
+    // Recommended Manga: Fetch data for specific titles (War Sci-Fi)
+    async function loadRecommendedManga() {
+      // Example titles - Choose titles relevant to "War Sci-Fi"
+      const recommendedTitles = [
+        "Attack on Titan", // Example
+        "86 - Eighty Six", // Example
+        "Gundam Thunderbolt", // Example
+        "Knights of Sidonia", // Example
+        "All You Need Is Kill" // Example (Edge of Tomorrow source)
+      ];
+      const recommendedCardsContainer = document.getElementById('recommendedCards');
+      recommendedCardsContainer.innerHTML = ''; // Clear loading indicator
+      let foundCount = 0;
+
+      // Use Promise.all for concurrent fetching
+      const fetchPromises = recommendedTitles.map(titleQuery =>
+        axios.get('https://api.mangadex.org/manga', {
+          params: {
+            title: titleQuery,
+            limit: 1,
+            'includes[]': 'cover_art',
+            'contentRating[]': ['safe', 'suggestive', 'erotica'] // Adjust as needed
+          }
+        }).catch(error => {
+            console.error(`Error fetching '${titleQuery}':`, error.response ? error.response.data : error.message);
+            return null; // Return null on error to not break Promise.all
+        }) // Add basic error handling per title
+      );
+
+        try {
+            const results = await Promise.all(fetchPromises);
+            results.forEach(res => {
+                if (res && res.data.data.length > 0) {
+                    foundCount++;
+                    const manga = res.data.data[0];
+                    const title = manga.attributes.title.en || Object.values(manga.attributes.title)[0] || 'No Title Available';
+                    const coverUrl = getCoverUrl(manga);
+                    const card = document.createElement('div');
+                    card.className = 'manga-card';
+                    card.innerHTML = `
+                      <img src="${coverUrl}" alt="${sanitizeHTML(title)} Cover" loading="lazy">
+                      <div class="card-content">
+                          <h3>${sanitizeHTML(title)}</h3>
+                          <button onclick="readManga('${manga.id}')">Read</button>
+                      </div>
+                    `;
+                    recommendedCardsContainer.appendChild(card);
+                }
+            });
+
+             if (foundCount === 0) {
+                recommendedCardsContainer.innerHTML = '<p style="padding-left: 10px;">No recommendations found for this category.</p>';
+            }
+
+        } catch (error) {
+            // This catch block might not be reached if individual fetches handle errors,
+            // but good to have for Promise.all level issues.
+            console.error("Error loading recommendations batch:", error);
+            recommendedCardsContainer.innerHTML = '<p style="padding-left: 10px;">Could not load recommendations.</p>';
+        }
+    }
+
+
+    // *** TODO: Create a similar function 'loadHighSchoolManga' ***
+    // async function loadHighSchoolManga() {
+    //   const titles = ["Komi Can't Communicate", "Horimiya", ...];
+    //   const container = document.getElementById('highCards');
+    //   // ... rest of the logic similar to loadRecommendedManga ...
+    // }
+
+
+    // Carousel functionality
+    let currentSlide = 0;
+    let slideInterval; // To store the interval ID
+
+    function initializeCarousel() {
+      const carousel = document.getElementById('trendingCarousel');
+      const slides = carousel.querySelectorAll('.manga-slide');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+
+      if (slides.length <= 1) { // No need for controls/auto-slide if 0 or 1 slide
+          if(prevBtn) prevBtn.style.display = 'none';
+          if(nextBtn) nextBtn.style.display = 'none';
+          return;
+      } else {
+          if(prevBtn) prevBtn.style.display = 'block';
+          if(nextBtn) nextBtn.style.display = 'block';
+      }
+
+      function updateCarousel() {
+        const offset = -currentSlide * 100;
+        carousel.style.transform = `translateX(${offset}%)`;
+      }
+
+      function nextSlide() {
+          currentSlide = (currentSlide + 1) % slides.length;
+          updateCarousel();
+      }
+
+       function prevSlide() {
+           currentSlide = (currentSlide - 1 + slides.length) % slides.length; // Ensure positive index
+           updateCarousel();
+       }
+
+      if(prevBtn) {
+          prevBtn.removeEventListener('click', prevSlide); // Remove previous listener if any
+          prevBtn.addEventListener('click', () => {
+            prevSlide();
+            resetSlideInterval(); // Reset timer on manual navigation
+        });
+      }
+
+      if(nextBtn) {
+           nextBtn.removeEventListener('click', nextSlide); // Remove previous listener if any
+           nextBtn.addEventListener('click', () => {
+            nextSlide();
+            resetSlideInterval(); // Reset timer on manual navigation
+        });
+      }
+
+
+      // Auto-slide functionality
+      function startSlideInterval() {
+          clearInterval(slideInterval); // Clear existing interval before starting a new one
+          slideInterval = setInterval(nextSlide, 5000); // Slide every 5 seconds
+      }
+
+      function resetSlideInterval() {
+          clearInterval(slideInterval);
+          startSlideInterval();
+      }
+
+      // Initial setup
+      updateCarousel(); // Set initial position
+      startSlideInterval(); // Start auto-sliding
+    }
+
+  </script>
+</body>
+</html>
