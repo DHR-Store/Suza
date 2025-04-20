@@ -510,9 +510,7 @@ function applySandboxRestrictions(iframeElement) {
       'allow-fullscreen' // Make sure this matches the iframe's allowfullscreen attribute
     ];
 
-    // Set the sandbox attribute
-    iframeElement.setAttribute('sandbox', sandboxPermissions.join(' '));
-    console.log(`Applied sandbox restrictions: ${iframeElement.getAttribute('sandbox')}`);
+    
   }
 }
 
