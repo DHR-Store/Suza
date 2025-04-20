@@ -415,7 +415,7 @@
 
     document.addEventListener('DOMContentLoaded', function() {
     // Get all provider links
-    const providerLinks = document.querySelectorAll('.provider-link');
+  const providerLinks = document.querySelectorAll('.provider-link');
 
     // Retrieve saved active provider from localStorage (if any)
     const savedProvider = localStorage.getItem('activeProvider');
@@ -439,187 +439,177 @@
     });
   });    
     
-    
-    document.addEventListener("DOMContentLoaded", function() {
-      // TVMaze API endpoint for shows
-      const TVMAZE_API = "https://api.tvmaze.com/shows?page=1";
+    document.addEventListener("DOMContentLoaded", function () {
+  const TVMAZE_BASE_URL = "https://api.tvmaze.com/shows?page=";
+  const PAGES_TO_FETCH = 2;
 
-      let allShows = [];   // Array to store the full list of shows from TVMaze
-      let heroShows = [];  // Array for hero carousel (first 5 shows)
-      let heroIndex = 0;   // Current index in the heroShows array
-      let heroInterval;    // Interval reference for auto-play
+  let allShows = [];
+  let heroShows = [];
+  let heroIndex = 0;
+  let heroInterval;
 
-      // Variables for swipe detection
-      let touchStartX = 0;
-      let touchEndX = 0;
-      const swipeThreshold = 50; // Minimum distance (in pixels) to consider a swipe
+  let touchStartX = 0;
+  let touchEndX = 0;
+  const swipeThreshold = 50;
 
-        // Prevent default right-click/context menu on the entire document
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-    });
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.addEventListener("touchstart", e => {
+    if (e.touches.length > 1) e.preventDefault();
+  });
 
-    // Prevent long-press on touch devices from showing image preview
-    document.addEventListener('touchstart', function(e) {
-      if(e.touches.length > 1) {
-        e.preventDefault();
-      }
-    });
-
-      
-      // Fetch all shows from TVMaze API once
-      async function fetchAllShows() {
-        try {
-          const response = await fetch(TVMAZE_API, { mode: 'cors', cache: 'no-cache' });
-          const data = await response.json();
-          if (data && data.length > 0) {
-            allShows = data;
-            // Setup hero carousel using the first 5 shows
-            heroShows = allShows.slice(0, 5);
-            heroIndex = 0;
-            showHeroShow(heroIndex);
-            buildHeroDots();
-            if (heroInterval) clearInterval(heroInterval);
-            heroInterval = setInterval(() => {
-              heroIndex = (heroIndex + 1) % heroShows.length;
-              showHeroShow(heroIndex);
-            }, 5000);
-            // Update horizontal sections with different slices
-            updateSection("movies-scroll", 0, 10);
-            updateSection("anime-scroll", 10, 10);
-            updateSection("web-series-scroll", 20, 10);
-            updateSection("tv-shows-scroll", 30, 10);
-          }
-        } catch (error) {
-          console.error("Error fetching TVMaze shows:", error);
-        }
+  async function fetchAllShows(pages = 1) {
+    try {
+      const promises = [];
+      for (let i = 0; i < pages; i++) {
+        promises.push(fetch(`${TVMAZE_BASE_URL}${i}`, {
+          mode: 'cors',
+          cache: 'no-cache'
+        }).then(res => res.json()));
       }
 
-      // Build dot indicators for the hero carousel
-      function buildHeroDots() {
-        const dotsContainer = document.getElementById("hero-dots");
-        dotsContainer.innerHTML = "";
-        heroShows.forEach((show, idx) => {
-          const dot = document.createElement("div");
-          dot.classList.add("hero-dot");
-          if (idx === heroIndex) dot.classList.add("active");
-          dot.addEventListener("click", () => {
-            heroIndex = idx;
-            showHeroShow(heroIndex);
-            resetHeroInterval();
-          });
-          dotsContainer.appendChild(dot);
-        });
-      }
+      const results = await Promise.all(promises);
+      allShows = results.flat();
 
-      // Reset the auto-play interval
-      function resetHeroInterval() {
-        clearInterval(heroInterval);
-        heroInterval = setInterval(() => {
-          heroIndex = (heroIndex + 1) % heroShows.length;
-          showHeroShow(heroIndex);
-        }, 5000);
-      }
+      heroShows = allShows.slice(0, 5);
+      heroIndex = 0;
+      showHeroShow(heroIndex);
+      buildHeroDots();
+      if (heroInterval) clearInterval(heroInterval);
+      heroInterval = setInterval(() => {
+        heroIndex = (heroIndex + 1) % heroShows.length;
+        showHeroShow(heroIndex);
+      }, 5000);
 
-      // Update hero section with show details and update dot indicators
-      function showHeroShow(index) {
-        const show = heroShows[index];
-        if (!show) return;
-        // Use the image from TVMaze. Use the original image if available or fallback.
-        if (show.image && show.image.original) {
-          document.getElementById("hero").style.backgroundImage = `url(${show.image.original})`;
-        } else {
-          document.getElementById("hero").style.backgroundImage = "url('fallback-image.jpg')";
-        }
-        document.getElementById("hero-title").textContent = show.name || "Unknown Title";
-        document.getElementById("hero-rating").textContent = `Rating: ${show.rating && show.rating.average ? show.rating.average : "N/A"}`;
-        document.getElementById("watch-hero").onclick = () => {
-          window.location.href = `moviesMod/watchM.html?title=${encodeURIComponent(show.name)}`;
-        };
-        // Update dot indicators
-        const dots = document.querySelectorAll(".hero-dot");
-        dots.forEach((dot, idx) => {
-          dot.classList.toggle("active", idx === index);
-        });
-        // Restart hero content animation for smooth transition
-        const heroContent = document.getElementById("hero-content");
-        heroContent.style.animation = 'none';
-        setTimeout(() => heroContent.style.animation = '', 50);
-      }
+      updateSection("movies-scroll", 0, 10);
+      updateSection("anime-scroll", 10, 10);
+      updateSection("web-series-scroll", 20, 10);
+      updateSection("tv-shows-scroll", 30, 10);
 
-      // Touch event handlers for swipe detection on the hero section
-      const heroElement = document.getElementById("hero");
-      if (heroElement) {
-        heroElement.addEventListener("touchstart", (e) => {
-          touchStartX = e.changedTouches[0].screenX;
-        });
-        heroElement.addEventListener("touchend", (e) => {
-          touchEndX = e.changedTouches[0].screenX;
-          handleSwipe();
-        });
-      }
+    } catch (error) {
+      console.error("Error fetching TVMaze shows:", error);
+    }
+  }
 
-      function handleSwipe() {
-        const distance = touchEndX - touchStartX;
-        if (Math.abs(distance) > swipeThreshold) {
-          if (distance < 0) { // Swipe left
-            heroIndex = (heroIndex + 1) % heroShows.length;
-          } else { // Swipe right
-            heroIndex = (heroIndex - 1 + heroShows.length) % heroShows.length;
-          }
-          showHeroShow(heroIndex);
-          resetHeroInterval();
-        }
-      }
-
-      // Hide/Show bottom navigation based on scroll direction
-      let lastScrollTop = 0;
-      window.addEventListener('scroll', () => {
-        let st = window.pageYOffset || document.documentElement.scrollTop;
-        const nav = document.getElementById('bottom-nav');
-        if (st > lastScrollTop) {
-          nav.style.transform = 'translateY(100%)';
-        } else {
-          nav.style.transform = 'translateY(0)';
-        }
-        lastScrollTop = st <= 0 ? 0 : st;
+  function buildHeroDots() {
+    const dotsContainer = document.getElementById("hero-dots");
+    dotsContainer.innerHTML = "";
+    heroShows.forEach((_, idx) => {
+      const dot = document.createElement("div");
+      dot.classList.add("hero-dot");
+      if (idx === heroIndex) dot.classList.add("active");
+      dot.addEventListener("click", () => {
+        heroIndex = idx;
+        showHeroShow(heroIndex);
+        resetHeroInterval();
       });
-
-      // Update a horizontal section using a slice from allShows
-      // start: starting index in the allShows array, count: number of items to display
-      function updateSection(sectionId, start, count) {
-        const sectionData = allShows.slice(start, start + count);
-        let htmlContent = "";
-        sectionData.forEach(item => {
-          let title = item.name;
-          // Escape any single quotes in title to avoid breaking the onclick attribute
-          let safeTitle = title.replace(/'/g, "\\'");
-          let shortTitle = title.length > 15 ? title.substring(0, 15) + "..." : title;
-          htmlContent += `
-            <div class="scroll-item" onclick="openWatchPage('${safeTitle}')">
-              <img src="${item.image && item.image.medium ? item.image.medium : 'fallback-image.jpg'}" alt="${title}" title="${title}">
-              <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
-            </div>`;
-        });
-        document.getElementById(sectionId).innerHTML = htmlContent;
-      }
-
-      // Open watch page function
-      window.openWatchPage = function(title) {
-        window.location.href = `moviesMod/watchM.html?title=${encodeURIComponent(title)}`;
-      }
-
-      // INITIAL CALL: Fetch TVMaze shows and update all sections
-      fetchAllShows();
-
-      // Optionally, update horizontal sections every 1 minute (if data changes)
-      setInterval(() => {
-        updateSection("movies-scroll", 0, 10);
-        updateSection("anime-scroll", 10, 10);
-        updateSection("web-series-scroll", 20, 10);
-        updateSection("tv-shows-scroll", 30, 10);
-      }, 60000);
+      dotsContainer.appendChild(dot);
     });
+  }
+
+  function resetHeroInterval() {
+    clearInterval(heroInterval);
+    heroInterval = setInterval(() => {
+      heroIndex = (heroIndex + 1) % heroShows.length;
+      showHeroShow(heroIndex);
+    }, 5000);
+  }
+
+  function showHeroShow(index) {
+    const show = heroShows[index];
+    if (!show) return;
+
+    const hero = document.getElementById("hero");
+    const imageUrl = show.image?.original || 'fallback-image.jpg';
+
+    // Preload image for smooth transition
+    const img = new Image();
+    img.onload = () => {
+      hero.style.backgroundImage = `url(${img.src})`;
+    };
+    img.src = imageUrl;
+
+    document.getElementById("hero-title").textContent = show.name || "Unknown Title";
+    document.getElementById("hero-rating").textContent = `Rating: ${show.rating?.average ?? "N/A"}`;
+
+    document.getElementById("watch-hero").onclick = () => {
+      window.location.href = `moviesMod/watchM.html?title=${encodeURIComponent(show.name)}`;
+    };
+
+    const dots = document.querySelectorAll(".hero-dot");
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle("active", idx === index);
+    });
+
+    const heroContent = document.getElementById("hero-content");
+    heroContent.style.animation = 'none';
+    setTimeout(() => heroContent.style.animation = '', 50);
+  }
+
+  const heroElement = document.getElementById("hero");
+  if (heroElement) {
+    heroElement.addEventListener("touchstart", e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    heroElement.addEventListener("touchend", e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+  }
+
+  function handleSwipe() {
+    const distance = touchEndX - touchStartX;
+    if (Math.abs(distance) > swipeThreshold) {
+      heroIndex = distance < 0
+        ? (heroIndex + 1) % heroShows.length
+        : (heroIndex - 1 + heroShows.length) % heroShows.length;
+
+      showHeroShow(heroIndex);
+      resetHeroInterval();
+    }
+  }
+
+  let lastScrollTop = 0;
+  window.addEventListener('scroll', () => {
+    let st = window.pageYOffset || document.documentElement.scrollTop;
+    const nav = document.getElementById('bottom-nav');
+    nav.style.transform = st > lastScrollTop ? 'translateY(100%)' : 'translateY(0)';
+    lastScrollTop = Math.max(st, 0);
+  });
+
+  function updateSection(sectionId, start, count) {
+    const sectionData = allShows.slice(start, start + count);
+    let htmlContent = "";
+
+    sectionData.forEach(item => {
+      const title = item.name || "Untitled";
+      const safeTitle = title.replace(/'/g, "\\'");
+      const shortTitle = title.length > 15 ? title.substring(0, 15) + "..." : title;
+      const imageSrc = item.image?.medium || 'fallback-image.jpg';
+
+      htmlContent += `
+        <div class="scroll-item" onclick="openWatchPage('${safeTitle}')">
+          <img loading="lazy" src="${imageSrc}" alt="${title}" title="${title}">
+          <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+        </div>`;
+    });
+
+    document.getElementById(sectionId).innerHTML = htmlContent;
+  }
+
+  window.openWatchPage = function (title) {
+    window.location.href = `moviesMod/watchM.html?title=${encodeURIComponent(title)}`;
+  };
+
+  fetchAllShows(PAGES_TO_FETCH);
+
+  setInterval(() => {
+    updateSection("movies-scroll", 0, 10);
+    updateSection("anime-scroll", 10, 10);
+    updateSection("web-series-scroll", 20, 10);
+    updateSection("tv-shows-scroll", 30, 10);
+  }, 60000);
+});
+    
   </script>
 </body>
 </html>
