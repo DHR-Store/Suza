@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hianime</title>
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+  
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Custom CSS -->
+  <style>
+    /* Custom Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    
+    * {
+      font-family: 'Poppins', sans-serif;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+    
+    body.bg-dark {
+      background-color: #000;
+      color: #fff;
+            -webkit-user-select: none; /* Chrome, Safari */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* IE10+ */
+      user-select: none;         /* Standard syntax */
+    }
+    
+    /* Disable dragging for images */
+    img {
+      -webkit-user-drag: none;
+      cursor: default;
+    }
+    
+    
+      /* Hamburger Button inside Hero Section */
+      .hamburger-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: transparent;
+        border: none;
+        border-radius: 50%;
+        padding: 10px;
+        z-index: 30;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+      .hamburger-btn:hover {
+        transform: scale(1.1);
+      }
+      .hamburger-btn i {
+        font-size: 1.8rem;
+        color: #fff;
+      }
+      
+      /* Offcanvas Sidebar Enhancements with Responsive Width */
+      .offcanvas-start {
+        /* Default for smaller screens */
+        width: 50px;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(5px);
+      }
+      /* Increase width for larger screens */
+      @media (min-width: 700px) {
+        .offcanvas-start {
+          width: 150px;
+        }
+      }
+      .offcanvas-header h5 {
+        color: #fff;
+      }
+      .offcanvas-body ul {
+        padding-left: 0;
+      }
+      .offcanvas-body ul li {
+        margin-bottom: 10px;
+      }
+      .offcanvas-body ul li a {
+        display: block;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 8px;
+        padding: 8px 10px;
+        color: #fff;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+      /* When a provider link is active, apply a glow effect */
+      .offcanvas-body ul li a.active {
+        background: rgba(0, 255, 255, 0.3);
+        color: #fff;
+        font-weight: bold;
+        box-shadow: 0 0 10px #00ffff;
+      }
+      .offcanvas-body ul li a:hover {
+        background: rgba(0, 255, 255, 0.2);
+        color: #00ffff;
+      }
+      .provider-icon {
+        margin-right: 6px;
+        color: #00ffff;
+      }
+      
+    /* HERO SECTION and related styles */
+    #hero {
+      position: relative;
+      height: 70vh;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      transition: background 0.5s ease;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+    #hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+    #hero-content {
+      position: relative;
+      z-index: 20;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s forwards;
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    #hero-title {
+      font-size: 2.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    #hero-rating {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    .hero-btn {
+      padding: 12px 25px;
+      background: linear-gradient(90deg, #00ffff, #00d4ff);
+      color: black;
+      font-size: 16px;
+      border: none;
+      border-radius: 25px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    .hero-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+    }
+    /* Dot Indicators */
+    #hero-dots {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .hero-dot {
+      width: 12px;
+      height: 12px;
+      background: #ccc;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .hero-dot.active {
+      background: cyan;
+    }
+    
+    /* Dark blur/gradient at bottom of hero */
+    #hero::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 150px; /* Adjust height to your preference */
+      background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.8));
+      z-index: 11;
+      pointer-events: none;
+    }
+    
+    /* Horizontal Scroll Sections */
+    .horizontal-scroll {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px 0;
+      gap: 12px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .horizontal-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .scroll-item {
+      flex: 0 0 auto;
+      width: 150px;
+      scroll-snap-align: center;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .scroll-item img {
+      width: 100%;
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+    .scroll-item:hover {
+      transform: scale(1.1);
+    }
+        /* Attractive gradient text style */
+    .stylish-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 600;
+      background: linear-gradient(45deg, #6a11cb, #2575fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+         .stylish1-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 50;
+      background: linear-gradient(45deg, #6a11cb, #2575fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      top: 1px;
+      margin-left: 250px;
+            }
+        /* ADDED: container background black */
+        /* ADDED: container background black */
+    .container.mt-4 {
+      background-color: #000; 
+      padding-top: 20px;
+      padding-bottom: 20px;
+      /* If there's any default margin from bootstrap, override it: */
+      margin-top: 0 !important;
+    }
+    
+    /* Bottom Navigation Bar */
+    nav.navbar {
+      background: transparent;
+      backdrop-filter: blur(8px);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #444;
+      transition: transform 0.3s ease;
+    }
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease, color 0.3s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .nav-link i {
+      font-size: 24px;
+    }
+    .nav-link:hover {
+      color: cyan;
+      transform: scale(1.1);
+    }
+    .nav-link.active {
+      color: cyan;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="bg-dark text-light">
+  <!-- Hamburger Icon placed inside the HERO SECTION -->
+  <div id="hero">
+    <button class="hamburger-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasProviders" aria-controls="offcanvasProviders">
+      <i class="bi bi-list"></i>
+    </button>
+    <div id="hero-overlay"></div>
+    <div id="hero-content">
+      <h1 id="hero-title">Anime Title</h1>
+      <div id="hero-rating">Rating: N/A</div>
+      <button class="hero-btn" id="watch-hero">Watch Now</button>
+      <!-- Dot indicators container -->
+      <div id="hero-dots"></div>
+    </div>
+  </div>
+
+  <!-- Offcanvas Sidebar for Providers -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasProviders" aria-labelledby="offcanvasProvidersLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasProvidersLabel">Providers</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="list-unstyled">
+        <li>
+          <a href="../home.html?provider=vegamovies">
+            <i class="bi bi-film provider-icon"></i>vegamovies
+          </a>
+        </li>
+        <li>
+          <a href="../moviesMod.html?provider=moviesmod">
+            <i class="bi bi-film provider-icon"></i>moviesmod
+          </a>
+        </li>
+        <li>
+          <a href="trakt.html?provider=trakt.tv">
+            <i class="bi bi-film provider-icon"></i>Trakt.tv
+          </a>
+        </li>
+        <li>
+          <a href="Anime.html?provider=netmirror">
+            <i class="bi bi-film provider-icon"></i>Anime
+          </a>
+        </li>
+        <li>
+          <a href="provider.html?provider=moviedrive">
+            <i class="bi bi-film provider-icon"></i>moviedrive
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT (Horizontal Scroll Sections) -->
+  <div class="container mt-4">
+         <div style="display: flex; justify-content: space-between; align-items: center;">
+  <h3 class="stylish-text" style="margin: 0;">Recent</h3>
+  <h5 class="stylish1-text" style="margin: 0;"><a href="more5.html">more</a></h5>
+    </div>
+        <div class="horizontal-scroll" id="new-scroll"></div>
+
+       <div style="display: flex; justify-content: space-between; align-items: center;">
+  <h3 class="stylish-text" style="margin: 0;">Air-Anime</h3>
+  <h5 class="stylish1-text" style="margin: 0;"><a href="more2.html">more</a></h5>
+    </div>
+    <div class="horizontal-scroll" id="anime-scroll"></div>
+    
+
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+  <h3 class="stylish-text" style="margin: 0;">Popular</h3>
+  <h5 class="stylish1-text" style="margin: 0;"><a href="more2.html">more</a></h5>
+    </div>
+    <div class="horizontal-scroll" id="popular-anime-scroll">
+      <!-- Web Series content here -->
+    </div>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+  <h3 class="stylish-text" style="margin: 0;">Top-Anime</h3>
+  <h5 class="stylish1-text" style="margin: 0;"><a href="more2.html">more</a></h5>
+    </div>
+    <div class="horizontal-scroll" id="top-anime-scroll">
+      <!-- TV Shows content here -->
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="Anime.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
+      <a href="searchT.html" class="nav-link"><i class="bi bi-search"></i><br></a>
+      <a href="watchlistT.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br></a>
+      <a href="settingsT.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
+    </div>
+  </nav>
+
+  <!-- Bootstrap JS Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom Scripts -->
+  <script>
+    // Hide hamburger when offcanvas opens and show it when closed
+    var offcanvasEl = document.getElementById('offcanvasProviders');
+    offcanvasEl.addEventListener('show.bs.offcanvas', function () {
+      document.querySelector('.hamburger-btn').style.opacity = '0';
+    });
+    offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
+      document.querySelector('.hamburger-btn').style.opacity = '1';
+    });
+    
+    // On the provider selection page, set the active provider based on the URL parameter.
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if a provider query parameter exists
+      const urlParams = new URLSearchParams(window.location.search);
+      const provider = urlParams.get('provider');
+      if (provider) {
+        const providerLinks = document.querySelectorAll('.offcanvas-body ul li a');
+        providerLinks.forEach(link => {
+          // If the link's href includes the selected provider, add the active class.
+          if (link.href.includes(`provider=${provider}`)) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+      // Also, update the bottom nav active state based on current file name.
+      var path = window.location.pathname.split("/").pop();
+      if (path === '') { path = 'trakt.html'; }
+      var navLinks = document.querySelectorAll('nav.navbar .nav-link');
+      navLinks.forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href === path) { link.classList.add('active'); }
+        else { link.classList.remove('active'); }
+      });
+    });
+    
+    // Static Data Version for MoviesHubWeb // This version uses hardcoded IMDb IDs for each section
+
+const OMDB_API_KEY = "90b37ad0"; // Replace with your OMDb API Key if needed
+// You need to register for a Trakt API key (Client ID) at https://trakt.tv/oauth/applications
+const TRAKT_CLIENT_ID = "97ca49d276bd090c063dd2c6174ed4c622ee58d443d1160aac87276f50b34b36"; // !!! REPLACE WITH YOUR TRAKT CLIENT ID !
+
+// Ensure you replace "YOUR_TRAKT_CLIENT_ID" with your actual Trakt API key.
+
+// === Hero Carousel Variables ===
+let heroMovies = [];  // Array to store full movie details for hero carousel (fetched via OMDb)
+let heroIndex = 0;    // Current index in the heroMovies array
+let heroInterval;     // Interval reference
+
+// === Swipe Detection Variables ===
+let touchStartX = 0;
+let touchEndX = 0;
+const swipeThreshold = 50; // Minimum distance (in pixels) to consider a swipe
+
+// === Global Event Listeners ===
+// Prevent default right-click/context menu on the entire document
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+// Prevent long-press on touch devices from showing image preview
+document.addEventListener('touchstart', function(e) {
+  if(e.touches.length > 1) {
+    e.preventDefault();
+  }
+});
+
+// === Hero Carousel Functions (Using OMDb) ===
+// Fetch trending movies or anime for the hero carousel
+async function fetchHeroMovies() {
+  // Define two sets of trending titles: one for movies and one for anime
+  // Note: Using specific titles with OMDb search might not always yield the best results.
+  // Consider alternative ways to get trending titles if needed, perhaps from Trakt initially,
+  // and then fetching details from OMDb using IDs.
+  const trendingMovies = [ "Solo Leveling Season 2", "Sakamoto Days", "Zenshu", "Dandadan Season 2", "Kaiju No. 8 Season 2", "Blue Exorcist: The Blue Night Saga", "Lazarus", "Apothecary Diaries Season 2", "One Piece Season 22 (Egghead Arc)", "JoJo’s Bizarre Adventure: Steel Ball Run", "Guilty Gear Strive: Dual Rulers", "Daisy's Life"
+  ];
+  
+  const trendingAnime = ["Solo leveling", "Red Ranger", "The Apothecary Diaries", "I'm getting married to girl I hate in class", "Dr stone", "One Piece", "Hunter X Hunter"];
+
+  // Combine the arrays so that a random trending title is chosen across movies and anime
+  const trendingTitles = trendingMovies.concat(trendingAnime);
+  const randomTrendingTitle = trendingTitles[Math.floor(Math.random() * trendingTitles.length)];
+
+  try {
+    // Use encodeURIComponent to safely encode the search term in the URL
+    const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(randomTrendingTitle)}&apikey=${OMDB_API_KEY}`);
+    const data = await response.json();
+
+    if (data.Search && data.Search.length > 0) {
+      // Limit to the first 5 items for the carousel
+      const itemsToFetch = data.Search.slice(0, 5);
+      // Fetch full details (including rating and plot) concurrently for each item
+      const detailsPromises = itemsToFetch.map(item =>
+        fetch(`https://www.omdbapi.com/?i=${item.imdbID}&apikey=${OMDB_API_KEY}&plot=short`).then(res => res.json())
+      );
+      heroMovies = await Promise.all(detailsPromises);
+
+      // Filter out any items that failed to fetch details or have no valid data
+      heroMovies = heroMovies.filter(movie => movie && movie.Response !== "False");
+
+      if (heroMovies.length > 0) {
+        // Initialize and start the carousel
+        heroIndex = 0;
+        showHeroMovie(heroIndex);
+        buildHeroDots();
+
+        if (heroInterval) clearInterval(heroInterval);
+        heroInterval = setInterval(() => {
+          heroIndex = (heroIndex + 1) % heroMovies.length;
+          showHeroMovie(heroIndex);
+        }, 5000);
+      } else {
+        console.warn("No valid hero movies fetched after detail lookup.");
+         document.getElementById("hero-title").textContent = "Content Not Available";
+         document.getElementById("hero-rating").textContent = "";
+         document.getElementById("watch-hero").style.display = "none"; // Hide button if no content
+         document.getElementById("hero-dots").innerHTML = ""; // Clear dots
+      }
+    } else {
+       console.warn(`OMDb search for "${randomTrendingTitle}" found no results.`);
+         document.getElementById("hero-title").textContent = "Content Not Available";
+         document.getElementById("hero-rating").textContent = "";
+         document.getElementById("watch-hero").style.display = "none"; // Hide button if no content
+         document.getElementById("hero-dots").innerHTML = ""; // Clear dots
+    }
+  } catch (error) {
+    console.error("Error fetching hero movies:", error);
+     document.getElementById("hero-title").textContent = "Error Loading Content";
+     document.getElementById("hero-rating").textContent = "";
+     document.getElementById("watch-hero").style.display = "none"; // Hide button on error
+     document.getElementById("hero-dots").innerHTML = ""; // Clear dots on error
+  }
+}
+
+// Build dot indicators for the hero carousel
+function buildHeroDots() {
+  const dotsContainer = document.getElementById("hero-dots");
+  dotsContainer.innerHTML = "";
+  heroMovies.forEach((movie, idx) => {
+    const dot = document.createElement("div");
+    dot.classList.add("hero-dot");
+    if (idx === heroIndex) dot.classList.add("active");
+    dot.addEventListener("click", () => {
+      heroIndex = idx;
+      showHeroMovie(heroIndex);
+      resetHeroInterval();
+    });
+    dotsContainer.appendChild(dot);
+  });
+}
+
+// Reset the auto-play interval
+function resetHeroInterval() {
+  clearInterval(heroInterval);
+  heroInterval = setInterval(() => {
+    heroIndex = (heroIndex + 1) % heroMovies.length;
+    showHeroMovie(heroIndex);
+  }, 5000);
+}
+
+// Update hero section with movie details and update dot indicators
+function showHeroMovie(index) {
+  const movie = heroMovies[index];
+  if (!movie) {
+      // Fallback if for some reason the movie object is null/undefined
+      document.getElementById("hero").style.backgroundImage = "url('fallback-image.jpg')";
+      document.getElementById("hero-title").textContent = "Content Error";
+      document.getElementById("hero-rating").textContent = "";
+      document.getElementById("watch-hero").style.display = "none";
+      return;
+  }
+
+  // Set background image
+  const posterUrl = (movie.Poster && movie.Poster !== "N/A") ? movie.Poster : "fallback-image.jpg";
+  document.getElementById("hero").style.backgroundImage = `url(${posterUrl})`;
+
+  // Set title and rating
+  document.getElementById("hero-title").textContent = movie.Title || "Unknown Title";
+  document.getElementById("hero-rating").textContent = `Rating: ${movie.imdbRating && movie.imdbRating !== "N/A" ? movie.imdbRating : "N/A"}`;
+
+  // Set watch button action
+   const watchButton = document.getElementById("watch-hero");
+   if(movie.Title) { // Only show button if title is available
+        watchButton.style.display = ""; // Make sure button is visible
+        watchButton.onclick = () => {
+            window.location.href = `watch.html?title=${encodeURIComponent(movie.Title)}`;
+        };
+   } else {
+        watchButton.style.display = "none"; // Hide button if no title
+   }
+
+
+  // Update dot indicators
+  const dots = document.querySelectorAll(".hero-dot");
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle("active", idx === index);
+  });
+
+  // Reset hero content animation for smooth transition
+  const heroContent = document.getElementById("hero-content");
+  heroContent.style.animation = 'none';
+  setTimeout(() => heroContent.style.animation = '', 50);
+}
+
+// === Horizontal Scroll Sections Functions (Using Trakt.tv and Jikan) ===
+
+// Function to fetch data from Trakt and then details from OMDb
+async function fetchTraktItemsAndOMDbDetails(endpoint, limit = 10) {
+    if (!TRAKT_CLIENT_ID || TRAKT_CLIENT_ID === "YOUR_TRAKT_CLIENT_ID") {
+        console.error("Trakt Client ID is not set. Cannot fetch from Trakt.");
+        return [];
+    }
+    if (!OMDB_API_KEY || OMDB_API_KEY === "YOUR_OMDB_API_KEY") {
+         console.error("OMDb API Key is not set. Cannot fetch details from OMDb.");
+        return [];
+    }
+
+
+  try {
+    const traktResponse = await fetch(`https://api.trakt.tv/${endpoint}?limit=${limit}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'trakt-api-key': TRAKT_CLIENT_ID,
+        'trakt-api-version': '2' // Specify API version
+      }
+    });
+
+    if (!traktResponse.ok) {
+        console.error(`Trakt API error for endpoint ${endpoint}: ${traktResponse.status}`);
+         // Attempt to read error body if available
+         try {
+            const errorBody = await traktResponse.json();
+            console.error("Trakt Error Details:", errorBody);
+         } catch (e) {
+             console.error("Could not parse Trakt error body.");
+         }
+        return [];
+    }
+
+    const traktData = await traktResponse.json();
+
+    // Trakt trending/popular data format varies slightly for movies vs shows
+    // Extract the core movie or show object and filter for items with IMDb ID
+    const itemsWithImdbId = traktData
+        .map(item => item.movie || item.show) // Get the nested movie or show object
+        .filter(item => item && item.ids && item.ids.imdb); // Filter out nulls and items without IMDb ID
+
+
+    // Fetch detailed info (including poster) from OMDb using IMDb ID
+    const omdbDetailsPromises = itemsWithImdbId.map(item =>
+        fetch(`https://www.omdbapi.com/?i=${item.ids.imdb}&apikey=${OMDB_API_KEY}&plot=short`).then(res => res.json()).catch(e => {
+            console.error(`Error fetching OMDb details for IMDb ID ${item.ids.imdb}:`, e);
+            return null; // Return null on fetch error
+        })
+    );
+
+    const omdbDetails = await Promise.all(omdbDetailsPromises);
+
+    // Filter out items that failed OMDb fetch or have no valid poster
+    const finalItems = omdbDetails.filter(item => item && item.Response !== "False" && item.Poster && item.Poster !== "N/A");
+
+    return finalItems;
+
+  } catch (error) {
+    console.error(`Error fetching data from Trakt or OMDb for endpoint ${endpoint}:`, error);
+    return [];
+  }
+}
+
+
+// Update Movies section using Trakt (Trending Movies)
+async function updateMoviesSectionTrakt() {
+    const movies = await fetchTraktItemsAndOMDbDetails("movies/trending");
+    const sectionElement = document.getElementById("movies-scroll");
+    let htmlContent = "";
+
+    if (movies.length > 0) {
+        movies.forEach(item => {
+            let shortTitle = item.Title.length > 15 ? item.Title.substring(0, 15) + "..." : item.Title;
+             const posterUrl = (item.Poster && item.Poster !== "N/A") ? item.Poster : "fallback-image.jpg";
+            htmlContent += `
+              <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(item.Title)}')">
+                <img src="${posterUrl}" alt="${item.Title}" title="${item.Title}">
+                <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+              </div>`;
+        });
+    } else {
+         htmlContent = "<p>Could not load trending movies at this time.</p>";
+    }
+     sectionElement.innerHTML = htmlContent;
+}
+
+// Update Web Series and TV Shows sections using Trakt (Trending Shows)
+async function updateShowsSectionTrakt() {
+    // Trakt trending shows include both what you might consider web series and TV shows
+    const shows = await fetchTraktItemsAndOMDbDetails("shows/trending");
+    const webSeriesSectionElement = document.getElementById("web-series-scroll");
+    const tvShowsSectionElement = document.getElementById("tv-shows-scroll");
+    let htmlContent = "";
+
+    if (shows.length > 0) {
+        shows.forEach(item => {
+            let shortTitle = item.Title.length > 15 ? item.Title.substring(0, 15) + "..." : item.Title;
+            const posterUrl = (item.Poster && item.Poster !== "N/A") ? item.Poster : "fallback-image.jpg";
+            htmlContent += `
+              <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(item.Title)}')">
+                <img src="${posterUrl}" alt="${item.Title}" title="${item.Title}">
+                <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+              </div>`;
+        });
+    } else {
+        htmlContent = "<p>Could not load trending shows at this time.</p>";
+    }
+
+    // Update both sections with the same trending shows data
+    webSeriesSectionElement.innerHTML = htmlContent;
+    tvShowsSectionElement.innerHTML = htmlContent;
+}
+
+async function updateMostPopularAnime() {
+    const response = await fetch("https://api.jikan.moe/v4/top/anime?filter=bypopularity");
+    const data = await response.json();
+    const animeList = data.data || [];
+
+    const popularSection = document.getElementById("popular-anime-scroll");
+    let htmlContent = "";
+
+    if (animeList.length > 0) {
+        animeList.slice(0, 20).forEach(anime => {
+            const shortTitle = anime.title.length > 15 ? anime.title.substring(0, 15) + "..." : anime.title;
+            const posterUrl = anime.images?.jpg?.image_url || "fallback-image.jpg";
+
+            htmlContent += `
+              <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(anime.title)}')">
+                <img src="${posterUrl}" alt="${anime.title}" title="${anime.title}">
+                <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+              </div>`;
+        });
+    } else {
+        htmlContent = "<p>Could not load popular anime.</p>";
+    }
+
+    popularSection.innerHTML = htmlContent;
+}
+updateMostPopularAnime();
+
+async function updateTopRatedAnime() {
+  const query = `
+    query {
+        Page(perPage: 20) {
+            media(type: ANIME, sort: SCORE_DESC) {
+                title {
+                    english
+                    romaji
+                }
+                coverImage {
+                    large
+                }
+            }
+        }
+    }`;
+  
+  const response = await fetch("https://graphql.anilist.co", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query })
+  });
+  
+  const result = await response.json();
+  const animeList = result.data?.Page?.media || [];
+  
+  const topRatedSection = document.getElementById("top-anime-scroll");
+  let htmlContent = "";
+  
+  if (animeList.length > 0) {
+    animeList.forEach(anime => {
+      const title = anime.title.english || anime.title.romaji;
+      const shortTitle = title.length > 15 ? title.substring(0, 15) + "..." : title;
+      const posterUrl = anime.coverImage?.large || "fallback-image.jpg";
+      
+      htmlContent += `
+              <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(title)}')">
+                <img src="${posterUrl}" alt="${title}" title="${title}">
+                <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+              </div>`;
+    });
+  } else {
+    htmlContent = "<p>Could not load top rated anime.</p>";
+  }
+  
+  topRatedSection.innerHTML = htmlContent;
+}
+updateTopRatedAnime();
+
+// Anime section update using Jikan API (example)
+async function updateAnimeSection() {
+  try {
+    const response = await fetch("https://api.jikan.moe/v4/seasons/now?limit=20");
+
+    if (!response.ok) {
+      console.error(`Jikan API error: ${response.status}`);
+      try {
+        const errorBody = await response.json();
+        console.error("Jikan Error Details:", errorBody);
+      } catch (e) {
+        console.error("Could not parse Jikan error body.");
+      }
+      document.getElementById("anime-scroll").innerHTML = "<p>Could not load currently airing anime at this time.</p>";
+      return;
+    }
+
+    const data = await response.json();
+    let htmlContent = "";
+
+    if (data.data && data.data.length > 0) {
+      const filteredAnime = data.data.filter(anime => {
+        // Show only anime that have an English title
+        const hasEnglishTitle = anime.title_english && anime.title_english.trim() !== "";
+        
+        // Filter out sequels by checking if the title contains season numbers or sequel indicators
+        const isNotSeason = !/season\s?\d+|2nd|3rd|4th|final/i.test(anime.title_english || anime.title);
+
+        return hasEnglishTitle && isNotSeason;
+      });
+
+      if (filteredAnime.length === 0) {
+        htmlContent = "<p>No standalone currently airing English-titled anime found.</p>";
+      } else {
+        filteredAnime.forEach(anime => {
+          let shortTitle = anime.title_english.length > 15 ? anime.title_english.substring(0, 15) + "..." : anime.title_english;
+          const posterUrl = (anime.images?.jpg?.large_image_url) || (anime.images?.jpg?.image_url) || "fallback-image-anime.jpg";
+
+          htmlContent += `
+            <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(anime.title_english)}')">
+              <img src="${posterUrl}" alt="${anime.title_english}" title="${anime.title_english}">
+              <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+            </div>`;
+        });
+      }
+    } else {
+      htmlContent = "<p>No currently airing anime found.</p>";
+    }
+    function openWatchPage(titleEnglish) {
+  localStorage.setItem("selectedAnimeTitle", decodeURIComponent(titleEnglish));
+  window.location.href = "watch.html";
+}
+
+    document.getElementById("anime-scroll").innerHTML = htmlContent;
+
+  } catch (error) {
+    console.error("Currently airing anime data fetch error:", error);
+    document.getElementById("anime-scroll").innerHTML = "<p>Error loading currently airing anime.</p>";
+  }
+}
+
+async function updateNewSectionOMDb() {
+    const bollywoodTitles = [ "Solo Leveling", "Sakamoto Days", "Medaka Kuroiwa Is Impervious to My Charms", "I'm getting married to a girl I hate in my class", "Apothecary Diaries", "One Piece", "fire force", "witch hat atelier", "My Happy Marriage", "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You"
+  ];
+  
+
+    const sectionElement = document.getElementById("new-scroll");
+     if (!sectionElement) {
+         console.error("Element with ID 'new-scroll' not found.");
+         return; // Exit if the target element doesn't exist
+     }
+
+    if (!OMDB_API_KEY || OMDB_API_KEY === "YOUR_OMDB_API_KEY") {
+         console.error("OMDb API Key is not set. Cannot fetch New Anime details.");
+         sectionElement.innerHTML = "<p>OMDb API Key is not configured. Cannot load Anime.</p>";
+        return;
+    }
+
+    let fetchedMovies = [];
+
+    try {
+        const fetchPromises = bollywoodTitles.map(title =>
+            fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${OMDB_API_KEY}&plot=short`).then(res => res.json()).catch(e => {
+                 console.error(`Error fetching OMDb details for "${title}":`, e);
+                 return null; // Return null on fetch error
+            })
+        );
+
+        const results = await Promise.all(fetchPromises);
+
+        // Filter out failed fetches and items without valid posters
+        fetchedMovies = results.filter(movie => movie && movie.Response !== "False" && movie.Poster && movie.Poster !== "N/A");
+
+        let htmlContent = "";
+
+        if (fetchedMovies.length > 0) {
+            fetchedMovies.forEach(movie => {
+                let shortTitle = movie.Title.length > 15 ? movie.Title.substring(0, 15) + "..." : movie.Title;
+                const posterUrl = movie.Poster; // OMDb provides the direct URL here
+
+                htmlContent += `
+                  <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(movie.Title)}')">
+                    <img src="${posterUrl}" alt="${movie.Title}" title="${movie.Title}">
+                    <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+                  </div>`;
+            });
+        } else {
+             htmlContent = "<p>Could not load Bollywood movies at this time or no details found.</p>";
+             console.warn("No valid Bollywood movies fetched from OMDb.");
+        }
+
+        sectionElement.innerHTML = htmlContent;
+
+    } catch (error) {
+        console.error("Error fetching Bollywood movies from OMDb:", error);
+        sectionElement.innerHTML = "<p>Error loading Bollywood movies.</p>";
+    }
+}
+
+
+// === Watch Page Function (Placeholder) ===
+// This function is called when a scroll item is clicked.
+// In a real application, this would navigate to a watch page
+// and potentially pass the movie/show title or ID to it.
+function openWatchPage(title) {
+    console.log("Navigate to watch page for:", decodeURIComponent(title));
+    // Example navigation (replace with your actual watch page logic)
+    // window.location.href = `watch.html?title=${title}`;
+    alert(`You clicked on "${decodeURIComponent(title)}". In a real app, this would go to the watch page.`);
+}
+
+
+// === Initialization ===
+document.addEventListener("DOMContentLoaded", () => {
+  fetchHeroMovies(); // Fetch and display hero carousel content
+  updateMoviesSectionTrakt(); // Fetch and display trending movies
+  updateShowsSectionTrakt(); // Fetch and display trending shows (Web Series and TV Shows)
+  updateAnimeSection(); // Fetch and display top anime
+  updateNewSectionOMDb(); // Fetch Bollywood movie details from OMDb and populate section
+
+  // Add event listeners for hero carousel swipe
+  const heroElement = document.getElementById("hero");
+  heroElement.addEventListener('touchstart', handleTouchStart, false);
+  heroElement.addEventListener('touchmove', handleTouchMove, false);
+  heroElement.addEventListener('touchend', handleTouchEnd, false);
+});
+
+// === Swipe Detection Handlers for Hero Carousel ===
+function handleTouchStart(event) {
+  touchStartX = event.touches[0].clientX;
+}
+
+function handleTouchMove(event) {
+  touchEndX = event.touches[0].clientX;
+}
+
+function handleTouchEnd() {
+  const deltaX = touchEndX - touchStartX;
+
+  if (deltaX > swipeThreshold) {
+    // Swipe right (previous)
+    heroIndex = (heroIndex - 1 + heroMovies.length) % heroMovies.length;
+    showHeroMovie(heroIndex);
+    resetHeroInterval();
+  } else if (deltaX < -swipeThreshold) {
+    // Swipe left (next)
+    heroIndex = (heroIndex + 1) % heroMovies.length;
+    showHeroMovie(heroIndex);
+    resetHeroInterval();
+  }
+
+  // Reset touch variables
+  touchStartX = 0;
+  touchEndX = 0;
+}
+
+
+// Open watch page function
+function openWatchPage(title) {
+  // Decode the title before using it in the URL, just in case it was double-encoded somewhere
+  // although encoding before passing to this function is generally sufficient.
+  // Let's re-encode here to be safe for the final URL.
+  window.location.href = `watch.html?title=${encodeURIComponent(decodeURIComponent(title))}`;
+}
+
+
+// === Navigation Active Class Logic ===
+// Wait until the DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Get the current file name from the URL (default to home.html if empty)
+  var path = window.location.pathname.split("/").pop();
+  if (path === '') {
+    path = 'home.html';
+  }
+
+  // Select all nav links inside the navbar and bottom nav
+  var navLinks = document.querySelectorAll('nav.navbar .nav-link, #bottom-nav .nav-link');
+
+  // Loop through each nav link and add active class if href matches current path
+  navLinks.forEach(function(link) {
+    var href = link.getAttribute('href');
+    if (href === path) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+
+  // Initial data fetches for the scroll sections
+  updateMoviesSectionTrakt();     // Movies (using Trakt & OMDb)
+  updateAnimeSection();           // Anime (using Jikan)
+  updateShowsSectionTrakt();      // Web Series and TV Shows (using Trakt & OMDb)
+  // Hero section is called separately as it has its own interval/logic
+  fetchHeroMovies();              // Hero Carousel (using OMDb)
+});
+
+// === Hide/Show bottom navigation based on scroll direction ===
+let lastScrollTop = 0;
+// Using a variable to store the bottom nav element for efficiency
+const bottomNav = document.getElementById('bottom-nav');
+window.addEventListener('scroll', () => {
+  let st = window.pageYOffset || document.documentElement.scrollTop;
+  // Add a small threshold to prevent flickering on minor scrolls
+  const scrollThreshold = 5;
+  if (Math.abs(st - lastScrollTop) <= scrollThreshold) {
+      return; // Do nothing if scroll is minimal
+  }
+
+  if (st > lastScrollTop && st > bottomNav.offsetHeight) {
+    // Scrolling down and past the height of the nav: hide nav
+    bottomNav.style.transform = 'translateY(100%)';
+  } else if (st < lastScrollTop) {
+    // Scrolling up: show nav
+    bottomNav.style.transform = 'translateY(0)';
+  }
+  // Ensure lastScrollTop doesn't go below 0
+  lastScrollTop = st <= 0 ? 0 : st;
+});
+
+
+// === Initialize Data Fetching ===
+// Initial calls are now handled within the DOMContentLoaded listener
+// fetchHeroMovies(); // Called in DOMContentLoaded
+// updateMoviesSectionTrakt(); // Called in DOMContentLoaded
+// updateAnimeSection();     // Called in DOMContentLoaded
+// updateShowsSectionTrakt(); // Called in DOMContentLoaded
+
+
+// Update horizontal sections periodically (e.g., every 5 minutes = 300000 ms)
+// Be mindful of API rate limits, especially with the OMDb per-item fetches.
+// Reducing the frequency might be necessary.
+setInterval(() => {
+  updateMoviesSectionTrakt();
+  updateShowsSectionTrakt();
+  updateAnimeSection(); // Also refresh anime data periodically
+}, 300000); // Update every 5 minutes
+
+// === Hero Section Swipe Detection ===
+const heroElement = document.getElementById("hero");
+if (heroElement) { // Check if the hero element exists before adding listeners
+    heroElement.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      // Stop the auto-interval on touch start, resume on touchend if not swiped
+      clearInterval(heroInterval);
+    });
+
+    heroElement.addEventListener("touchend", (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+      // Resume the auto-interval after touch ends, but only if not swiped
+      // or handle it inside handleSwipe if you want a delay after swipe
+      // Let's reset the interval in handleSwipe after a swipe occurs.
+      // If no swipe, the interval should also restart.
+       if (heroInterval) clearInterval(heroInterval); // Clear any pending interval
+       heroInterval = setInterval(() => {
+           heroIndex = (heroIndex + 1) % heroMovies.length;
+           showHeroMovie(heroIndex);
+       }, 5000);
+
+    });
+} else {
+    console.warn("Hero element not found. Swipe detection not enabled.");
+}
+
+
+function handleSwipe() {
+  const distance = touchEndX - touchStartX;
+  if (Math.abs(distance) > swipeThreshold) {
+    if (distance < 0) { // Swipe left (next item)
+      heroIndex = (heroIndex + 1) % heroMovies.length;
+    } else { // Swipe right (previous item)
+      heroIndex = (heroIndex - 1 + heroMovies.length) % heroMovies.length;
+    }
+    showHeroMovie(heroIndex);
+    // The interval is reset in the touchend listener
+    // resetHeroInterval(); // This is now handled by touchend
+  } else {
+     // If it was just a tap, also restart the interval
+     // The touchend listener already handles restarting the interval
+  }
+}
+
+// Function for handling click on scroll items - Kept as is
+// Note: The title is encoded when calling openWatchPage
+// in the update functions, so it needs to be decoded if necessary on the watch page.
+// The encoding/decoding logic in openWatchPage is updated slightly for robustness.
+
+
+         // When the page loads, start the timeout to auto-dismiss the notification after 5 seconds.
+    window.addEventListener("load", function() {
+      setTimeout(function() {
+        var notification = document.getElementById("notification");
+        if (notification) {
+          // Use Bootstrap's alert API to close the notification gracefully.
+          var alertInstance = bootstrap.Alert.getInstance(notification);
+          if (!alertInstance) {
+            alertInstance = new bootstrap.Alert(notification);
+          }
+          alertInstance.close();
+        }
+      }, 4000); // 5000 milliseconds = 5 seconds
+    });
+    
+    // Add click event for the Try button to open 'hh.html'
+    document.getElementById("try-btn").addEventListener("click", function() {
+      window.location.href = "suzaTV/suzatvhome.html";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Movie Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+  /* Custom Styles */
+.movie-item-container {
+    margin-bottom: 20px; /* Space below each movie item */
+    text-align: center;
+    cursor: pointer; /* Indicate it's clickable */
+    transition: transform 0.2s ease-in-out; /* Add a slight hover effect */
+    display: flex; /* Use flexbox to arrange internal parts */
+    flex-direction: column; /* Stack image container and title */
+    height: 100%; /* Ensure items in a row align top */
+}
+
+.movie-item-container:hover {
+    transform: translateY(-5px); /* Lift item slightly on hover */
+}
+
+.movie-card-image {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 10px; /* Space between image and title */
+    flex-shrink: 0; /* Prevent image area from shrinking */
+    /* Optional: Set a fixed aspect ratio for the image container */
+    /* For example, typical movie poster aspect ratio is ~2:3 */
+    /* aspect-ratio: 2 / 3; */
+    background-color: #f0f0f0; /* Background for placeholder */
+    display: flex; /* Center placeholder text/image */
+    align-items: center;
+    justify-content: center;
+}
+
+.movie-card-image img {
+    display: block; /* Remove extra space below image */
+    width: 100%; /* Image takes full width of its container */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: cover; /* Cover the container area */
+    /* If using aspect-ratio on .movie-card-image, you might need: */
+    /* height: 100%; width: 100%; object-fit: cover; */
+}
+
+.movie-title-area {
+    flex-grow: 1; /* Allow title area to take up remaining space */
+    padding: 0 5px; /* Add padding to prevent title from hitting edges */
+}
+
+.movie-title-area h5 {
+    font-size: 0.9rem; /* Slightly smaller font for title */
+    margin: 0;
+    /* Prevent title wrapping, hide overflow */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Custom Grid for 5 Columns on Desktop --- */
+/* Override default Bootstrap column padding */
+.row.custom-grid {
+    margin-left: -5px; /* Compensate for custom column padding */
+    margin-right: -5px; /* Compensate for custom column padding */
+}
+
+.row.custom-grid > [class*="col-"] {
+    padding-left: 5px; /* Custom column padding */
+    padding-right: 5px; /* Custom column padding */
+}
+
+
+/* Styles for 2 columns on extra-small (default Bootstrap col-6) */
+/* Styles for 3 columns on small screens (Bootstrap col-sm-4) */
+/* Styles for 5 columns on medium screens and up */
+@media (min-width: 768px) {
+    .row.custom-grid {
+        display: flex; /* Enable flexbox on the row */
+        flex-wrap: wrap; /* Allow items to wrap */
+    }
+
+    /* Define the custom 5-column width (100% / 5 = 20%) */
+    .row.custom-grid > .col-md-custom-5 {
+        flex: 0 0 20%; /* Do not grow or shrink, fix basis to 20% */
+        max-width: 20%; /* Maximum width is 20% */
+        /* Padding is handled by the general custom-grid rule above */
+    }
+
+    /* Ensure other column classes behave as needed at MD breakpoint */
+    /* Bootstrap's col-md- classes would normally take over,
+       but our .col-md-custom-5 takes precedence for items having that class.
+       Items *without* col-md-custom-5 would use Bootstrap's md grid. */
+}
+
+</style>
+<body>
+
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Popular Anime</h1>
+
+        <div class="row custom-grid" id="movie-cards-row">
+            </div>
+
+        <div class="text-center my-4">
+            <button id="load-more-btn" class="btn btn-primary">
+                <i class="bi bi-arrow-down-circle"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+// !!! SECURITY WARNING !!!
+// Storing API keys directly in client-side JavaScript is INSECURE.
+// For production, use a server-side // --- Constants ---
+// --- Constants ---
+const JIKAN_API_BASE = 'https://api.jikan.moe/v4/top/anime?filter=bypopularity';
+let currentPage = 1;
+const limitPerPage = 12;
+let loading = false;
+
+// DOM Elements
+const movieCardsRow = document.getElementById('movie-cards-row');
+const loadMoreBtn = document.getElementById('load-more-btn');
+
+// Clean title (remove season/part info)
+function getMainTitle(title) {
+    return title.replace(/(\s*[:\-–]\s*Season\s*\d+|\s*[:\-–]\s*Part\s*\d+|\s*Season\s*\d+|\s*Part\s*\d+)/i, '').trim();
+}
+
+// Redirect to Watch Page
+function redirectToWatch(showId, encodedTitle, encodedPoster) {
+    const mainTitle = getMainTitle(decodeURIComponent(encodedTitle));
+    const encodedMainTitle = encodeURIComponent(mainTitle);
+    console.log(`Redirecting to watch page: ID=${showId}, Title=${mainTitle}`);
+    window.location.href = `watch.html?id=${showId}&title=${encodedMainTitle}&poster=${encodedPoster}`;
+}
+
+// Fetch Popular Anime
+async function fetchPopularAnime(page) {
+    if (loading) return;
+    if (!movieCardsRow || !loadMoreBtn) {
+        console.error("Essential DOM elements missing.");
+        return;
+    }
+
+    loading = true;
+    loadMoreBtn.disabled = true;
+    loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+    loadMoreBtn.style.display = '';
+
+    const url = `https://api.jikan.moe/v4/top/anime?filter=bypopularity&page=${page}&limit=${limitPerPage}`;
+    console.log("Fetching:", url);
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            const errMsg = `Jikan API error: ${response.status}`;
+            console.error(errMsg);
+            throw new Error(errMsg);
+        }
+
+        const data = await response.json();
+        const animeList = data.data;
+
+        if (!animeList || animeList.length === 0) {
+            if (page === 1) {
+                movieCardsRow.innerHTML = '<p class="col-12 text-center">No popular anime found.</p>';
+            }
+            loadMoreBtn.style.display = 'none';
+            return;
+        }
+
+        animeList.forEach(anime => {
+            if (!anime || !anime.mal_id || (!anime.title && !anime.title_english) || !anime.images?.jpg?.image_url) {
+                console.warn("Incomplete data, skipping:", anime);
+                return;
+            }
+
+            const rawTitle = anime.title_english && anime.title_english.trim() !== "" ? anime.title_english : anime.title;
+            const mainTitle = getMainTitle(rawTitle);
+
+            renderAnimeCard({
+                id: anime.mal_id,
+                Title: mainTitle,
+                Poster: anime.images.jpg.large_image_url || anime.images.jpg.image_url || 'https://via.placeholder.com/300x450?text=No+Poster'
+            });
+        });
+
+        currentPage++;
+        console.log(`Page ${page} loaded. Next page: ${currentPage}`);
+    } catch (error) {
+        console.error("Fetch failed:", error.message);
+        if (page === 1) movieCardsRow.innerHTML = '';
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger col-12';
+        errorDiv.textContent = `Failed to load anime: ${error.message}`;
+        movieCardsRow.appendChild(errorDiv);
+        loadMoreBtn.style.display = 'none';
+    } finally {
+        loading = false;
+        if (loadMoreBtn.style.display !== 'none') {
+            loadMoreBtn.disabled = false;
+            loadMoreBtn.innerHTML = '<i class="bi bi-arrow-down-circle"></i> Load More';
+        }
+    }
+}
+
+// Render Anime Card
+function renderAnimeCard({ id, Title, Poster }) {
+    console.log("Rendering:", Title);
+    const encodedTitle = encodeURIComponent(Title);
+    const encodedPoster = encodeURIComponent(Poster);
+
+    const itemHTML = `
+        <div class="col-6 col-sm-4 col-md-custom-5">
+            <div class="movie-item-container"
+                 data-id="${id}"
+                 data-title="${encodedTitle}"
+                 data-poster="${encodedPoster}">
+                <div class="movie-card-image">
+                    <img src="${Poster}" alt="${Title} Poster" loading="lazy"
+                         onerror="this.onerror=null;this.src='https://via.placeholder.com/300x450?text=Image+Error';">
+                </div>
+                <div class="movie-title-area">
+                    <h5>${Title}</h5>
+                </div>
+            </div>
+        </div>
+    `;
+    movieCardsRow.insertAdjacentHTML('beforeend', itemHTML);
+}
+
+// Handle Card Click
+movieCardsRow?.addEventListener('click', (event) => {
+    const clickedItem = event.target.closest('.movie-item-container');
+    if (!clickedItem) return;
+
+    const showId = clickedItem.getAttribute('data-id');
+    const encodedTitle = clickedItem.getAttribute('data-title');
+    const encodedPoster = clickedItem.getAttribute('data-poster');
+
+    if (showId && encodedTitle && encodedPoster) {
+        redirectToWatch(showId, encodedTitle, encodedPoster);
+    } else {
+        console.warn("Missing data attributes for clicked item.");
+    }
+});
+
+// Load More Button
+loadMoreBtn?.addEventListener('click', () => {
+    console.log("Load More clicked.");
+    fetchPopularAnime(currentPage);
+});
+
+// Initial Load
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Page loaded. Fetching first anime batch.");
+    fetchPopularAnime(currentPage);
+});
+    </script>
+</body>
+</html>
