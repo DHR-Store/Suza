@@ -433,6 +433,12 @@
   <h5 class="stylish1-text" style="margin: 0;"><a href="more1.html">more</a></h5>
       </div>
     <div class="horizontal-scroll" id="tv-shows-scroll"></div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+  <h3 class="stylish-text" style="margin: 0;">Bollywood</h3>
+  <h5 class="stylish1-text" style="margin: 0;"><a href="more3.html">more</a></h5>
+      </div>
+    <div class="horizontal-scroll" id="bollywood-scroll"></div>
   </div>
 
   <!-- BOTTOM NAVIGATION BAR -->
@@ -875,6 +881,125 @@ async function updateAnimeSection() {
     document.getElementById("anime-scroll").innerHTML = "<p>Error loading top anime.</p>";
   }
       }
+    async function updateBollywoodSectionOMDb() {
+    const bollywoodTitles = [ 
+"Chhaava", "Alpha", "Deva", "Sky Force", "Lahore 1947", "Sikandar", "The Diplomat", "Jaat", "Jewel Thief: The Heist Begins", "Superboys of Malegaon"
+      
+    ];
+
+    const sectionElement = document.getElementById("bollywood-scroll");
+     if (!sectionElement) {
+         console.error("Element with ID 'bollywood-scroll' not found.");
+         return; // Exit if the target element doesn't exist
+     }
+
+    if (!OMDB_API_KEY || OMDB_API_KEY === "YOUR_OMDB_API_KEY") {
+         console.error("OMDb API Key is not set. Cannot fetch Bollywood movie details.");
+         sectionElement.innerHTML = "<p>OMDb API Key is not configured. Cannot load Bollywood movies.</p>";
+        return;
+    }
+
+    let fetchedMovies = [];
+
+    try {
+        const fetchPromises = bollywoodTitles.map(title =>
+            fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${OMDB_API_KEY}&plot=short`).then(res => res.json()).catch(e => {
+                 console.error(`Error fetching OMDb details for "${title}":`, e);
+                 return null; // Return null on fetch error
+            })
+        );
+
+        const results = await Promise.all(fetchPromises);
+
+        // Filter out failed fetches and items without valid posters
+        fetchedMovies = results.filter(movie => movie && movie.Response !== "False" && movie.Poster && movie.Poster !== "N/A");
+
+        let htmlContent = "";
+
+        if (fetchedMovies.length > 0) {
+            fetchedMovies.forEach(movie => {
+                let shortTitle = movie.Title.length > 15 ? movie.Title.substring(0, 15) + "..." : movie.Title;
+                const posterUrl = movie.Poster; // OMDb provides the direct URL here
+
+                htmlContent += `
+                  <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(movie.Title)}')">
+                    <img src="${posterUrl}" alt="${movie.Title}" title="${movie.Title}">
+                    <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
+                  </div>`;
+            });
+        } else {
+             htmlContent = "<p>Could not load Bollywood movies at this time or no details found.</p>";
+             console.warn("No valid Bollywood movies fetched from OMDb.");
+        }
+
+        sectionElement.innerHTML = htmlContent;
+
+    } catch (error) {
+        console.error("Error fetching Bollywood movies from OMDb:", error);
+        sectionElement.innerHTML = "<p>Error loading Bollywood movies.</p>";
+    }
+}
+
+
+// === Watch Page Function (Placeholder) ===
+// This function is called when a scroll item is clicked.
+// In a real application, this would navigate to a watch page
+// and potentially pass the movie/show title or ID to it.
+function openWatchPage(title) {
+    console.log("Navigate to watch page for:", decodeURIComponent(title));
+    // Example navigation (replace with your actual watch page logic)
+    // window.location.href = `watch.html?title=${title}`;
+    alert(`You clicked on "${decodeURIComponent(title)}". In a real app, this would go to the watch page.`);
+}
+
+
+// === Initialization ===
+document.addEventListener("DOMContentLoaded", () => {
+  fetchHeroMovies(); // Fetch and display hero carousel content
+  updateMoviesSectionTrakt(); // Fetch and display trending movies
+  updateShowsSectionTrakt(); // Fetch and display trending shows (Web Series and TV Shows)
+  updateAnimeSection(); // Fetch and display top anime
+  updateBollywoodSectionOMDb(); // Fetch Bollywood movie details from OMDb and populate section
+
+  // Add event listeners for hero carousel swipe
+  const heroElement = document.getElementById("hero");
+  heroElement.addEventListener('touchstart', handleTouchStart, false);
+  heroElement.addEventListener('touchmove', handleTouchMove, false);
+  heroElement.addEventListener('touchend', handleTouchEnd, false);
+});
+
+// === Swipe Detection Handlers for Hero Carousel ===
+function handleTouchStart(event) {
+  touchStartX = event.touches[0].clientX;
+}
+
+function handleTouchMove(event) {
+  touchEndX = event.touches[0].clientX;
+}
+
+function handleTouchEnd() {
+  const deltaX = touchEndX - touchStartX;
+
+  if (deltaX > swipeThreshold) {
+    // Swipe right (previous)
+    heroIndex = (heroIndex - 1 + heroMovies.length) % heroMovies.length;
+    showHeroMovie(heroIndex);
+    resetHeroInterval();
+  } else if (deltaX < -swipeThreshold) {
+    // Swipe left (next)
+    heroIndex = (heroIndex + 1) % heroMovies.length;
+    showHeroMovie(heroIndex);
+    resetHeroInterval();
+  }
+
+  // Reset touch variables
+  touchStartX = 0;
+  touchEndX = 0;
+}
+
+    
+
+    
 // Open watch page function
 function openWatchPage(title) {
   // Decode the title before using it in the URL, just in case it was double-encoded somewhere
