@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Updated viewport to disable zoom on mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Search Page</title>
+
+  <!-- Bootstrap & Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+  />
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <style>
+    /* Reset body/html to fill screen */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #000;
+      color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden; /* We'll manage scroll in the suggestions area */
+       -webkit-user-select: none; /* Chrome, Safari */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* IE10+ */
+      user-select: none;         /* Standard syntax */
+    }
+    
+    /* Disable dragging for images */
+    img {
+      -webkit-user-drag: none;
+      cursor: default;
+    }
+
+    /* Fixed top search bar spanning full width */
+    .search-box {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #222;
+      padding: 15px 20px;
+      box-shadow: 0px 2px 8px rgba(255, 255, 255, 0.2);
+      z-index: 1001;
+    }
+
+    /* Input group must be relative for small dropdown arrow if used */
+    .input-group.position-relative {
+      position: relative;
+    }
+
+    /* The container for suggestions: fills screen under the search bar, above bottom nav */
+    #suggestionsContainer {
+      position: fixed;
+      top: 80px; /* enough space for the search bar */
+      left: 0;
+      right: 0;
+      bottom: 60px; /* enough space for the bottom nav (when visible) */
+      background-color: #121212;
+      z-index: 1002;
+      display: none; /* hidden by default */
+      overflow-y: auto; /* enable scrolling for multiple results */
+      padding: 10px 20px; 
+    }
+
+    /* Each suggestion is a "card-like" row with a poster on the left and details on the right */
+    .suggestion-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background-color: #333;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px; 
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .suggestion-item:hover {
+      transform: scale(1.02);
+      background-color: #444;
+    }
+
+    /* Poster image styling */
+    .suggestion-item img {
+      width: 70px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    /* The text details on the right side */
+    .suggestion-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .suggestion-title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 3px;
+    }
+    .suggestion-meta {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+    .suggestion-plot {
+      font-size: 0.85rem;
+      color: #ccc;
+      line-height: 1.2rem;
+    }
+
+    /* Search History container */
+    #historyContainer {
+      margin-top: 15px;
+    }
+
+    /* The list group items for history */
+    .list-group-item {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      margin-bottom: 5px;
+      transition: background-color 0.2s ease;
+    }
+    .list-group-item:hover {
+      background-color: #444;
+      cursor: pointer;
+    }
+
+    /* Clear button */
+    .clear-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .clear-btn:hover {
+      background-color: darkred;
+    }
+
+    /* Bottom Navigation Bar (fixed) */
+    nav.navbar {
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid #444;
+      padding: 10px 0;
+      font-size: 15px;
+      height: 60px;
+      z-index: 1000;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 0;
+      transition: all 0.3s ease-in-out;
+    }
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: all 0.3s ease-in-out;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .nav-link i {
+      font-size: 24px;
+    }
+    .nav-link:hover {
+      color: cyan;
+      transform: scale(1.1);
+    }
+    .nav-link.active {
+  color: cyan;
+  font-weight: bold;
+        }
+
+    /* Hide scrollbar for #suggestionsContainer (optional) */
+    #suggestionsContainer::-webkit-scrollbar {
+      width: 6px;
+    }
+    #suggestionsContainer::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 5px;
+    }
+    #suggestionsContainer::-webkit-scrollbar-track {
+      background: #222;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 480px) {
+      .search-box {
+        padding: 10px;
+      }
+      .suggestion-item img {
+        width: 60px;
+        height: 85px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed top search bar -->
+  <div class="search-box">
+    <h4 class="mb-3"></h4>
+    <div class="input-group position-relative">
+      <input
+        type="text"
+        id="searchInput"
+        class="form-control"
+        placeholder="Enter name..."
+        autocomplete="off"
+      />
+      <button class="btn btn-primary" onclick="performSearch()">Search</button>
+    </div>
+
+    <!-- Search History -->
+    <div id="historyContainer">
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <h6 class="mb-0">Search History</h6>
+        <button class="clear-btn" onclick="clearHistory()">Clear</button>
+      </div>
+      <ul id="searchHistory" class="list-group mt-2"></ul>
+    </div>
+  </div>
+
+  <!-- Fullscreen suggestions container -->
+  <div id="suggestionsContainer"></div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="navbar navbar-dark fixed-bottom" id="bottomNav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="Anime.html" class="nav-link">
+        <i class="bi bi-house-door-fill"></i><br />
+      </a>
+      <a href="search.html" class="nav-link">
+        <i class="bi bi-search"></i><br />
+      </a>
+      <a href="watchlist.html" class="nav-link">
+        <i class="bi bi-bookmark-fill"></i><br />
+      </a>
+      <a href="settings.html" class="nav-link">
+        <i class="bi bi-gear-fill"></i><br />
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    
+    // Prevent default right-click/context menu on the entire document
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Prevent long-press on touch devices from showing image preview
+    document.addEventListener('touchstart', function(e) {
+      if(e.touches.length > 1) {
+        e.preventDefault();
+      }
+    });
+
+    
+    // Prevent zoom gestures on mobile devices (optional)
+    document.addEventListener("gesturestart", function(e) {
+      e.preventDefault();
+    });
+
+    // Hide bottom nav when the keyboard is shown (i.e., input is focused)
+    // and show it again on blur.
+    $(document).ready(function() {
+      $("#searchInput").on("focus", function() {
+        $("#bottomNav").hide();
+      });
+      $("#searchInput").on("blur", function() {
+        $("#bottomNav").show();
+      });
+      loadSearchHistory();
+    });
+
+    // Perform the search, store in history (newest on top), then redirect
+    function performSearch() {
+      const query = $("#searchInput").val().trim();
+      if (!query) return;
+
+      // Load or init search history
+      let history = JSON.parse(localStorage.getItem("searchHistory")) || [];
+      // Remove if it already exists, then add to front
+      history = history.filter(item => item !== query);
+      history.unshift(query);
+      localStorage.setItem("searchHistory", JSON.stringify(history));
+
+      // Redirect to your results page
+      window.location.href = `results.html?query=${encodeURIComponent(query)}`;
+    }
+
+    // Load and display search history
+    function loadSearchHistory() {
+      const history = JSON.parse(localStorage.getItem("searchHistory")) || [];
+      const list = $("#searchHistory");
+      list.empty();
+
+      if (history.length === 0) {
+        list.html("<li class='list-group-item text-center'>No Search History</li>");
+        return;
+      }
+
+      history.forEach(item => {
+        const li = $("<li></li>")
+          .addClass("list-group-item d-flex justify-content-between align-items-center")
+          .text(item)
+          .click(() => {
+            $("#searchInput").val(item);
+          });
+
+        const deleteBtn = $("<button></button>")
+          .text("X")
+          .addClass("btn btn-sm btn-danger")
+          .click(e => {
+            e.stopPropagation();
+            deleteHistoryItem(item);
+          });
+
+        li.append(deleteBtn);
+        list.append(li);
+      });
+    }
+
+    // Clear all search history
+    function clearHistory() {
+      localStorage.removeItem("searchHistory");
+      loadSearchHistory();
+    }
+
+    // Delete a single history item
+    function deleteHistoryItem(item) {
+      let history = JSON.parse(localStorage.getItem("searchHistory")) || [];
+      history = history.filter(entry => entry !== item);
+      localStorage.setItem("searchHistory", JSON.stringify(history));
+      loadSearchHistory();
+    }
+
+    // Listen for input changes to fetch live suggestions
+    // Listen for input changes to fetch live suggestions
+$("#searchInput").on("input", showSuggestions);
+
+// Show suggestions in a full-width container
+function showSuggestions() {
+  const query = $("#searchInput").val().trim();
+  const suggestionsContainer = $("#suggestionsContainer");
+  const historyContainer = $("#historyContainer");
+
+  // If no query, hide suggestions and show history
+  if (!query) {
+    suggestionsContainer.hide().empty();
+    historyContainer.show();
+    return;
+  }
+
+  // Hide history while suggestions are visible and clear previous suggestions
+  historyContainer.hide();
+  suggestionsContainer.empty();
+
+  // --- OMDb API suggestions ---
+  $.ajax({
+    url: "https://www.omdbapi.com/",
+    data: {
+      apikey: "90b37ad0", // Replace with your OMDb API key
+      s: query
+    },
+    dataType: "json",
+    success: function(response) {
+      if (response.Response === "True" && response.Search.length > 0) {
+        const searchResults = response.Search.slice(0, 5); // Limit to first 5 results
+
+        searchResults.forEach(item => {
+          const imdbID = item.imdbID;
+          const title = item.Title || "Untitled";
+          const year = item.Year || "";
+          const type = item.Type || "";
+          const poster = (item.Poster && item.Poster !== "N/A")
+            ? item.Poster
+            : "https://via.placeholder.com/70x100?text=No+Image";
+
+          // Fetch additional details (short plot) for each OMDb result
+          $.ajax({
+            url: "https://www.omdbapi.com/",
+            data: {
+              apikey: "90b37ad0", // Replace with your OMDb API key
+              i: imdbID,
+              plot: "short"
+            },
+            dataType: "json",
+            success: function(details) {
+              const plot = (details.Plot && details.Plot !== "N/A")
+                ? details.Plot
+                : "No plot available.";
+
+              // Create suggestion item UI
+              const suggestionItem = $(`
+                <div class="suggestion-item">
+                  <img src="${poster}" alt="${title} Poster">
+                  <div class="suggestion-info">
+                    <div class="suggestion-title">${title}</div>
+                    <div class="suggestion-meta">${type.toUpperCase()} • ${year}</div>
+                    <div class="suggestion-plot">${plot}</div>
+                  </div>
+                </div>
+              `);
+
+              suggestionItem.click(() => {
+                $("#searchInput").val(title);
+                suggestionsContainer.hide().empty();
+                performSearch();
+              });
+
+              suggestionsContainer.append(suggestionItem);
+              suggestionsContainer.show();
+            },
+            error: function(err) {
+              console.error("Error fetching OMDb item details:", err);
+            }
+          });
+        });
+      }
+    },
+    error: function(err) {
+      console.error("Error fetching OMDb search results:", err);
+    }
+  });
+
+  // --- IMDb JSON suggestions with similar UI ---
+  // Construct the IMDb suggestions URL based on the query's first letter
+  const imdbUrl = "https://v2.sg.media-imdb.com/suggestion/" +
+    query.charAt(0).toLowerCase() + "/" +
+    encodeURIComponent(query) + ".json";
+
+  $.ajax({
+    url: imdbUrl,
+    dataType: "json",
+    success: function(data) {
+      if (data && data.d && data.d.length > 0) {
+        const imdbResults = data.d.slice(0, 5); // Limit to first 5 results
+
+        imdbResults.forEach(item => {
+          const imdbID = item.id;
+          const title = item.l || "Untitled";
+          // Use IMDb's year if available; we'll override with OMDb details if provided.
+          const imdbYear = item.yr ? item.yr : "";
+          // Use IMDb's poster as fallback; OMDb details may override it.
+          const imdbPoster = (item.i && item.i[0])
+            ? item.i[0]
+            : "https://via.placeholder.com/70x100?text=No+Image";
+
+          // Use the OMDb API to fetch extra details so that IMDb suggestions mimic the OMDb UI
+          $.ajax({
+            url: "https://www.omdbapi.com/",
+            data: {
+              apikey: "90b37ad0", // Replace with your OMDb API key
+              i: imdbID,
+              plot: "short"
+            },
+            dataType: "json",
+            success: function(details) {
+              // Determine poster: if OMDb returns a valid image, use it, else fallback to IMDb poster
+              const poster = (details && details.Poster && details.Poster !== "N/A")
+                ? details.Poster
+                : imdbPoster;
+              // Use the year from OMDb if available; otherwise, use IMDb's year
+              const year = (details && details.Year && details.Year !== "N/A")
+                ? details.Year
+                : imdbYear;
+              // Get type and plot details from OMDb
+              const type = (details && details.Type)
+                ? details.Type.toUpperCase()
+                : "";
+              const plot = (details && details.Plot && details.Plot !== "N/A")
+                ? details.Plot
+                : "No plot available.";
+
+              // Create suggestion item with the same UI as OMDb suggestions
+              const suggestionItem = $(`
+                <div class="suggestion-item">
+                  <img src="${poster}" alt="${title} Poster">
+                  <div class="suggestion-info">
+                    <div class="suggestion-title">${title}</div>
+                    <div class="suggestion-meta">${type}${type && year ? " • " : ""}${year}</div>
+                    <div class="suggestion-plot">${plot}</div>
+                  </div>
+                </div>
+              `);
+
+              suggestionItem.click(() => {
+                $("#searchInput").val(title);
+                suggestionsContainer.hide().empty();
+                performSearch();
+              });
+
+              suggestionsContainer.append(suggestionItem);
+              suggestionsContainer.show();
+            },
+            error: function(err) {
+              console.error("Error fetching IMDb details via OMDb:", err);
+            }
+          });
+        });
+      }
+    },
+    error: function(err) {
+      console.error("Error fetching IMDb suggestions:", err);
+    }
+  });
+}
+  
+
+                  
+
+    // Hide suggestions when clicking outside the search box
+    $(document).click(function(e) {
+      // If click is outside the search box or suggestions container
+      if (
+        !$(e.target).closest(".search-box").length &&
+        !$(e.target).closest("#suggestionsContainer").length
+      ) {
+        $("#suggestionsContainer").hide().empty();
+        $("#historyContainer").show();
+      }
+    });
+
+        
+      // Wait until the DOM is loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get the current file name from the URL (default to home.html if empty)
+    var path = window.location.pathname.split("/").pop();
+    if (path === '') {
+      path = 'search.html';
+    }
+    
+    // Select all nav links inside the navbar
+    var navLinks = document.querySelectorAll('nav.navbar .nav-link');
+    
+    // Loop through each nav link and add active class if href matches current path
+    navLinks.forEach(function(link) {
+      var href = link.getAttribute('href');
+      if (href === path) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  });
+    function performSearch() {
+    const query = $("#searchInput").val().trim();
+    if (!query) return;
+
+    // Load or init search history
+    let history = JSON.parse(localStorage.getItem("searchHistory")) || [];
+    // Remove if it already exists, then add to front
+    history = history.filter(item => item !== query);
+    history.unshift(query);
+    localStorage.setItem("searchHistory", JSON.stringify(history));
+
+    // Redirect to your results page
+    window.location.href = `results.html?query=${encodeURIComponent(query)}`;
+  }
+
+  // Call performSearch when the Enter (search) key is pressed
+  $("#searchInput").on("keydown", function(e) {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      // Prevent the default action if needed (like form submission)
+      e.preventDefault();
+      performSearch();
+    }
+  });
+
+  // Rest of your existing code...
+  
+  // Show suggestions as before
+  $("#searchInput").on("input", showSuggestions);
+
+  // ... (rest of your code remains unchanged)
+    
+  </script>
+</body>
+</html>
