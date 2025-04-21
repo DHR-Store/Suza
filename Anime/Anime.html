@@ -364,7 +364,7 @@
 
        <div style="display: flex; justify-content: space-between; align-items: center;">
   <h3 class="stylish-text" style="margin: 0;">Air-Anime</h3>
-  <h5 class="stylish1-text" style="margin: 0;"><a href="more2.html">more</a></h5>
+  <h5 class="stylish1-text" style="margin: 0;"><a href="more4.html">more</a></h5>
     </div>
     <div class="horizontal-scroll" id="anime-scroll"></div>
     
@@ -390,9 +390,9 @@
   <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
     <div class="container-fluid d-flex justify-content-around">
       <a href="Anime.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
-      <a href="searchT.html" class="nav-link"><i class="bi bi-search"></i><br></a>
-      <a href="watchlistT.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br></a>
-      <a href="settingsT.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
+      <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark-fill"></i><br></a>
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i><br></a>
     </div>
   </nav>
 
@@ -428,7 +428,7 @@
       }
       // Also, update the bottom nav active state based on current file name.
       var path = window.location.pathname.split("/").pop();
-      if (path === '') { path = 'trakt.html'; }
+      if (path === '') { path = 'Anime.html'; }
       var navLinks = document.querySelectorAll('nav.navbar .nav-link');
       navLinks.forEach(function(link) {
         var href = link.getAttribute('href');
