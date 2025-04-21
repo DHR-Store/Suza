@@ -156,7 +156,7 @@ const loadMoreBtn = document.getElementById('load-more-btn');
 
 // --- Fetch Movie Poster from OMDb API ---
 async function fetchMoviePoster(movieTitle) {
-    const url = `http://www.omdbapi.com/?t=${encodeURIComponent(movieTitle)}&apikey=${OMDB_API_KEY}`;
+    const url = `https://www.omdbapi.com/?t=${encodeURIComponent(movieTitle)}&apikey=${OMDB_API_KEY}`;
     const response = await fetch(url);
     const data = await response.json();
     return data.Poster || 'https://via.placeholder.com/300x450?text=No+Poster+Available';
