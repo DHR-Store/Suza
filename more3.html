@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+  /* Custom Styles */
+.movie-item-container {
+    margin-bottom: 20px; /* Space below each movie item */
+    text-align: center;
+    cursor: pointer; /* Indicate it's clickable */
+    transition: transform 0.2s ease-in-out; /* Add a slight hover effect */
+    display: flex; /* Use flexbox to arrange internal parts */
+    flex-direction: column; /* Stack image container and title */
+    height: 100%; /* Ensure items in a row align top */
+}
+
+.movie-item-container:hover {
+    transform: translateY(-5px); /* Lift item slightly on hover */
+}
+
+.movie-card-image {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 10px; /* Space between image and title */
+    flex-shrink: 0; /* Prevent image area from shrinking */
+    /* Optional: Set a fixed aspect ratio for the image container */
+    /* For example, typical movie poster aspect ratio is ~2:3 */
+    /* aspect-ratio: 2 / 3; */
+    background-color: #f0f0f0; /* Background for placeholder */
+    display: flex; /* Center placeholder text/image */
+    align-items: center;
+    justify-content: center;
+}
+
+.movie-card-image img {
+    display: block; /* Remove extra space below image */
+    width: 100%; /* Image takes full width of its container */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: cover; /* Cover the container area */
+    /* If using aspect-ratio on .movie-card-image, you might need: */
+    /* height: 100%; width: 100%; object-fit: cover; */
+}
+
+.movie-title-area {
+    flex-grow: 1; /* Allow title area to take up remaining space */
+    padding: 0 5px; /* Add padding to prevent title from hitting edges */
+}
+
+.movie-title-area h5 {
+    font-size: 0.9rem; /* Slightly smaller font for title */
+    margin: 0;
+    /* Prevent title wrapping, hide overflow */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Custom Grid for 5 Columns on Desktop --- */
+/* Override default Bootstrap column padding */
+.row.custom-grid {
+    margin-left: -5px; /* Compensate for custom column padding */
+    margin-right: -5px; /* Compensate for custom column padding */
+}
+
+.row.custom-grid > [class*="col-"] {
+    padding-left: 5px; /* Custom column padding */
+    padding-right: 5px; /* Custom column padding */
+}
+
+
+/* Styles for 2 columns on extra-small (default Bootstrap col-6) */
+/* Styles for 3 columns on small screens (Bootstrap col-sm-4) */
+/* Styles for 5 columns on medium screens and up */
+@media (min-width: 768px) {
+    .row.custom-grid {
+        display: flex; /* Enable flexbox on the row */
+        flex-wrap: wrap; /* Allow items to wrap */
+    }
+
+    /* Define the custom 5-column width (100% / 5 = 20%) */
+    .row.custom-grid > .col-md-custom-5 {
+        flex: 0 0 20%; /* Do not grow or shrink, fix basis to 20% */
+        max-width: 20%; /* Maximum width is 20% */
+        /* Padding is handled by the general custom-grid rule above */
+    }
+
+    /* Ensure other column classes behave as needed at MD breakpoint */
+    /* Bootstrap's col-md- classes would normally take over,
+       but our .col-md-custom-5 takes precedence for items having that class.
+       Items *without* col-md-custom-5 would use Bootstrap's md grid. */
+}
+
+</style>
+<body>
+
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Trending Movies</h1>
+
+        <div class="row custom-grid" id="movie-cards-row">
+            </div>
+
+        <div class="text-center my-4">
+            <button id="load-more-btn" class="btn btn-primary">
+                <i class="bi bi-arrow-down-circle"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+// !!! SECURITY WARNING !!!
+// Storing API keys directly in client-side JavaScript is INSECURE.
+// For production, use a server-side proxy to make API calls.
+const OMDB_API_KEY = '90b37ad0'; // Add your OMDb API key here
+const limitPerPage = 10; // Show 10 items per page
+let currentPage = 0;
+let loading = false;
+
+// --- Const List of Bollywood Movies ---
+const bollywoodMovies = [
+  "Chhaava", "Deva", "Bhool Bhulaiyaa 3", "Dhoom Dhaam", "Laapataa Ladies", "Do Patti",
+  "Crew", "Sector 36", "Animal", "Shaitaan", "Maharaj", "Emergency", "Haseen Dillruba",
+  "Nadaaniyan", "Article 370", "Dunki", "Fighter", "Sikandar Ka Muqaddar", "Phir Aayi Hasseen Dillruba",
+  "Jigra", "Mission Majnu", "Azaad", "Ulajh", "Shehzada", "Mr. & Mrs. Mahi", "Savi", "Darlings",
+  "Bade Miyan Chote Miyan", "'83", "Talaash", "Srikanth", "Jaane Jaan", "OMG 2", "Vicky Vidya ka Woh Wala Video",
+  "Wild Wild Punjab", "Jawan: Extended Cut", "Khel Khel Mein", "HIT: The First Case", "Gunjan Saxena: The Kargil Girl",
+  "Ginny Weds Sunny", "Swades", "Mrs. Chatterjee vs Norway", "Hasee Toh Phasee", "Yeh Jawaani Hai Deewani",
+  "HIT: The First Case", "Bajrangi Bhaijaan", "Mimi", "Zindagi Na Milegi Dobara", "Tu Jhoothi Main Makkar",
+  "Veere Di Wedding", "Murder Mubarak", "Double XL", "Om Shanti Om", "Kathal - A Jackfruit Mystery",
+  "Laal Singh Chaddha", "OMG 2", "Sukhee", "Mission Raniganj: The Great Bharat Rescue", "Badhaai Do", 
+  "Jaadugar", "Doctor G", "Mom", "Badla", "Raat Akeli Hai", "Shabaash Mithu", "Ludo", "The Sky Is Pink",
+  "Jersey", "Soorma", "Pad Man", "Dasvi", "Qarib Qarib Singlle", "Toolsidas Junior", "Chopsticks",
+  "Dostana", "Kabir Singh", "Jab We Met", "Kuch Kuch Hota Hai", "Dilwale Dulhania Le Jayenge", "Lagaan",
+  "Dil Chahta Hai", "Taare Zameen Par", "Kabhi Khushi Kabhie Gham", "3 Idiots", "Rang De Basanti",
+  "Chennai Express", "Goliyon Ki Raasleela Ram-Leela", "Piku", "Barfi!", "Rock On!!", "Zindagi Na Milegi Dobara",
+  "Wake Up Sid", "Tamasha", "Barfi!", "Dangal", "Chhichhore", "Andhadhun", "Article 15", "Badhaai Ho",
+  "Chhapaak", "Queen", "Raat Akeli Hai", "Lootcase", "Kahaani", "Tumbbad", "Drishyam", "Bajirao Mastani",
+  "Dabangg", "Sultan", "Tanu Weds Manu", "Airlift", "Rang De Basanti", "Pyaar Ka Punchnama",
+  "Sonu Ke Titu Ki Sweety", "Baaghi", "Mardaani", "Bajirao Mastani", "Housefull 4", "Baahubali: The Beginning",
+  "Baahubali: The Conclusion", "The Lunchbox", "Sholay", "Mughal-e-Azam", "Pyaasa", "Anand", "Drishyam",
+  "Mughal-e-Azam", "Madhumati", "Gully Boy", "Kahaani", "Aaradhana", "Pakeezah", "Meri Jung", "Rang De Basanti",
+  "Dil Chahta Hai", "Chupke Chupke", "Jaane Bhi Do Yaaro", "Chupke Chupke", "Angoor", "Hera Pheri", "Chupke Chupke"
+];
+
+// --- DOM Elements ---
+const movieCardsRow = document.getElementById('movie-cards-row');
+const loadMoreBtn = document.getElementById('load-more-btn');
+
+// --- Fetch Movie Poster from OMDb API ---
+async function fetchMoviePoster(movieTitle) {
+    const url = `http://www.omdbapi.com/?t=${encodeURIComponent(movieTitle)}&apikey=${OMDB_API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.Poster || 'https://via.placeholder.com/300x450?text=No+Poster+Available';
+}
+
+// --- Render Movie Card ---
+function renderMovieCard(movie, posterUrl) {
+    const encodedTitle = encodeURIComponent(movie);
+    const gridClasses = "col-6 col-sm-4 col-md-custom-5";
+
+    const itemHTML = `
+        <div class="${gridClasses}">
+            <div class="movie-item-container"
+                 data-title="${encodedTitle}"
+                 data-poster="${posterUrl}">
+                <div class="movie-card-image">
+                    <img src="${posterUrl}" alt="${movie} Poster" loading="lazy">
+                </div>
+                <div class="movie-title-area">
+                    <h5>${movie}</h5>
+                </div>
+            </div>
+        </div>
+    `;
+    movieCardsRow.innerHTML += itemHTML;
+}
+
+// --- Handle Card Click ---
+movieCardsRow.addEventListener('click', function (event) {
+    const clickedItem = event.target.closest('.movie-item-container');
+
+    if (clickedItem) {
+        const title = clickedItem.getAttribute('data-title');
+        const poster = clickedItem.getAttribute('data-poster');
+        // Handle redirection to another page if needed
+        // redirectToWatch(showId, encodedTitle, encodedPoster, season, episodes);
+    }
+});
+
+// --- Load More Click ---
+loadMoreBtn.addEventListener('click', function () {
+    loadMoreMovies();
+});
+
+// --- Load Movies ---
+async function loadMoreMovies() {
+    if (loading) return;
+
+    loading = true;
+    loadMoreBtn.disabled = true;
+    loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+
+    const startIndex = currentPage * limitPerPage;
+    const moviesToShow = bollywoodMovies.slice(startIndex, startIndex + limitPerPage);
+
+    for (const movie of moviesToShow) {
+        const posterUrl = await fetchMoviePoster(movie);
+        renderMovieCard(movie, posterUrl);
+    }
+
+    currentPage++;
+
+    if (currentPage * limitPerPage >= bollywoodMovies.length) {
+        loadMoreBtn.style.display = 'none';
+    }
+
+    loading = false;
+    loadMoreBtn.disabled = false;
+    loadMoreBtn.innerHTML = '<i class="bi bi-arrow-down-circle"></i>';
+}
+// --- Handle Card Click ---
+movieCardsRow.addEventListener('click', function (event) {
+    const clickedItem = event.target.closest('.movie-item-container');
+
+    if (clickedItem) {
+        const title = clickedItem.getAttribute('data-title');
+        const poster = clickedItem.getAttribute('data-poster');
+
+        // Redirect to the watch page with the movie details in the URL
+        window.location.href = `watch.html?title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
+    }
+});
+
+// --- Initial Load ---
+document.addEventListener('DOMContentLoaded', function () {
+    loadMoreMovies();
+});
+
+    </script>
+</body>
+</html>
