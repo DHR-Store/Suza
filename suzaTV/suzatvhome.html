@@ -362,7 +362,7 @@ body {
     <div class="container-fluid d-flex justify-content-around">
       <a href="suzatvhome.html" class="nav-link"><i class="bi bi-house-door-fill" style="color: #00ffff;"></i><br></a>
       <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
-      <a href="watchlist.html" class="nav-link"><i class="bi bi-tv"></i><br></a>
+      <a id="bi-bi" class="nav-link"><i class="bi bi-tv"></i><br></a>
       <a href="settings.html" class="nav-link"><i class="bi bi-gear"></i><br></a>
     </div>
   </nav>
@@ -520,46 +520,35 @@ const RECENT_STORAGE_KEY = 'recentChannels';
 
 /**
  * Adds a recent channel.
- * You can pass either a string (channel name) or an object with properties:
- * - name: the display name for the channel
- * - htmlFile: the HTML file to open.
- *
- * If a string is provided, the function creates an object where
- * the htmlFile is computed as "<channel name>.html".
  */
 function addRecentChannel(channel) {
-  // Determine if channel is a string or an object.
   let channelObj = (typeof channel === 'string')
     ? { name: channel, htmlFile: channel + ".html" }
     : channel;
 
   let recents = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY)) || [];
 
-  // Remove any existing entry with the same HTML file.
   recents = recents.filter(item => item.htmlFile !== channelObj.htmlFile);
-
-  // Add new channel at the beginning.
   recents.unshift(channelObj);
 
-  // Limit to 5 items.
   if (recents.length > 5) {
     recents = recents.slice(0, 5);
   }
-  
-  localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(recents));
-  renderRecentlyUsed();
-}
 
+  localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(recents));
+  
+  renderRecentlyUsed();
+  renderTVButton(); // Add the TV navigation button for latest
+}
 /**
  * Renders the list of recently used channels.
- * Each channel is displayed by its name and clicking it opens the associated HTML file.
  */
 function renderRecentlyUsed() {
   const container = document.getElementById("recentlyUsedList");
   container.innerHTML = "";
 
   const recents = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY)) || [];
-  
+
   recents.forEach(channel => {
     const div = document.createElement("div");
     div.className = "info-item";
@@ -571,8 +560,30 @@ function renderRecentlyUsed() {
   });
 }
 
-// Initial render to display any stored channels.
+/**
+ * Renders the TV button to open the most recent channel.
+ */
+function renderTVButton() {
+  const tvContainer = document.getElementById("bi-bi");
+  tvContainer.innerHTML = "";
+
+  const recents = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY)) || [];
+  if (recents.length > 0) {
+    const latest = recents[0];
+    const icon = document.createElement("i");
+    icon.className = "bi bi-tv";
+    icon.style.cursor = "pointer";
+    icon.title = "Open latest channel: " + latest.name;
+    icon.onclick = () => {
+      window.location.href = latest.htmlFile;
+    };
+    tvContainer.appendChild(icon);
+  }
+}
+
+// Initial render
 renderRecentlyUsed();
+renderTVButton();
 
     // Clear recent history functionality.
     document.getElementById("clearRecents").addEventListener("click", () => {
