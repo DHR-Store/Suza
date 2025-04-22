@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sony Kal Live</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-height: 100vh;
+      background: #111;
+    }
+    video {
+      width: 100%;
+      height: auto;
+      background-color: #000;
+    }
+       .content-section {
+      padding: 20px;
+      max-width: 960px;
+      margin: 15px auto;
+      background-color: #000;
+      border-radius: 5px;
+    }
+    .content-section h2 {
+      color: #ff0000;
+      border-bottom: 1px solid #555;
+      padding-bottom: 5px;
+      margin-top: 0;
+    }
+    .content-section img {
+      border-radius: 0;
+      width: 150px;
+      height: 100px;
+    }
+    .content-section p, .content-section ul {
+      color: #ccc;
+      line-height: 1.6;
+    }
+    .content-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .content-section li {
+      padding: 5px 0;
+      border-bottom: 1px dotted #444;
+    }
+    .content-section li:last-child {
+      border-bottom: none;
+    }
+    /* Styling for upcoming schedule list */
+    .schedule-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #444;
+    }
+    .schedule-list li:last-child {
+      border-bottom: none;
+    }
+    .schedule-time {
+      font-weight: bold;
+      color: #ff0000;
+    }
+  </style>
+</head>
+<body>
+  <div class="video-wrapper" id="videoContainer">
+    <video id="liveStream" controls autoplay>
+      <source src="https://spt-sonykal-1-us.lg.wurl.tv/playlist.m3u8" type="application/x-mpegURL" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+  <div class="content-section">
+    <img src="https://sonykal.com/themes/custom/responsive_sony_kal/logo.svg" alt="Sony kal"/>
+    <h2>About Sony Kal</h2>
+    <p>
+      Sony Kal is an Indian-based international television service owned by Culver Max Entertainment, itself owned by Sony. It was launched on 28 January 2022, and distributes Indian soap operas and other television programs in the United States and Canada. It is available on platforms such as Xumo, Sling TV, and TCL.
+    </p>
+  </div>
+
+  <!-- Upcoming Schedule Section -->
+  <div class="content-section">
+    <h2>Upcoming Shows</h2>
+    <ul id="upcomingSchedule" class="schedule-list">
+      <!-- Schedule items will be populated here -->
+      <li><h3>CID –<br>
+
+Crime Patrol Dial 100 –<br>
+
+Adaalat – <br>
+
+Aladdin –<br>
+
+Baalveer –<br>
+
+Chidiyagharbr<br>
+
+Taarak Mehta Ka Ooltah Chashmah – <br>
+
+Tenali Rama – <br>
+
+Vighnaharta Ganesh –<br>
+</li>
+    </ul>
+  </div>
+
+  <script>
+    const fullscreenButton = document.getElementById('fullscreenBtn');
+    const videoContainer = document.getElementById('videoContainer');
+    const fullscreenIcon = document.getElementById('fullscreenIcon');
+
+    async function lockOrientation() {
+      try {
+        if (screen.orientation && typeof screen.orientation.lock === 'function') {
+          await screen.orientation.lock('landscape');
+        }
+      } catch (error) {}
+    }
+
+    function unlockOrientation() {
+      try {
+        if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+          screen.orientation.unlock();
+        }
+      } catch (error) {}
+    }
+
+    async function goFullscreen() {
+      await lockOrientation();
+      try {
+        if (videoContainer.requestFullscreen) {
+          await videoContainer.requestFullscreen();
+        } else if (videoContainer.webkitRequestFullscreen) {
+          await videoContainer.webkitRequestFullscreen();
+        } else if (videoContainer.msRequestFullscreen) {
+          await videoContainer.msRequestFullscreen();
+        }
+      } catch (err) {
+        console.error("Fullscreen error:", err);
+        unlockOrientation();
+      }
+    }
+
+    async function exitFullscreen() {
+      try {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          await document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          await document.msExitFullscreen();
+        }
+      } catch (err) {
+        console.error("Exit fullscreen error:", err);
+      }
+    }
+
+    fullscreenButton.addEventListener('click', () => {
+      const isFullscreen = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement
+      );
+      if (!isFullscreen) {
+        goFullscreen();
+      } else {
+        exitFullscreen();
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      const isFs = !!document.fullscreenElement;
+      fullscreenIcon.className = isFs ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+      fullscreenButton.title = isFs ? 'Exit Fullscreen' : 'Enter Fullscreen';
+      if (!isFs) unlockOrientation();
+    });
+  </script>
+</body>
+</html>
