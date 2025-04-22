@@ -78,6 +78,68 @@
       font-weight: bold;
       color: #ff0000;
     }
+     .container-box {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      height: 100px;
+      overflow: hidden;
+    }
+
+    .img-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .img-wrapper img {
+      width: 100px;
+      height: 100px;
+      margin: 0 5px;
+      border-radius: 10px;
+    }
+
+    .playlist-btn {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      color: white;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      opacity: 0;
+      z-index: 1;
+      transition: opacity 1s ease;
+    }
+
+    .show-btn {
+      opacity: 1;
+      z-index: 3;
+    }
+
+    @keyframes slideLeft {
+      0% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      80% {
+        transform: translateX(-100%);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+    }
+
+    .start-animation {
+      animation: slideLeft 3s ease-in-out forwards;
+      }
         /* Bottom Navigation Bar */
     nav.navbar {
       background: transparent;
@@ -127,6 +189,18 @@
       Sony Kal is an Indian-based international television service owned by Culver Max Entertainment, itself owned by Sony. It was launched on 28 January 2022, and distributes Indian soap operas and other television programs in the United States and Canada. It is available on platforms such as Xumo, Sling TV, and TCL.
     </p>
   </div>
+    <div class="container-box">
+    <div class="img-wrapper" id="imageRow">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSb5uro0WoIa5dgyb4qJ3vZqagAtdyRXRJQjaTEZVQXgF1KACnGmF2_Sy2L&s=10" />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbqAWSGW7koZOnVBRTiSgIGVk6LX0fHb3nXbsVuXq8K7umSA6FG5Vn0PY&s=10" />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiG84FIzcLDZpvYcFQn_OndI94wKIPYYdn3ZER_fw62yzTmpfbMUoXR1mM&s=10" />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJDLUpjwBWmqZSaQwfJ8jvYaCUp35i7k9UgnrHU1x85n8w4_f16645HJ8&s=10" />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPXfwDUOn0qYugzBHy8_6azXAhv8k1Aax0dflSLLGZeY7T4K9TQg0uibE&s=10" />
+    </div>
+    <button class="playlist-btn" id="playlistBtn" onclick="window.location.href='sonic.html'">
+      Click for playlist<i class="bi bi-archive-fill" style="color: #00ffff;"></i>
+    </button>
+    </div>
 
   <!-- Upcoming Schedule Section -->
   <div class="content-section">
@@ -256,5 +330,17 @@ window.addEventListener('scroll', () => {
 });
     
   </script>
+      <script>
+    setTimeout(() => {
+      const imgWrapper = document.getElementById('imageRow');
+      imgWrapper.classList.add('start-animation');
+
+      setTimeout(() => {
+        const playlistBtn = document.getElementById('playlistBtn');
+        playlistBtn.classList.add('show-btn');
+      }, 3000); // wait till animation ends
+    }, 3000); // wait before starting animation
+      </script>
+  
 </body>
 </html>
