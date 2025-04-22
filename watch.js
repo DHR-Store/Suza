@@ -275,14 +275,14 @@ function loadEpisodeSourceTVMaze(season, episode, title, epName) {
   let src = "";
   if (embedProvider === "filmu") {
     // Updated Filmu embed using TMDB id for TV episodes
-    src = `https://embed.filmu.fun/embed/tmdb-tv-${currentTMDB}/${season}/${episode}`;
+    src = `https://embed.filmu.fun/embed/tmdb-tv-${currentImdb}/${season}/${episode}`;
   } else if (embedProvider === "2embed") {
-    src = `https://www.2embed.cc/embedtv/${currentImdb}&s=${season}&e=${episode}`;
+    src = `https://www.2embed.cc/embedtv/${currentImdb}?&s=${season}&e=${episode}`;
   } else if (embedProvider === "multiembed") {
-    src = `https://multiembed.mov/?video_id=${currentImdb}&s=${season}&e=${episode}`;
+    src = `https://multiembed.mov/?video_id=${currentImdb}?&s=${season}&e=${episode}`;
   } else {
     // Default: VidAPI endpoint
-    src = `https://vidapi.xyz/embed/tv/${currentImdb}&s=${season}&e=${episode}`;
+    src = `https://vidapi.xyz/embed/tv/${currentImdb}?&s=${season}&e=${episode}`;
   }
   document.getElementById("videoPlayer").src = src;
   document.getElementById("videoCaption").innerText = `S${season}E${episode} - ${epName}`;
