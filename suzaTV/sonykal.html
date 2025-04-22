@@ -4,7 +4,11 @@
   <meta charset="UTF-8" />
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Sony Kal Live</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+  
   <style>
     body {
       margin: 0;
@@ -74,6 +78,39 @@
       font-weight: bold;
       color: #ff0000;
     }
+        /* Bottom Navigation Bar */
+    nav.navbar {
+      background: transparent;
+      backdrop-filter: blur(8px);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #444;
+      transition: transform 0.3s ease;
+    }
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease, color 0.3s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .nav-link i {
+      font-size: 24px;
+    }
+    .nav-link:hover {
+      color: cyan;
+      transform: scale(1.1);
+    }
+    .nav-link.active {
+  color: cyan;
+  font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -116,6 +153,15 @@ Vighnaharta Ganesh –<br>
 </li>
     </ul>
   </div>
+    <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="suzatvhome.html" class="nav-link"><i class="bi bi-house-door"></i><br></a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
+      <a href="sonykal.html" class="nav-link"><i class="bi bi-tv-fill" style="color: #00ffff;"></i><br></a>
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear"></i><br></a>
+    </div>
+  </nav>
 
   <script>
     const fullscreenButton = document.getElementById('fullscreenBtn');
@@ -187,6 +233,28 @@ Vighnaharta Ganesh –<br>
       fullscreenButton.title = isFs ? 'Exit Fullscreen' : 'Enter Fullscreen';
       if (!isFs) unlockOrientation();
     });
+    let lastScrollTop = 0;
+// Using a variable to store the bottom nav element for efficiency
+const bottomNav = document.getElementById('bottom-nav');
+window.addEventListener('scroll', () => {
+  let st = window.pageYOffset || document.documentElement.scrollTop;
+  // Add a small threshold to prevent flickering on minor scrolls
+  const scrollThreshold = 5;
+  if (Math.abs(st - lastScrollTop) <= scrollThreshold) {
+      return; // Do nothing if scroll is minimal
+  }
+
+  if (st > lastScrollTop && st > bottomNav.offsetHeight) {
+    // Scrolling down and past the height of the nav: hide nav
+    bottomNav.style.transform = 'translateY(100%)';
+  } else if (st < lastScrollTop) {
+    // Scrolling up: show nav
+    bottomNav.style.transform = 'translateY(0)';
+  }
+  // Ensure lastScrollTop doesn't go below 0
+  lastScrollTop = st <= 0 ? 0 : st;
+});
+    
   </script>
 </body>
 </html>
