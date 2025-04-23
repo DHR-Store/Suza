@@ -280,6 +280,8 @@ function loadEpisodeSourceTVMaze(season, episode, title, epName) {
     src = `https://www.2embed.cc/embedtv/${currentImdb}&s=${season}&e=${episode}`;
   } else if (embedProvider === "multiembed") {
     src = `https://multiembed.mov/?video_id=${currentImdb}&s=${season}&e=${episode}`;
+  } else if (embedProvider === "player4u") {
+    src = `https://player4u.xyz/embed?key=${epName}&s=${season}&e=${episode}`;
   } else {
     // Default: VidAPI endpoint - Modified to exclude IMDB ID
     src = `https://vidapi.xyz/embed/tv/${currentImdb}?&s=${season}&e=${episode}`; // Potential format, needs verification
@@ -309,6 +311,8 @@ function loadMovieVideoFromSearch() {
     src = `https://www.2embed.cc/embed/${currentImdb}`;
   } else if (embedProvider === "multiembed") {
     src = `https://multiembed.mov/?video_id=${currentImdb}`;
+  } else if (embedProvider === "player4u") {
+    src = `https://player4u.xyz/embed?key=${currentMovieTitle}`;
   } else {
     // Default: VidAPI endpoints
     const urlParams = new URLSearchParams(window.location.search);
