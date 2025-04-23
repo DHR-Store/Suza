@@ -458,18 +458,13 @@
   <!-- JavaScript file inclusion -->
   <script src="watch.js"></script>
 <script>
-    window.addEventListener('DOMContentLoaded', () => {
-    const iframe = document.getElementById('videoPlayer');
-
-    // Make sure iframe starts with sandbox (in case someone removes it earlier)
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
-
-    // Remove sandbox after 4 seconds
+    window.onload = function() {
     setTimeout(() => {
+      const iframe = document.getElementById('videoPlayer');
       iframe.removeAttribute('sandbox');
       console.log('Sandbox attribute removed after 4 seconds.');
-    }, 5000);
-  });
+    }, 3000);
+  };
 
 </script>
 </body>
