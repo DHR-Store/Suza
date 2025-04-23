@@ -457,35 +457,59 @@
   
   <!-- JavaScript file inclusion -->
   <script src="watch.js"></script>
-  <script>
-        setTimeout(() => {
-  // Step 1: Remove overlay so iframe can do its thing
-  document.getElementById("overlayBlock").remove();
+<script>
+function openVideo(url, caption = '') {
+  const iframe = document.getElementById('videoPlayer');
+  const container = document.getElementById('videoContainer');
+  const overlay = document.getElementById('darkOverlay');
+  const captionElem = document.getElementById('videoCaption');
 
-  // Step 2: Block any future tab opens by overriding window.open
-  // This only blocks if iframe tries to open in SAME window context
+  // Show video UI
+  container.style.display = 'block';
+  overlay.style.display = 'block';
+  captionElem.innerText = caption;
+
+  // Step 1: First load with sandbox for 4 seconds
+  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+  iframe.src = url;
+
+  // Block unwanted popup at start
   window.open = function () {
-    console.log("Blocked an external tab open attempt bhidu!");
+    console.warn("Blocked popup attempt bhidu!");
     return null;
   };
 
-  // (Bonus) Optionally refocus window in case iframe tried pop-up
-  window.focus();
-}, 200); // 0.2 sec = 200ms 
-// Extra protection - block window.open at page level too
-window.open = function() {
-  console.warn("Popup blocked bhidu!");
-  return null;
-};
+  // Step 2: After 4 seconds, remove sandbox by reloading iframe
+  setTimeout(() => {
+    const currentURL = iframe.src;
+    iframe.removeAttribute('sandbox');
+    iframe.src = ''; // Force reload
+    setTimeout(() => {
+      iframe.src = currentURL;
+      console.log("Sandbox removed and iframe reloaded bhidu!");
+    }, 100); // short delay before reassigning
+  }, 4000);
+}
 
-// Optional - intercept anchor tags trying to go outside
-document.addEventListener("click", function (e) {
-  if (e.target.tagName === 'A' && e.target.target === "_blank") {
-    e.preventDefault();
-    console.warn("Blocked external link: " + e.target.href);
+function closeVideo() {
+  const iframe = document.getElementById('videoPlayer');
+  iframe.src = '';
+  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin'); // reset for next time
+  document.getElementById('videoContainer').style.display = 'none';
+  document.getElementById('darkOverlay').style.display = 'none';
+}
+
+function toggleFullscreen() {
+  const iframe = document.getElementById('videoPlayer');
+  if (iframe.requestFullscreen) {
+    iframe.requestFullscreen();
+  } else if (iframe.webkitRequestFullscreen) {
+    iframe.webkitRequestFullscreen();
+  } else if (iframe.msRequestFullscreen) {
+    iframe.msRequestFullscreen();
   }
-});
-  </script>
+}
+</script>
 </body>
 </html>
 
