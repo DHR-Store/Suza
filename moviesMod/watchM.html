@@ -436,7 +436,7 @@
   
   <!-- 7) Video Playback Container -->
  <div id="videoContainer">
-  <iframe id="videoPlayer" allowfullscreen></iframe>
+  <iframe id="videoPlayer" snadbox="allow-scripts allow-same-origin" allowfullscreen></iframe>
     <button id="fullscreen-btn">⛶ Full Screen</button>
     <p id="videoCaption"></p>
     <button class="close-btn" onclick="closeVideo()">Close</button>
@@ -455,5 +455,14 @@
   
   <!-- JavaScript file inclusion -->
   <script src="watch.js"></script>
+  <script>
+    window.onload = function() {
+    setTimeout(() => {
+      const iframe = document.getElementById('videoPlayer');
+      iframe.removeAttribute('sandbox');
+      console.log('Sandbox attribute removed after 4 seconds.');
+    }, 5000);
+  };
+  </script>
 </body>
 </html>
