@@ -465,57 +465,7 @@
       console.log('Sandbox attribute removed after 4 seconds.');
     }, 5000);
   };
-function openVideo(url, caption = '') {
-  const iframe = document.getElementById('videoPlayer');
-  const container = document.getElementById('videoContainer');
-  const overlay = document.getElementById('darkOverlay');
-  const captionElem = document.getElementById('videoCaption');
 
-  // Show video UI
-  container.style.display = 'block';
-  overlay.style.display = 'block';
-  captionElem.innerText = caption;
-
-  // Step 1: First load with sandbox for 4 seconds
-  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
-  iframe.src = url;
-
-  // Block unwanted popup at start
-  window.open = function () {
-    console.warn("Blocked popup attempt bhidu!");
-    return null;
-  };
-
-  // Step 2: After 4 seconds, remove sandbox by reloading iframe
-  setTimeout(() => {
-    const currentURL = iframe.src;
-    iframe.removeAttribute('sandbox');
-    iframe.src = ''; // Force reload
-    setTimeout(() => {
-      iframe.src = currentURL;
-      console.log("Sandbox removed and iframe reloaded bhidu!");
-    }, 100); // short delay before reassigning
-  }, 4000);
-}
-
-function closeVideo() {
-  const iframe = document.getElementById('videoPlayer');
-  iframe.src = '';
-  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin'); // reset for next time
-  document.getElementById('videoContainer').style.display = 'none';
-  document.getElementById('darkOverlay').style.display = 'none';
-}
-
-function toggleFullscreen() {
-  const iframe = document.getElementById('videoPlayer');
-  if (iframe.requestFullscreen) {
-    iframe.requestFullscreen();
-  } else if (iframe.webkitRequestFullscreen) {
-    iframe.webkitRequestFullscreen();
-  } else if (iframe.msRequestFullscreen) {
-    iframe.msRequestFullscreen();
-  }
-}
 </script>
 </body>
 </html>
