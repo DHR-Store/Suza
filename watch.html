@@ -411,6 +411,7 @@
   <div id="iframeSourceSelector">
     <label for="iframeSource">Select Iframe Source: </label>
     <select id="iframeSource">
+       <option value="player4u">player4u</option>
       <option value="2embed">2embed</option>
       <option value="vidapi">Vidapi</option>
        <option value="filmu">filmu</option>
@@ -435,7 +436,7 @@
   
   <!-- 7) Video Playback Container -->
  <div id="videoContainer">
-  <iframe id="videoPlayer" allowfullscreen></iframe>
+  <iframe id="videoPlayer" src="" allowfullscreen></iframe>
     <button id="fullscreen-btn">⛶ Full Screen</button>
     <p id="videoCaption"></p>
     <button class="close-btn" onclick="closeVideo()">Close</button>
@@ -457,80 +458,33 @@
   <!-- JavaScript file inclusion -->
   <script src="watch.js"></script>
   <script>
-    function updateVideoSource() {
-  const selectElement = document.getElementById('iframeSource');
-  const iframeElement = document.getElementById('videoPlayer');
-  const videoCaptionElement = document.getElementById('videoCaption');
-  const selectedSource = selectElement.value;
+        setTimeout(() => {
+  // Step 1: Remove overlay so iframe can do its thing
+  document.getElementById("overlayBlock").remove();
 
-  // --- IMPORTANT ---
-  // Replace these placeholder URLs with the actual base URLs or logic
-  // for fetching the correct embed URL for the video you want to show.
-  // You will need a mechanism (e.g., data attributes, a lookup object,
-  // or fetching from an API) to get the specific video ID/path for
-  // the currently desired content for each source type.
-  // This example uses placeholders.
-  // --- IMPORTANT ---
+  // Step 2: Block any future tab opens by overriding window.open
+  // This only blocks if iframe tries to open in SAME window context
+  window.open = function () {
+    console.log("Blocked an external tab open attempt bhidu!");
+    return null;
+  };
 
-  let embedUrl = '';
-  let captionText = '';
+  // (Bonus) Optionally refocus window in case iframe tried pop-up
+  window.focus();
+}, 200); // 0.2 sec = 200ms 
+// Extra protection - block window.open at page level too
+window.open = function() {
+  console.warn("Popup blocked bhidu!");
+  return null;
+};
 
-  // Example: You would typically have a video ID or identifier
-  // let videoId = 'YOUR_VIDEO_ID'; // You need to manage this
-
-  switch (selectedSource) {
-    case 'filmu':
-      // Example: embedUrl = `https://embed.filmu.example.com/${videoId}`;
-      embedUrl = 'https://embed.filmu.fun/embed/tmdb-tv-${currentTMDB}/${season}/${episode}'; // Placeholder
-      captionText = 'Source: Filmu';
-      break;
-    case '2embed':
-      // Example: embedUrl = `https://2embed.example.com/embed?id=${videoId}`;
-       embedUrl = 'https://www.2embed.cc/embedtv/${currentImdb}&s=${season}&e=${episode}'; // Placeholder
-       captionText = 'Source: 2Embed';
-      break;
-    case 'multiembed':
-      // Example: embedUrl = `https://multiembed.example.com/${videoId}`;
-       embedUrl = 'https://multiembed.mov/?video_id=${currentImdb}&s=${season}&e=${episode}'; // Placeholder
-       captionText = 'Source: MultiEmbed';
-      break;
-    case 'vidapi':
-      // Example: embedUrl = `https://vidapi.example.com/embed?video=${videoId}`;
-       embedUrl = 'https://vidapi.xyz/embed/tv/${currentImdb}&s=${season}&e=${episode}'; // Placeholder
-       captionText = 'Source: VidAPI';
-      break;
-    default:
-      embedUrl = ''; // Clear iframe or set a default
-      captionText = 'Select a source';
+// Optional - intercept anchor tags trying to go outside
+document.addEventListener("click", function (e) {
+  if (e.target.tagName === 'A' && e.target.target === "_blank") {
+    e.preventDefault();
+    console.warn("Blocked external link: " + e.target.href);
   }
-
-  if (embedUrl) {
-    iframeElement.src = embedUrl;
-    videoCaptionElement.textContent = captionText;
-     // Ensure the container is visible if it was hidden
-    document.getElementById('videoContainer').style.display = 'block';
-    document.getElementById('darkOverlay').style.display = 'block'; // Show overlay
-  } else {
-     iframeElement.src = ''; // Clear source if no valid URL
-     videoCaptionElement.textContent = '';
-     document.getElementById('videoContainer').style.display = 'none'; // Hide container
-     document.getElementById('darkOverlay').style.display = 'none'; // Hide overlay
-  }
-}
-
-// Function to close the video container and overlay
-function closeVideo() {
-  const iframeElement = document.getElementById('videoPlayer');
-  iframeElement.src = ''; // Stop video playback and clear source
-  document.getElementById('videoContainer').style.display = 'none';
-  document.getElementById('darkOverlay').style.display = 'none';
-  document.getElementById('videoCaption').textContent = ''; // Clear caption
-   // Reset the select box to default if desired
-  document.getElementById('iframeSource').value = 'vidapi'; // or a blank option if added
-}
-
-// Optional: Call updateVideoSource initially if you want a default source loaded on page load
-// window.onload = updateVideoSource; // Or call this function when a video is selected elsewhere on your page
+});
   </script>
 </body>
 </html>
