@@ -407,6 +407,12 @@
 
   <!-- MAIN CONTENT (Horizontal Scroll Sections) -->
   <div class="container mt-4">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+  <h3 class="stylish-text" style="margin: 0;">Upcoming</h3>
+  <h5 class="stylish1-text" style="margin: 0;"><a href="more6.html">more</a></h5>
+      </div>
+    <div class="horizontal-scroll" id="upcoming-scroll"></div>
+    
       <div style="display: flex; justify-content: space-between; align-items: center;">
   <h3 class="stylish-text" style="margin: 0;">Movies</h3>
   <h5 class="stylish1-text" style="margin: 0;"><a href="more.html">more</a></h5>
@@ -939,6 +945,86 @@ async function updateAnimeSection() {
         sectionElement.innerHTML = "<p>Error loading Bollywood movies.</p>";
     }
 }
+    async function updateBollywoodSectionIMDB() {
+    const bollywoodTitles = [
+        "Tum Laut Aana Zindagi",
+        "Phule",
+        "Oye Bhootni Ke",
+        "Ground Zero",
+        "Jewel Thief",
+        "Naisha",
+        "Andaaz 2",
+        "The Bhootnii",
+        "Thunderbolts* (English)",
+        "Costao"
+    ];
+
+    const movieReleaseDates = {
+  "Tum Laut Aana Zindagi": "25 Apr 2025",
+  "Phule": "25 Apr 2025",
+  "Oye Bhootni Ke": "25 Apr 2025",
+  "Ground Zero": "25 Apr 2025",
+  "Jewel Thief": "25 Apr 2025",
+  "Naisha": "May 2025",
+  "Andaaz 2": "May 2025",
+  "The Bhootnii": "01 May 2025",
+  "Thunderbolts* (English)": "01 May 2025",
+  "Costao": "01 May 2025"
+};
+
+    const sectionElement = document.getElementById("upcoming-scroll");
+    if (!sectionElement) {
+        console.error("Element with ID 'upcoming-scroll' not found.");
+        return;
+    }
+
+    let htmlContent = "";
+
+    const fetchMovieDetails = async (title) => {
+        const query = title.toLowerCase();
+        const firstLetter = query.charAt(0);
+        const imdbUrl = `https://v2.sg.media-imdb.com/suggestion/${firstLetter}/${encodeURIComponent(query)}.json`;
+
+        try {
+            const response = await fetch(imdbUrl);
+            const data = await response.json();
+
+            const result = data.d?.find(item => item.id?.startsWith("tt") && item.i?.imageUrl);
+            return result || null;
+
+        } catch (err) {
+            console.error(`Error fetching IMDb suggestion for ${title}:`, err);
+            return null;
+        }
+    };
+
+    const fetchPromises = bollywoodTitles.map(title => fetchMovieDetails(title));
+    const results = await Promise.all(fetchPromises);
+    const filteredResults = results.filter(movie => movie);
+
+    if (filteredResults.length > 0) {
+        filteredResults.forEach(movie => {
+            const title = movie.l;
+            const shortTitle = title.length > 15 ? title.substring(0, 15) + "..." : title;
+            const posterUrl = movie.i.imageUrl;
+
+            // Use static date if available, otherwise fallback to IMDb year
+            const releaseDate = movieReleaseDates[title] || (movie.y ? `Year: ${movie.y}` : "Coming Soon");
+
+            htmlContent += `
+                <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(title)}')" style="width: 120px;">
+                    <img src="${posterUrl}" alt="${title}" title="${title}" style="width: 100px; height: 150px; object-fit: cover; display: block; margin: 0 auto;">
+                    <p style="font-size: 12px; text-align: center; margin-top: 4px;">${shortTitle}</p>
+                    <p style="font-size: 10px; text-align: center; color: gray;">${releaseDate}</p>
+                </div>`;
+        });
+    } else {
+        htmlContent = "<p>No Bollywood movie data available from IMDb Suggestion API.</p>";
+    }
+
+    sectionElement.innerHTML = htmlContent;
+}
+
 
 
 // === Watch Page Function (Placeholder) ===
@@ -959,7 +1045,8 @@ document.addEventListener("DOMContentLoaded", () => {
   updateMoviesSectionTrakt(); // Fetch and display trending movies
   updateShowsSectionTrakt(); // Fetch and display trending shows (Web Series and TV Shows)
   updateAnimeSection(); // Fetch and display top anime
-  updateBollywoodSectionOMDb(); // Fetch Bollywood movie details from OMDb and populate section
+  updateBollywoodSectionOMDb();
+  updateBollywoodSectionIMDB();// Fetch Bollywood movie details from OMDb and populate section
 
   // Add event listeners for hero carousel swipe
   const heroElement = document.getElementById("hero");
