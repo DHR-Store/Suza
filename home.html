@@ -1014,7 +1014,7 @@ async function updateAnimeSection() {
             const releaseDate = movieReleaseDates[title] || (movie.y ? `Year: ${movie.y}` : "Coming Soon");
 
             htmlContent += `
-                <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(title)}')" style="width: 120px;">
+                <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(title)}')" style="width: 100px;">
                     <img src="${posterUrl}" alt="${title}" title="${title}" style="width: 100px; height: 150px; object-fit: cover; display: block; margin: 0 auto;">
                     <p style="font-size: 12px; text-align: center; margin-top: 4px;">${shortTitle}</p>
                     <p style="font-size: 10px; text-align: center; color: gray;">${releaseDate}</p>
