@@ -945,6 +945,8 @@ async function updateAnimeSection() {
         sectionElement.innerHTML = "<p>Error loading Bollywood movies.</p>";
     }
 }
+
+
     async function updateBollywoodSectionIMDB() {
     const bollywoodTitles = [
         "Tum Laut Aana Zindagi",
@@ -960,17 +962,17 @@ async function updateAnimeSection() {
     ];
 
     const movieReleaseDates = {
-  "Tum Laut Aana Zindagi": "25 Apr 2025",
-  "Phule": "25 Apr 2025",
-  "Oye Bhootni Ke": "25 Apr 2025",
-  "Ground Zero": "25 Apr 2025",
-  "Jewel Thief": "25 Apr 2025",
-  "Naisha": "May 2025",
-  "Andaaz 2": "May 2025",
-  "The Bhootnii": "01 May 2025",
-  "Thunderbolts* (English)": "01 May 2025",
-  "Costao": "01 May 2025"
-};
+        "Tum Laut Aana Zindagi": "25 Apr 2025",
+        "Phule": "25 Apr 2025",
+        "Oye Bhootni Ke": "25 Apr 2025",
+        "Ground Zero": "25 Apr 2025",
+        "Jewel Thief": "25 Apr 2025",
+        "Naisha": "May 2025",
+        "Andaaz 2": "May 2025",
+        "The Bhootnii": "01 May 2025",
+        "Thunderbolts* (English)": "01 May 2025",
+        "Costao": "01 May 2025"
+    };
 
     const sectionElement = document.getElementById("upcoming-scroll");
     if (!sectionElement) {
@@ -983,7 +985,8 @@ async function updateAnimeSection() {
     const fetchMovieDetails = async (title) => {
         const query = title.toLowerCase();
         const firstLetter = query.charAt(0);
-        const imdbUrl = `https://v2.sg.media-imdb.com/suggestion/${firstLetter}/${encodeURIComponent(query)}.json`;
+        const corsProxy = "https://api.allorigins.win/raw?url=";
+        const imdbUrl = `${corsProxy}https://v2.sg.media-imdb.com/suggestion/${firstLetter}/${encodeURIComponent(query)}.json`;
 
         try {
             const response = await fetch(imdbUrl);
@@ -1008,7 +1011,6 @@ async function updateAnimeSection() {
             const shortTitle = title.length > 15 ? title.substring(0, 15) + "..." : title;
             const posterUrl = movie.i.imageUrl;
 
-            // Use static date if available, otherwise fallback to IMDb year
             const releaseDate = movieReleaseDates[title] || (movie.y ? `Year: ${movie.y}` : "Coming Soon");
 
             htmlContent += `
@@ -1023,7 +1025,8 @@ async function updateAnimeSection() {
     }
 
     sectionElement.innerHTML = htmlContent;
-}
+    }
+    
 
 
 
