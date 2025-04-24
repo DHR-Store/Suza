@@ -273,8 +273,8 @@ function fetchEpisodesTVMaze(showID, seasonID, seasonNumber, title) {
 function loadEpisodeSourceTVMaze(season, episode, title, epName) {
   const embedProvider = document.getElementById("iframeSource").value;
   let src = "";
+
   if (embedProvider === "filmu") {
-    // Updated Filmu embed using TMDB id for TV episodes
     src = `https://embed.filmu.fun/embed/imdb-tv-${currentImdb}/${season}/${episode}`;
   } else if (embedProvider === "2embed") {
     src = `https://www.2embed.cc/embedtv/${currentImdb}&s=${season}&e=${episode}`;
@@ -283,11 +283,19 @@ function loadEpisodeSourceTVMaze(season, episode, title, epName) {
   } else if (embedProvider === "player4u") {
     src = `https://player4u.xyz/embed?key=${epName}&s=${season}&e=${episode}`;
   } else {
-    // Default: VidAPI endpoint - Modified to exclude IMDB ID
-    src = `https://vidapi.xyz/embed/tv/${currentImdb}?&s=${season}&e=${episode}`; // Potential format, needs verification
+    src = `https://vidapi.xyz/embed/tv/${currentImdb}?&s=${season}&e=${episode}`;
   }
 
-  document.getElementById("videoPlayer").src = src;
+  const iframe = document.getElementById("videoPlayer");
+  iframe.src = src;
+
+  // Add sandbox attribute for 4 seconds
+  iframe.setAttribute("sandbox", "allow-scripts allow-same-origin");
+
+  setTimeout(() => {
+    iframe.removeAttribute("sandbox");
+  }, 4000);
+
   document.getElementById("videoCaption").innerText = `S${season}E${episode} - ${epName}`;
   document.getElementById("videoContainer").style.display = "block";
 }
