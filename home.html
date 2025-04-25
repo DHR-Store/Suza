@@ -945,87 +945,87 @@ async function updateAnimeSection() {
         sectionElement.innerHTML = "<p>Error loading Bollywood movies.</p>";
     }
 }
-
-
-    async function updateBollywoodSectionIMDB() {
-    const bollywoodTitles = [
-        "Tum Laut Aana Zindagi",
-        "Phule",
-        "Oye Bhootni Ke",
-        "Ground Zero",
-        "Jewel Thief",
-        "Naisha",
-        "Andaaz 2",
-        "The Bhootnii",
-        "Thunderbolts* (English)",
-        "Costao"
-    ];
-
-    const movieReleaseDates = {
-        "Tum Laut Aana Zindagi": "25 Apr 2025",
-        "Phule": "25 Apr 2025",
-        "Oye Bhootni Ke": "25 Apr 2025",
-        "Ground Zero": "25 Apr 2025",
-        "Jewel Thief": "25 Apr 2025",
-        "Naisha": "May 2025",
-        "Andaaz 2": "May 2025",
-        "The Bhootnii": "01 May 2025",
-        "Thunderbolts* (English)": "01 May 2025",
-        "Costao": "01 May 2025"
-    };
-
+document.addEventListener("DOMContentLoaded", async function () {
     const sectionElement = document.getElementById("upcoming-scroll");
     if (!sectionElement) {
         console.error("Element with ID 'upcoming-scroll' not found.");
         return;
     }
 
-    let htmlContent = "";
+    const apiKey = "b6b677eb7d4ec17f700e3d4dfc31d005"; // Apna TMDb API key yahan daaliye
+    const corsProxy = "https://api.allorigins.win/raw?url=";
+    const imdbBase = "https://v2.sg.media-imdb.com/suggestion/";
+    const defaultPoster = "https://via.placeholder.com/100x150?text=No+Image";
 
-    const fetchMovieDetails = async (title) => {
+    // Static movie list
+    const staticMovies = [
+        { title: "kesari chapter 2", releaseDate: "18 Apr 2025" },
+        { title: "Phule", releaseDate: "25 Apr 2025" },
+        { title: "Oye Bhootni Ke", releaseDate: "25 Apr 2025" },
+        { title: "Ground Zero", releaseDate: "25 Apr 2025" },
+        { title: "Jewel Thief", releaseDate: "25 Apr 2025" }
+    ];
+
+    // Get poster from IMDb Suggestion API via proxy
+    async function fetchPosterFromIMDb(title) {
         const query = title.toLowerCase();
         const firstLetter = query.charAt(0);
-        const corsProxy = "https://api.allorigins.win/raw?url=";
-        const imdbUrl = `${corsProxy}https://v2.sg.media-imdb.com/suggestion/${firstLetter}/${encodeURIComponent(query)}.json`;
-
+        const url = `${corsProxy}${imdbBase}${firstLetter}/${encodeURIComponent(query)}.json`;
         try {
-            const response = await fetch(imdbUrl);
+            const response = await fetch(url);
             const data = await response.json();
-
-            const result = data.d?.find(item => item.id?.startsWith("tt") && item.i?.imageUrl);
-            return result || null;
-
-        } catch (err) {
-            console.error(`Error fetching IMDb suggestion for ${title}:`, err);
-            return null;
+            const match = data.d?.find(item => item.id?.startsWith("tt") && item.i?.imageUrl);
+            return match?.i?.imageUrl || defaultPoster;
+        } catch (error) {
+            console.error(`IMDb error for "${title}":`, error);
+            return defaultPoster;
         }
-    };
+    }
 
-    const fetchPromises = bollywoodTitles.map(title => fetchMovieDetails(title));
-    const results = await Promise.all(fetchPromises);
-    const filteredResults = results.filter(movie => movie);
+    // Get poster from TMDb
+    async function fetchUpcomingMovies(count = 10) {
+        const url = `${corsProxy}https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=1`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.results.slice(0, count);
+        } catch (error) {
+            console.error("TMDb upcoming fetch failed:", error);
+            return [];
+        }
+    }
 
-    if (filteredResults.length > 0) {
-        filteredResults.forEach(movie => {
-            const title = movie.l;
-            const shortTitle = title.length > 15 ? title.substring(0, 15) + "..." : title;
-            const posterUrl = movie.i.imageUrl;
+    function createMovieCard({ title, releaseDate, poster }) {
+        const shortTitle = title.length > 15 ? title.substring(0, 15) + "..." : title;
+        return `
+            <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(title)}')" style="width: 100px;">
+                <img src="${poster}" alt="${title}" title="${title}" style="width: 100px; height: 150px; object-fit: cover; display: block; margin: 0 auto;">
+                <p style="font-size: 12px; text-align: center; margin-top: 4px;">${shortTitle}</p>
+                <p style="font-size: 10px; text-align: center; color: gray;">${releaseDate}</p>
+            </div>`;
+    }
 
-            const releaseDate = movieReleaseDates[title] || (movie.y ? `Year: ${movie.y}` : "Coming Soon");
+    let htmlContent = "";
 
-            htmlContent += `
-                <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(title)}')" style="width: 100px;">
-                    <img src="${posterUrl}" alt="${title}" title="${title}" style="width: 100px; height: 150px; object-fit: cover; display: block; margin: 0 auto;">
-                    <p style="font-size: 12px; text-align: center; margin-top: 4px;">${shortTitle}</p>
-                    <p style="font-size: 10px; text-align: center; color: gray;">${releaseDate}</p>
-                </div>`;
-        });
-    } else {
-        htmlContent = "<p>No Bollywood movie data available from IMDb Suggestion API.</p>";
+    // Static list cards with IMDb poster
+    for (let movie of staticMovies) {
+        const poster = await fetchPosterFromIMDb(movie.title);
+        htmlContent += createMovieCard({ ...movie, poster });
+    }
+
+    // TMDb dynamic cards
+    const upcoming = await fetchUpcomingMovies(10);
+    for (let movie of upcoming) {
+        const title = movie.title || "Untitled";
+        const releaseDate = movie.release_date || "Coming Soon";
+        const poster = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : defaultPoster;
+        htmlContent += createMovieCard({ title, releaseDate, poster });
     }
 
     sectionElement.innerHTML = htmlContent;
-    }
+});
+    
+
     
 
 
