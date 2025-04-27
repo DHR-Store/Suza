@@ -153,42 +153,47 @@
     }
 
     /* Bottom Navigation Bar (fixed) */
-    nav.navbar {
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid #444;
-      padding: 10px 0;
-      font-size: 15px;
-      height: 60px;
-      z-index: 1000;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin: 0;
-      transition: all 0.3s ease-in-out;
-    }
-    .nav-link {
-      text-align: center;
-      color: white;
-      transition: all 0.3s ease-in-out;
-      padding: 5px;
-      border-radius: 10px;
-      font-size: 14px;
-    }
-    .nav-link i {
-      font-size: 24px;
-    }
-    .nav-link:hover {
-      color: cyan;
-      transform: scale(1.1);
-    }
-    .nav-link.active {
-  color: cyan;
+    /* Bottom Navigation Bar */
+nav.navbar {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #444;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Normal Nav Link */
+.nav-link {
+  text-align: center;
+  color: var(--theme-color, white); /* Use theme color */
+  transition: transform 0.3s ease, color 0.3s ease;
+  padding: 5px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* Icon inside Nav Link */
+.nav-link i {
+  font-size: 24px;
+}
+
+/* Hover Effect */
+.nav-link:hover {
+  color: var(--theme-color, cyan); /* Dynamic hover color */
+  transform: scale(1.1);
+}
+
+/* Active Link */
+.nav-link.active {
+  color: var(--theme-color, cyan); /* Dynamic active color */
   font-weight: bold;
-        }
+}
 
     /* Hide scrollbar for #suggestionsContainer (optional) */
     #suggestionsContainer::-webkit-scrollbar {
@@ -593,6 +598,23 @@ function showSuggestions() {
   $("#searchInput").on("input", showSuggestions);
 
   // ... (rest of your code remains unchanged)
+    window.addEventListener('load', function () {
+  var savedColor = localStorage.getItem("themeColor");
+  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
+  
+  if (savedColor) {
+    if (currentPage === 'search.html') {
+      // Sirf search icon ka color change
+      document.querySelector('.nav-link[href="search.html"] i').style.color = savedColor;
+    }
+    // Baaki sab icons white karna
+    document.querySelectorAll('.nav-link i').forEach(function (icon) {
+      if (icon.closest('a').getAttribute('href') !== 'search.html') {
+        icon.style.color = 'white';
+      }
+    });
+  }
+});
     
   </script>
 </body>
