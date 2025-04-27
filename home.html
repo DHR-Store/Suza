@@ -1265,6 +1265,23 @@ function handleSwipe() {
       document.querySelectorAll('.nav-link').forEach(el => el.style.color = savedColor);
     }
   });
+    window.addEventListener('load', function() {
+  var savedColor = localStorage.getItem("themeColor");
+  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
+  
+  if (savedColor) {
+    if (currentPage === 'home.html') {
+      // Sirf search icon ka color change
+      document.querySelector('.nav-link[href="home.html"] i').style.color = savedColor;
+    }
+    // Baaki sab icons white karna
+    document.querySelectorAll('.nav-link i').forEach(function(icon) {
+      if (icon.closest('a').getAttribute('href') !== 'home.html') {
+        icon.style.color = 'white';
+      }
+    });
+  }
+});
   </script>
 </body>
 </html>
