@@ -65,37 +65,48 @@
     .remove-btn:hover {
       background: #d50000;
     }
-    nav.navbar {
-      background: transparent;
-      backdrop-filter: blur(8px);
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 10px 0;
-      border-top: 1px solid #444;
-    }
-    .nav-link {
-      text-align: center;
-      color: white;
-      transition: all 0.3s ease-in-out;
-      padding: 5px;
-      border-radius: 10px;
-      font-size: 14px;
-    }
-    .nav-link i {
-      font-size: 24px;
-    }
-    .nav-link:hover {
-      color: cyan;
-      transform: scale(1.1);
-    }
-    .nav-link.active {
-      color: cyan;
-      font-weight: bold;
-    }
+    /* Bottom Navigation Bar */
+nav.navbar {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #444;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Normal Nav Link */
+.nav-link {
+  text-align: center;
+  color: var(--theme-color, white); /* Use theme color */
+  transition: transform 0.3s ease, color 0.3s ease;
+  padding: 5px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* Icon inside Nav Link */
+.nav-link i {
+  font-size: 24px;
+}
+
+/* Hover Effect */
+.nav-link:hover {
+  color: var(--theme-color, cyan); /* Dynamic hover color */
+  transform: scale(1.1);
+}
+
+/* Active Link */
+.nav-link.active {
+  color: var(--theme-color, cyan); /* Dynamic active color */
+  font-weight: bold;
+}
+    
   </style>
 </head>
 <body>
@@ -217,13 +228,30 @@
         }
       });
     });
+    window.addEventListener('load', function () {
+  var savedColor = localStorage.getItem("themeColor");
+  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
+  
+  if (savedColor) {
+    if (currentPage === 'watchlist.html') {
+      // Sirf search icon ka color change
+      document.querySelector('.nav-link[href="watchlist.html"] i').style.color = savedColor;
+    }
+    // Baaki sab icons white karna
+    document.querySelectorAll('.nav-link i').forEach(function (icon) {
+      if (icon.closest('a').getAttribute('href') !== 'watchlist.html') {
+        icon.style.color = 'white';
+      }
+    });
+  }
+});
   </script>
 
   <nav class="navbar navbar-dark fixed-bottom">
     <div class="container-fluid d-flex justify-content-around">
       <a href="home.html" class="nav-link"><i class="bi bi-house-door"></i></a>
       <a href="search.html" class="nav-link"><i class="bi bi-search"></i></a>
-      <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark-fill"  style="color: #00ffff;"></i></a>
+      <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark-fill"></i></a>
       <a href="settings.html" class="nav-link"><i class="bi bi-gear"></i></a>
     </div>
   </nav>
