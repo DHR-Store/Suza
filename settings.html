@@ -357,48 +357,37 @@
                 document.getElementById("gear-icon").style.color = color;
               });
             });
-        
+
         // Color Picker Updated
-        document.getElementById("colorPicker").addEventListener("input", function (e) {
-          var selectedColor = e.target.value;
-          localStorage.setItem("themeColor", selectedColor); // Save in localStorage
-          applyThemeColor(selectedColor);
-        });
-        
-        // Predefined Color Palette Updated
-        document.querySelectorAll('.color-box').forEach(function (box) {
-          box.addEventListener('click', function () {
-            var color = this.getAttribute('data-color');
-            localStorage.setItem("themeColor", color); // Save in localStorage
-            applyThemeColor(color);
-          });
-        });
-        
-        // Function to Apply Theme
-        function applyThemeColor(color) {
-          document.documentElement.style.setProperty('--theme-color', color);
-          document.querySelectorAll('.nav-link').forEach(el => el.style.color = color);
-          document.getElementById("gear-icon").style.color = color;
-        }
-        
-        // Page Reload hone par bhi apply ho jaye
-        window.addEventListener('load', function() {
-  var savedColor = localStorage.getItem("themeColor");
-  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
-  
-  if (savedColor) {
-    if (currentPage === 'settings.html') {
-      // Sirf search icon ka color change
-      document.querySelector('.nav-link[href="settings.html"] i').style.color = savedColor;
-    }
-    // Baaki sab icons white karna
-    document.querySelectorAll('.nav-link i').forEach(function(icon) {
-      if (icon.closest('a').getAttribute('href') !== 'settings.html') {
-        icon.style.color = 'white';
-      }
-    });
-  }
+document.getElementById("colorPicker").addEventListener("input", function (e) {  
+  var selectedColor = e.target.value;  
+  localStorage.setItem("themeColor", selectedColor); // Save in localStorage  
+  applyGearIconColor(selectedColor);  // Apply only to the gear icon
+});  
+
+// Predefined Color Palette Updated  
+document.querySelectorAll('.color-box').forEach(function (box) {  
+  box.addEventListener('click', function () {  
+    var color = this.getAttribute('data-color');  
+    localStorage.setItem("themeColor", color); // Save in localStorage  
+    applyGearIconColor(color);  // Apply only to the gear icon
+  });  
+});  
+
+// Function to Apply Gear Icon Color
+function applyGearIconColor(color) {  
+  document.getElementById("gear-icon").style.color = color;  
+}  
+
+// Page Reload hone par bhi apply ho jaye  
+window.addEventListener('load', function () {  
+  var savedColor = localStorage.getItem("themeColor");  
+  if (savedColor) {  
+    applyGearIconColor(savedColor);  // Apply only to the gear icon
+  }  
 });
+        
+        
         // Hex Code Input Field
         document.getElementById("hexInput").addEventListener("keypress", function (e) {
           if (e.key === "Enter") {
