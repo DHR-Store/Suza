@@ -1,16 +1,14 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-   
-
     <!-- Open Graph meta tags -->
- <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta property="og:title" content="SUZA">
     <meta property="og:description" content="Simple UI based smoothly Movie entertainment page">
     <meta property="og:url" content="https://suza.vercel.app/">
     <meta property="og:image" content="https://suza.vercel.app/suza.png">
     <meta property="og:type" content="website">
- <link rel="icon" href="https://suza.vercel.app/suza.png" type="image/png">
+    <link rel="icon" href="https://suza.vercel.app/suza.png" type="image/png">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>SUZA</title>
@@ -40,6 +38,7 @@ body {
     font-size: 100px;
     font-weight: bold;
     display: flex;
+    color: white; /* Default text color */
 }
 
 .neon-text span {
@@ -97,16 +96,33 @@ body {
     </div>
 
     <script>
-     document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(() => {
-        document.body.style.transition = "opacity 1s ease-in-out";
-        document.body.style.opacity = "0";
+        // Function to apply the color to both the text and the neon effect
+        function applyNeonTextColor(color) {
+            const neonText = document.querySelector('.neon-text');
+            const textShadow = `${color} 0 0 10px, ${color} 0 0 30px, ${color} 0 0 50px`;
+            neonText.style.color = color;  // Change the main text color
+            neonText.style.textShadow = textShadow; // Apply the neon glow effect
+        }
 
-        setTimeout(() => {
-            window.location.href = "home.html"; // Smooth transition to Entry Page
-        }, 1000);
-    }, 4000);
-});
+        // Listen for changes when the page loads
+        window.addEventListener('load', function () {
+            const savedColor = localStorage.getItem('themeColor');
+            if (savedColor) {
+                applyNeonTextColor(savedColor); // Apply saved color to both the text and neon effect
+            }
+        });
+
+        // For smooth page transition to home.html after 4 seconds
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                document.body.style.transition = "opacity 1s ease-in-out";
+                document.body.style.opacity = "0";
+
+                setTimeout(() => {
+                    window.location.href = "home.html"; // Smooth transition to Entry Page
+                }, 1000);
+            }, 4000);
+        });
     </script>
 </body>
 </html>
