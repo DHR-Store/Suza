@@ -371,7 +371,8 @@ function applyThemeColor(color) {
   if (savedColor) {
     if (currentPage === 'settings.html') {
       // Sirf search icon ka color change
-      
+      document.querySelector('.nav-link[href="settings.html"] i').style.color = savedColor;
+        }
     // Baaki sab icons white karna
     document.querySelectorAll('.nav-link i').forEach(function(icon) {
       if (icon.closest('a').getAttribute('href') !== 'settings.html') {
