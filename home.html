@@ -108,8 +108,7 @@
 .offcanvas-body ul li {
   margin-bottom: 10px;
 }
-
-/* Provider link styling */
+    /* Provider link styling */
 .offcanvas-body ul li a {
   display: block;
   background: rgba(255, 255, 255, 0.1);
@@ -127,113 +126,116 @@
   background: rgba(0, 255, 255, 0.3);
   color: #fff;
   font-weight: bold;
-  box-shadow: 0 0 10px #00ffff;
+  box-shadow: 0 0 10px var(--theme-color, #00ffff);
 }
 
 /* Hover state for provider links */
 .offcanvas-body ul li a:hover {
   background: rgba(0, 255, 255, 0.2);
-  color: #00ffff;
+  color: var(--theme-color, #00ffff);
 }
 
 /* Provider icon styling */
 .provider-icon {
   margin-right: 6px;
-  color: #00ffff;
+  color: var(--theme-color, #00ffff);
 }
 
-    /* HERO SECTION */
-    #hero {
-      position: relative;
-      height: 70vh;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: white;
-      transition: background 0.5s ease;
-      overflow: hidden;
-      touch-action: pan-y;
-    }
+/* HERO SECTION */
+#hero {
+  position: relative;
+  height: 70vh;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  transition: background 0.5s ease;
+  overflow: hidden;
+  touch-action: pan-y;
+}
 
-    /* Semi-transparent overlay for contrast */
-    #hero-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 10;
-    }
+/* Semi-transparent overlay for contrast */
+#hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 10;
+}
 
-    /* Hero Content & Animation */
-    #hero-content {
-      position: relative;
-      z-index: 20;
-      opacity: 0;
-      transform: translateY(30px);
-      animation: fadeInUp 1s forwards;
-    }
+/* Hero Content & Animation */
+#hero-content {
+  position: relative;
+  z-index: 20;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 1s forwards;
+}
 
-    @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    #hero-title {
-      font-size: 2.8rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      margin-bottom: 0.5rem;
-    }
+#hero-title {
+  font-size: 2.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
 
-    #hero-rating {
-      font-size: 1.2rem;
-      font-weight: 500;
-      margin-bottom: 1rem;
-    }
+#hero-rating {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
 
-    .hero-btn {
-      padding: 12px 25px;
-      background: linear-gradient(90deg, #00ffff, #00d4ff);
-      color: black;
-      font-size: 16px;
-      border: none;
-      border-radius: 25px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 1rem;
-    }
+/* Hero Button */
+.hero-btn {
+  padding: 12px 25px;
+  background: linear-gradient(90deg, var(--theme-color, #00ffff), var(--theme-second-color, #00d4ff));
+  color: black;
+  font-size: 16px;
+  border: none;
+  border-radius: 25px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 1rem;
+}
 
-    .hero-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
-    }
+.hero-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px var(--theme-color, rgba(0, 255, 255, 0.8));
+}
 
-    /* Dot Indicators */
-    #hero-dots {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-    }
-    .hero-dot {
-      width: 12px;
-      height: 12px;
-      background: #ccc;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    .hero-dot.active {
-      background: cyan;
-    }
+/* Dot Indicators */
+#hero-dots {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.hero-dot {
+  width: 12px;
+  height: 12px;
+  background: #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.hero-dot.active {
+  background: var(--theme-color, cyan);
+}
+
+
         /* Dark blur/gradient at bottom of hero */
     #hero::after {
       content: "";
@@ -278,19 +280,20 @@
     }
         /* Attractive gradient text style */
     .stylish-text {
-      font-family: 'Poppins', sans-serif;
-      font-size: 2rem;
-      font-weight: 600;
-      background: linear-gradient(45deg, #6a11cb, #2575fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 20px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  background: linear-gradient(45deg, var(--theme-color, #6a11cb), var(--theme-second-color, #2575fc));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+  transition: background 0.3s ease;
     }
      .stylish1-text {
       font-family: 'Poppins', sans-serif;
       font-size: 1.4rem;
       font-weight: 50;
-      background: linear-gradient(45deg, #6a11cb, #2575fc);
+      background: linear-gradient(45deg, var(--theme-color, #6a11cb), var(--theme-second-color, #2575fc));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       top: 1px;
@@ -304,40 +307,50 @@
       /* If there's any default margin from bootstrap, override it: */
       margin-top: 0 !important;
     }
+       /* Bottom Navigation Bar */
+nav.navbar {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #444;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
 
-    /* Bottom Navigation Bar */
-    nav.navbar {
-      background: transparent;
-      backdrop-filter: blur(8px);
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 10px 0;
-      border-top: 1px solid #444;
-      transition: transform 0.3s ease;
-    }
-    .nav-link {
-      text-align: center;
-      color: white;
-      transition: transform 0.3s ease, color 0.3s ease;
-      padding: 5px;
-      border-radius: 10px;
-      font-size: 14px;
-    }
-    .nav-link i {
-      font-size: 24px;
-    }
-    .nav-link:hover {
-      color: cyan;
-      transform: scale(1.1);
-    }
-    .nav-link.active {
-  color: cyan;
+/* Normal Nav Link */
+.nav-link {
+  text-align: center;
+  color: var(--theme-color, white); /* Use theme color */
+  transition: transform 0.3s ease, color 0.3s ease;
+  padding: 5px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* Icon inside Nav Link */
+.nav-link i {
+  font-size: 24px;
+}
+
+/* Hover Effect */
+.nav-link:hover {
+  color: var(--theme-color, cyan); /* Dynamic hover color */
+  transform: scale(1.1);
+}
+
+/* Active Link */
+.nav-link.active {
+  color: var(--theme-color, cyan); /* Dynamic active color */
   font-weight: bold;
-          }
+}
+    
+
+    
         #notification {
       position: fixed;
       bottom: 30px;
@@ -450,7 +463,7 @@
   <!-- BOTTOM NAVIGATION BAR -->
   <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
     <div class="container-fluid d-flex justify-content-around">
-      <a href="home.html" class="nav-link"><i class="bi bi-house-door-fill" style="color: #00ffff;"></i><br></a>
+      <a href="home.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
       <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
       <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark"></i><br></a>
       <a href="settings.html" class="nav-link"><i class="bi bi-gear"></i><br></a>
@@ -1245,6 +1258,13 @@ function handleSwipe() {
     document.getElementById("try-btn").addEventListener("click", function() {
       window.location.href = "suzaTV/suzatvhome.html";
     });
+    window.addEventListener('load', function () {
+    var savedColor = localStorage.getItem("themeColor");
+    if (savedColor) {
+      document.documentElement.style.setProperty('--theme-color', savedColor);
+      document.querySelectorAll('.nav-link').forEach(el => el.style.color = savedColor);
+    }
+  });
   </script>
 </body>
 </html>
