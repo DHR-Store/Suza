@@ -126,45 +126,47 @@
             font-size: 28px;
             cursor: pointer;
         }
-        nav.navbar {
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid #444;
-      padding: 10px 0;
-      font-size: 15px;
-      height: 60px;
-      z-index: 1000;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-    }
+   nav.navbar {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #444;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
 
-    .nav-link {
-      text-align: center;
-      color: white;
-      transition: all 0.3s ease-in-out;
-      padding: 5px;
-      border-radius: 10px;
-      font-size: 14px;
-    }
+/* Normal Nav Link */
+.nav-link {
+  text-align: center;
+  color: var(--theme-color, white); /* Use theme color */
+  transition: transform 0.3s ease, color 0.3s ease;
+  padding: 5px;
+  border-radius: 10px;
+  font-size: 14px;
+}
 
-    #gear-icon {
-      cursor: pointer;
-      font-size: 30px;
-    }
+/* Icon inside Nav Link */
+.nav-link i {
+  font-size: 24px;
+}
 
-    .nav-link i {
-      font-size: 24px;
-    }
+/* Hover Effect */
+.nav-link:hover {
+  color: var(--theme-color, cyan); /* Dynamic hover color */
+  transform: scale(1.1);
+}
 
-    .nav-link:hover {
-      color: cyan;
-      transform: scale(1.1);
-    }
-
+/* Active Link */
+.nav-link.active {
+  color: var(--theme-color, cyan); /* Dynamic active color */
+  font-weight: bold;
+}
+        
     /* Color Palette */
     .color-palette {
       display: flex;
@@ -339,25 +341,41 @@
         document.getElementById("gear-icon").style.color = color;
       });
     });
-
-// Color Picker Updated
-document.getElementById("colorPicker").addEventListener("input", function (e) {
-  var selectedColor = e.target.value;
-  localStorage.setItem("themeColor", selectedColor); // Save in localStorage
-  applyThemeColor(selectedColor);
-});
-
-// Predefined Color Palette Updated
-document.querySelectorAll('.color-box').forEach(function (box) {
-  box.addEventListener('click', function () {
-    var color = this.getAttribute('data-color');
-    localStorage.setItem("themeColor", color); // Save in localStorage
-    applyThemeColor(color);
-  });
-});
-
-// Function to Apply Theme
-function applyThemeColor(color) {
+                    // Color Picker
+            document.getElementById("colorPicker").addEventListener("input", function (e) {
+              document.documentElement.style.setProperty('--theme-color', e.target.value);
+              document.querySelectorAll('.nav-link').forEach(el => el.style.color = e.target.value);
+              document.getElementById("gear-icon").style.color = e.target.value;
+            });
+        
+            // Predefined Color Palette
+            document.querySelectorAll('.color-box').forEach(function (box) {
+              box.addEventListener('click', function () {
+                var color = this.getAttribute('data-color');
+                document.documentElement.style.setProperty('--theme-color', color);
+                document.querySelectorAll('.nav-link').forEach(el => el.style.color = color);
+                document.getElementById("gear-icon").style.color = color;
+              });
+            });
+        
+        // Color Picker Updated
+        document.getElementById("colorPicker").addEventListener("input", function (e) {
+          var selectedColor = e.target.value;
+          localStorage.setItem("themeColor", selectedColor); // Save in localStorage
+          applyThemeColor(selectedColor);
+        });
+        
+        // Predefined Color Palette Updated
+        document.querySelectorAll('.color-box').forEach(function (box) {
+          box.addEventListener('click', function () {
+            var color = this.getAttribute('data-color');
+            localStorage.setItem("themeColor", color); // Save in localStorage
+            applyThemeColor(color);
+          });
+        });
+        
+        // Function to Apply Theme
+        function applyThemeColor(color) {
           document.documentElement.style.setProperty('--theme-color', color);
           document.querySelectorAll('.nav-link').forEach(el => el.style.color = color);
           document.getElementById("gear-icon").style.color = color;
@@ -372,7 +390,7 @@ function applyThemeColor(color) {
     if (currentPage === 'settings.html') {
       // Sirf search icon ka color change
       document.querySelector('.nav-link[href="settings.html"] i').style.color = savedColor;
-        }
+    }
     // Baaki sab icons white karna
     document.querySelectorAll('.nav-link i').forEach(function(icon) {
       if (icon.closest('a').getAttribute('href') !== 'settings.html') {
@@ -381,18 +399,20 @@ function applyThemeColor(color) {
     });
   }
 });
-// Hex Code Input Field
-document.getElementById("hexInput").addEventListener("keypress", function (e) {
-  if (e.key === "Enter") {
-    var hexColor = e.target.value.trim();
-    if (/^#([0-9A-Fa-f]{6})$/.test(hexColor)) {
-      localStorage.setItem("themeColor", hexColor);
-      applyThemeColor(hexColor);
-    } else {
-      alert("Please enter a valid Hex code (e.g., #ff0000)");
-    }
-  }
-});
+        // Hex Code Input Field
+        document.getElementById("hexInput").addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            var hexColor = e.target.value.trim();
+            if (/^#([0-9A-Fa-f]{6})$/.test(hexColor)) {
+              localStorage.setItem("themeColor", hexColor);
+              applyThemeColor(hexColor);
+            } else {
+              alert("Please enter a valid Hex code (e.g., #ff0000)");
+            }
+          }
+        });
+
+
         // Hide or show nav based on scroll direction
 window.addEventListener('scroll', () => {
   let st = window.pageYOffset || document.documentElement.scrollTop;
