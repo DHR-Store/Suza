@@ -126,41 +126,61 @@
             font-size: 28px;
             cursor: pointer;
         }
-
         nav.navbar {
-  background: transparent;
-  backdrop-filter: blur(8px);
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 0;
-  border-top: 1px solid #444;
-}
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid #444;
+      padding: 10px 0;
+      font-size: 15px;
+      height: 60px;
+      z-index: 1000;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
 
-        .nav-link {
-            text-align: center;
-            color: white;
-            transition: all 0.3s ease-in-out;
-            padding: 5px;
-            border-radius: 10px;
-            font-size: 14px;
-        }
+    .nav-link {
+      text-align: center;
+      color: white;
+      transition: all 0.3s ease-in-out;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
 
-        .nav-link i {
-            font-size: 24px;
-        }
+    #gear-icon {
+      cursor: pointer;
+      font-size: 30px;
+    }
 
-        .nav-link:hover {
-            color: cyan;
-            transform: scale(1.1);
-        }
-       .nav-link.active {
-  color: cyan;
-  font-weight: bold;
-          }
+    .nav-link i {
+      font-size: 24px;
+    }
+
+    .nav-link:hover {
+      color: cyan;
+      transform: scale(1.1);
+    }
+
+    /* Color Palette */
+    .color-palette {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .color-box {
+      width: 30px;
+      height: 30px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 2px solid white;
+    }
+
+        
     </style>
 </head>
 <body>
@@ -200,6 +220,27 @@
             <i class="bi bi-chevron-right"></i>
         </div>
     </div>
+    div class="setting-item">
+  <span><i class="bi bi-palette"></i> Change Theme Color</span>
+  <input type="color" id="colorPicker" style="margin-left:auto;">
+</div>
+
+<div class="color-palette">
+  <div class="color-box" style="background-color: #00c3ff;" data-color="#00c3ff"></div>
+  <div class="color-box" style="background-color: #ff5722;" data-color="#ff5722"></div>
+  <div class="color-box" style="background-color: #4caf50;" data-color="#4caf50"></div>
+  <div class="color-box" style="background-color: #e91e63;" data-color="#e91e63"></div>
+  <div class="color-box" style="background-color: #ffc107;" data-color="#ffc107"></div>
+</div>
+
+<!-- New Hex Code Input -->
+<div class="setting-item">
+  <span><i class="bi bi-code"></i> Enter Hex Code</span>
+  <input type="text" id="hexInput" placeholder="#00c3ff" style="margin-left:auto; width:120px; padding:3px 8px; border-radius:5px; border:none;">
+</div>
+
+</div>
+    
 
     <!-- Privacy Policy Modal -->
     <div id="privacyModal" class="modal">
@@ -225,7 +266,7 @@
             <a href="home.html" class="nav-link"><i class="bi bi-house-door"></i></a>
             <a href="search.html" class="nav-link"><i class="bi bi-search"></i></a>
             <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark"></i></a>
-            <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill" style="color: #00ffff;"></i></a>
+            <a href="settings.html" class="nav-link"><i class="bi bi-gear-fill"></i></a>
         </div>
     </nav>
 
@@ -286,26 +327,65 @@
 });
             
       // Wait until the DOM is loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    // Get the current file name from the URL (default to home.html if empty)
-    var path = window.location.pathname.split("/").pop();
-    if (path === '') {
-      path = 'settings.html';
-    }
-    
-    // Select all nav links inside the navbar
-    var navLinks = document.querySelectorAll('nav.navbar .nav-link');
-    
-    // Loop through each nav link and add active class if href matches current path
-    navLinks.forEach(function(link) {
-      var href = link.getAttribute('href');
-      if (href === path) {
-        link.classList.add('active');
-      } else {
-        link.classList.remove('active');
-      }
+      // Color Picker
+    document.getElementById("colorPicker").addEventListener("input", function (e) {
+      document.documentElement.style.setProperty('--theme-color', e.target.value);
+      document.querySelectorAll('.nav-link').forEach(el => el.style.color = e.target.value);
+      document.getElementById("gear-icon").style.color = e.target.value;
     });
+
+    // Predefined Color Palette
+    document.querySelectorAll('.color-box').forEach(function (box) {
+      box.addEventListener('click', function () {
+        var color = this.getAttribute('data-color');
+        document.documentElement.style.setProperty('--theme-color', color);
+        document.querySelectorAll('.nav-link').forEach(el => el.style.color = color);
+        document.getElementById("gear-icon").style.color = color;
+      });
+    });
+
+// Color Picker Updated
+document.getElementById("colorPicker").addEventListener("input", function (e) {
+  var selectedColor = e.target.value;
+  localStorage.setItem("themeColor", selectedColor); // Save in localStorage
+  applyThemeColor(selectedColor);
+});
+
+// Predefined Color Palette Updated
+document.querySelectorAll('.color-box').forEach(function (box) {
+  box.addEventListener('click', function () {
+    var color = this.getAttribute('data-color');
+    localStorage.setItem("themeColor", color); // Save in localStorage
+    applyThemeColor(color);
   });
+});
+
+// Function to Apply Theme
+function applyThemeColor(color) {
+  document.documentElement.style.setProperty('--theme-color', color);
+  document.querySelectorAll('.nav-link').forEach(el => el.style.color = color);
+  document.getElementById("gear-icon").style.color = color;
+}
+
+// Page Reload hone par bhi apply ho jaye
+window.addEventListener('load', function () {
+  var savedColor = localStorage.getItem("themeColor");
+  if (savedColor) {
+    applyThemeColor(savedColor);
+  }
+});
+// Hex Code Input Field
+document.getElementById("hexInput").addEventListener("keypress", function (e) {
+  if (e.key === "Enter") {
+    var hexColor = e.target.value.trim();
+    if (/^#([0-9A-Fa-f]{6})$/.test(hexColor)) {
+      localStorage.setItem("themeColor", hexColor);
+      applyThemeColor(hexColor);
+    } else {
+      alert("Please enter a valid Hex code (e.g., #ff0000)");
+    }
+  }
+});
     
     
     </script>
