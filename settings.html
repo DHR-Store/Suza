@@ -344,11 +344,12 @@
               });
             });
 
+        
         // Color Picker Updated
 document.getElementById("colorPicker").addEventListener("input", function (e) {  
   var selectedColor = e.target.value;  
   localStorage.setItem("themeColor", selectedColor); // Save in localStorage  
-  applyGearIconColor(selectedColor);  // Apply only to the gear icon
+  applyGearIconColor(selectedColor);  // Apply only to the gear icon if on settings.html
 });  
 
 // Predefined Color Palette Updated  
@@ -356,23 +357,40 @@ document.querySelectorAll('.color-box').forEach(function (box) {
   box.addEventListener('click', function () {  
     var color = this.getAttribute('data-color');  
     localStorage.setItem("themeColor", color); // Save in localStorage  
-    applyGearIconColor(color);  // Apply only to the gear icon
+    applyGearIconColor(color);  // Apply only to the gear icon if on settings.html
   });  
 });  
 
 // Function to Apply Gear Icon Color
 function applyGearIconColor(color) {  
-  document.getElementById("gear-icon").style.color = color;  
+  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
+  if (currentPage === 'settings.html') {
+    document.getElementById("gear-icon").style.color = color;  // Apply to gear icon only
+  }
 }  
 
-// Page Reload hone par bhi apply ho jaye  
+// Page Reload hone par bhi apply ho jaye
 window.addEventListener('load', function () {  
   var savedColor = localStorage.getItem("themeColor");  
-  if (savedColor) {  
-    applyGearIconColor(savedColor);  // Apply only to the gear icon
-  }  
+  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
+
+  if (savedColor) {
+    if (currentPage === 'settings.html') {
+      applyGearIconColor(savedColor);  // Apply only to the gear icon on settings.html
+    }
+    
+    // For other pages, set the gear icon to the saved color and other icons to white
+    if (currentPage !== 'settings.html') {
+      document.querySelectorAll('.nav-link i').forEach(function (icon) {
+        if (icon.closest('a').getAttribute('href') === 'settings.html') {
+          icon.style.color = savedColor;  // Set gear icon color
+        } else {
+          icon.style.color = 'white';  // Set other icons to white
+        }
+      });
+    }
+  }
 });
-        
         
         // Hex Code Input Field
         document.getElementById("hexInput").addEventListener("keypress", function (e) {
@@ -388,55 +406,7 @@ window.addEventListener('load', function () {
         });
 
 
-        // Hide or show nav based on scroll direction
-window.addEventListener('scroll', () => {
-  let st = window.pageYOffset || document.documentElement.scrollTop;
-  if (st > lastScrollTop) {
-    // Scrolling down: hide nav
-    nav.style.transform = 'translateY(100%)';
-    navVisible = false;
-  } else {
-    // Scrolling up: show nav
-    nav.style.transform = 'translateY(0)';
-    navVisible = true;
-  }
-  lastScrollTop = st <= 0 ? 0 : st;
-});
-
-// Double-tap detection for toggling nav visibility
-let lastTap = 0;
-document.addEventListener('touchend', () => {
-  const currentTime = new Date().getTime();
-  const tapInterval = currentTime - lastTap;
-  // Check if two taps occurred within 300ms
-  if (tapInterval > 0 && tapInterval < 300) {
-    if (navVisible) {
-      nav.style.transform = 'translateY(100%)';
-      navVisible = false;
-    } else {
-      nav.style.transform = 'translateY(0)';
-      navVisible = true;
-    }
-  }
-  lastTap = currentTime;
-});
-    window.addEventListener('load', function () {
-  var savedColor = localStorage.getItem("themeColor");
-  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
-  
-  if (savedColor) {
-    if (currentPage === 'settings.html') {
-      // Sirf search icon ka color change
-      document.querySelector('.nav-link[href="settings.html"] i').style.color = savedColor;
-    }
-    // Baaki sab icons white karna
-    document.querySelectorAll('.nav-link i').forEach(function (icon) {
-      if (icon.closest('a').getAttribute('href') !== 'settings.html') {
-        icon.style.color = 'white';
-      }
-    });
-  }
-});
+        
     
     </script>
 
