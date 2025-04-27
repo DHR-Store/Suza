@@ -358,19 +358,13 @@ document.querySelectorAll('.color-box').forEach(function (box) {
 
 // Function to Apply Theme
 function applyThemeColor(color) {
-  document.documentElement.style.setProperty('--theme-color', color);
-  document.querySelectorAll('.nav-link').forEach(el => el.style.color = color);
-  document.getElementById("gear-icon").style.color = color;
-}
-
-// Page Reload hone par bhi apply ho jaye
-window.addEventListener('load', function () {
-  var savedColor = localStorage.getItem("themeColor");
-  if (savedColor) {
-    applyThemeColor(savedColor);
-  }
-});
-window.addEventListener('load', function() {
+          document.documentElement.style.setProperty('--theme-color', color);
+          document.querySelectorAll('.nav-link').forEach(el => el.style.color = color);
+          document.getElementById("gear-icon").style.color = color;
+        }
+        
+        // Page Reload hone par bhi apply ho jaye
+        window.addEventListener('load', function() {
   var savedColor = localStorage.getItem("themeColor");
   var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
   
