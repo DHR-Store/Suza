@@ -371,8 +371,7 @@ function applyThemeColor(color) {
   if (savedColor) {
     if (currentPage === 'settings.html') {
       // Sirf search icon ka color change
-      document.querySelector('.nav-link[href="settings.html"] i').style.color = savedColor;
-    }
+      
     // Baaki sab icons white karna
     document.querySelectorAll('.nav-link i').forEach(function(icon) {
       if (icon.closest('a').getAttribute('href') !== 'settings.html') {
@@ -392,6 +391,38 @@ document.getElementById("hexInput").addEventListener("keypress", function (e) {
       alert("Please enter a valid Hex code (e.g., #ff0000)");
     }
   }
+});
+        // Hide or show nav based on scroll direction
+window.addEventListener('scroll', () => {
+  let st = window.pageYOffset || document.documentElement.scrollTop;
+  if (st > lastScrollTop) {
+    // Scrolling down: hide nav
+    nav.style.transform = 'translateY(100%)';
+    navVisible = false;
+  } else {
+    // Scrolling up: show nav
+    nav.style.transform = 'translateY(0)';
+    navVisible = true;
+  }
+  lastScrollTop = st <= 0 ? 0 : st;
+});
+
+// Double-tap detection for toggling nav visibility
+let lastTap = 0;
+document.addEventListener('touchend', () => {
+  const currentTime = new Date().getTime();
+  const tapInterval = currentTime - lastTap;
+  // Check if two taps occurred within 300ms
+  if (tapInterval > 0 && tapInterval < 300) {
+    if (navVisible) {
+      nav.style.transform = 'translateY(100%)';
+      navVisible = false;
+    } else {
+      nav.style.transform = 'translateY(0)';
+      navVisible = true;
+    }
+  }
+  lastTap = currentTime;
 });
     
     
