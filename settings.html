@@ -259,19 +259,7 @@
       }
     });
         
-        // Dark Mode Toggle
-        document.getElementById("toggle-darkmode").addEventListener("click", function () {
-            document.body.classList.toggle("light-mode");
-            this.classList.toggle("active");
-            localStorage.setItem("darkMode", document.body.classList.contains("light-mode") ? "off" : "on");
-        });
-
-        // Load Dark Mode Setting
-        if (localStorage.getItem("darkMode") === "off") {
-            document.body.classList.add("light-mode");
-            document.getElementById("toggle-darkmode").classList.add("active");
-        }
-
+        
         // Open Modal
         function openModal(id) {
             document.getElementById(id).style.display = "block";
@@ -283,10 +271,7 @@
         }
 
         // Event Listeners for Modals
-        document.getElementById("privacy-policy").addEventListener("click", function () {
-            openModal("privacyModal");
-        });
-
+        
         document.getElementById("about").addEventListener("click", function () {
             openModal("aboutModal");
         });
