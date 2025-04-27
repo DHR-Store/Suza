@@ -513,6 +513,37 @@ document.documentElement.style.setProperty('--theme-color', savedColor);
 document.querySelectorAll('.nav-link').forEach(el => el.style.color = savedColor);
 }
 });
+  window.addEventListener('load', function () {
+  // Apply Dynamic Color Gradient for Text
+  var savedColor = localStorage.getItem('themeColor');
+  var primaryColor = savedColor ? savedColor : '#00c3ff'; // Default primary color
+  var secondaryColor = '#ff5722'; // Secondary color
+
+  // Apply Gradient to the text
+  document.querySelectorAll('h3').forEach(function (element) {
+    element.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    element.style.color = 'transparent';
+    element.style.webkitBackgroundClip = 'text';
+  });
+});
+window.addEventListener('load', function () {
+  var savedColor = localStorage.getItem("themeColor");
+  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
+  
+  if (savedColor) {
+    if (currentPage === 'search.html') {
+      // Sirf search icon ka color change
+      document.querySelector('.nav-link[href="search.html"] i').style.color = savedColor;
+    }
+    // Baaki sab icons white karna
+    document.querySelectorAll('.nav-link i').forEach(function (icon) {
+      if (icon.closest('a').getAttribute('href') !== 'search.html') {
+        icon.style.color = 'white';
+      }
+    });
+  }
+});
+  
 
 </script>
 </body>
