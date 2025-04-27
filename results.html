@@ -23,8 +23,10 @@
       cursor: default;
     }
         h2 {
-            color: #ff4c4c;
-            margin: 10px;
+            background: linear-gradient(135deg, var(--theme-color, #00c3ff), #ff5722);
+  color: transparent;
+  -webkit-background-clip: text;
+  margin: var(--dynamic-margin, 10px);
         }
         .provider-section {
             margin: 20px 0;
@@ -50,7 +52,7 @@
         .movie-card img:hover {
             transform: scale(1.1);
         }
-        .bottom-nav {
+      nav.navbar {
   background: transparent;
   backdrop-filter: blur(8px);
   position: fixed;
@@ -61,36 +63,61 @@
   align-items: center;
   padding: 10px 0;
   border-top: 1px solid #444;
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
-        .bottom-nav a {
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .bottom-nav i {
-            font-size: 24px;
-            display: block;
-        }
-        .bottom-nav a:hover {
-            color: #ff4c4c;
-        }
+
+/* Normal Nav Link */
+.nav-link {
+  text-align: center;
+  color: var(--theme-color, white); /* Use theme color */
+  transition: transform 0.3s ease, color 0.3s ease;
+  padding: 5px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* Icon inside Nav Link */
+.nav-link i {
+  font-size: 24px;
+}
+
+/* Hover Effect */
+.nav-link:hover {
+  color: var(--theme-color, cyan); /* Dynamic hover color */
+  transform: scale(1.1);
+}
+
+/* Active Link */
+.nav-link.active {
+  color: var(--theme-color, cyan); /* Dynamic active color */
+  font-weight: bold;
+}
     </style>
 </head>
 <body>
 
 <div class="container mt-4">
-    <h2>Search Results for "<span id="search-query"></span>"</h2>
+    <h2>Search Results for"<span id="search-query"></span>"</h2>
     <div id="movies-container"></div>
 </div>
 
 <!-- Bottom Navigation -->
-<nav class="bottom-nav">
-    <a href="home.html"><i class="bi bi-house-door"></i></a>
-    <a href="search.html"><i class="bi bi-search" style="color: #00ffff;"></i></a>
-    <a href="watchlist.html"><i class="bi bi-bookmark"></i></a>
-    <a href="settings.html"><i class="bi bi-gear"></i></a>
-</nav>
+  <nav class="navbar navbar-dark fixed-bottom" id="bottomNav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="home.html" class="nav-link">
+        <i class="bi bi-house-door"></i><br />
+      </a>
+      <a href="search.html" class="nav-link">
+        <i class="bi bi-search"></i><br />
+      </a>
+      <a href="watchlist.html" class="nav-link">
+        <i class="bi bi-bookmark"></i><br />
+      </a>
+      <a href="settings.html" class="nav-link">
+        <i class="bi bi-gear"></i><br />
+      </a>
+    </div>
+  </nav>
 
 <script>
         // Prevent default right-click/context menu on the entire document
@@ -195,7 +222,9 @@ async function loadMovies() {
     // Create provider section
     let section = document.createElement("div");
     section.classList.add("provider-section");
-    section.innerHTML = `<h3 style="color:#ff4c4c;">${provider}</h3>`;
+     section.innerHTML =`<h3 style="background: linear-gradient(135deg, ${localStorage.getItem('themeColor') || '#00c3ff'}, #ff5722); color: transparent; -webkit-background-clip: text; margin: ${localStorage.getItem('themeColor') ? '15px' : '10px'};">
+  ${provider}
+</h3>`;
 
     // Create movies row with movie cards
     let moviesRow = document.createElement("div");
@@ -215,6 +244,36 @@ async function loadMovies() {
 function redirectToWatch(imdbID, title, poster) {
   window.location.href = `watch.html?id=${imdbID}&title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
 }
+    window.addEventListener('load', function () {
+  // Apply Dynamic Color Gradient for Text
+  var savedColor = localStorage.getItem('themeColor');
+  var primaryColor = savedColor ? savedColor : '#00c3ff'; // Default primary color
+  var secondaryColor = '#ff5722'; // Secondary color
+
+  // Apply Gradient to the text
+  document.querySelectorAll('h3').forEach(function (element) {
+    element.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    element.style.color = 'transparent';
+    element.style.webkitBackgroundClip = 'text';
+  });
+});
+window.addEventListener('load', function () {
+  var savedColor = localStorage.getItem("themeColor");
+  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
+  
+  if (savedColor) {
+    if (currentPage === 'search.html') {
+      // Sirf search icon ka color change
+      document.querySelector('.nav-link[href="search.html"] i').style.color = savedColor;
+    }
+    // Baaki sab icons white karna
+    document.querySelectorAll('.nav-link i').forEach(function (icon) {
+      if (icon.closest('a').getAttribute('href') !== 'search.html') {
+        icon.style.color = 'white';
+      }
+    });
+  }
+});
 </script>
 
 </body>
