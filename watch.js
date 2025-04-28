@@ -72,13 +72,15 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("season-container-toggle").style.display = "none";
       document.getElementById("season-selector").style.display = "none";
       document.getElementById("episode-buttons-container").innerHTML = `
-        <div id="movie-search-container" style="margin-bottom:15px; text-align:center;">
+       <button class="episode-watch-btn" onclick="loadMovieVideoFromSearch()">Watch ${type === 'multi' ? 'Multi Movie' : 'Movie'}</button>
+  <button class="episode-download-btn">
+    <i class="download-icon"></i> Download
+  </button>
+</div>
+        <div id="movie-search-container" style="margin-bottom: 0px; text-align:center;">
           <input id="movieSearch" type="text" placeholder="Search movie..." value="${data.title}"
-            style="padding:8px; font-size:14px; border-radius:4px; border:none; margin-right:5px;">
+            style="padding: 0px; font-size:0px; border-radius:0px; border:none; margin-right:0px;">
           <button onclick="searchMovie()" class="episode-watch-btn">Search</button>
-        </div>
-        <div style="text-align:center;">
-          <button class="episode-watch-btn" onclick="loadMovieVideoFromSearch()">Watch ${type === "multi" ? "Multi Movie" : "Movie"}</button>
         </div>
       `;
     } else {
