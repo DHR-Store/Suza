@@ -80,7 +80,6 @@ document.addEventListener("DOMContentLoaded", function () {
         <div id="movie-search-container" style="margin-bottom: 0px; text-align:center;">
           <input id="movieSearch" type="text" placeholder="Search movie..." value="${data.title}"
             style="padding: 0px; font-size:0px; border-radius:0px; border:none; margin-right:0px;">
-          <button onclick="searchMovie()" class="episode-watch-btn">Search</button>
         </div>
       `;
     } else {
