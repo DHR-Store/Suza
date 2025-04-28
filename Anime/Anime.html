@@ -1103,28 +1103,7 @@ function handleSwipe() {
 // in the update functions, so it needs to be decoded if necessary on the watch page.
 // The encoding/decoding logic in openWatchPage is updated slightly for robustness.
 
-
-         // When the page loads, start the timeout to auto-dismiss the notification after 5 seconds.
-    window.addEventListener("load", function() {
-      setTimeout(function() {
-        var notification = document.getElementById("notification");
-        if (notification) {
-          // Use Bootstrap's alert API to close the notification gracefully.
-          var alertInstance = bootstrap.Alert.getInstance(notification);
-          if (!alertInstance) {
-            alertInstance = new bootstrap.Alert(notification);
-          }
-          alertInstance.close();
-        }
-      }, 4000); // 5000 milliseconds = 5 seconds
-    });
-    
-    // Add click event for the Try button to open 'hh.html'
-    document.getElementById("try-btn").addEventListener("click", function() {
-      window.location.href = "suzaTV/suzatvhome.html";
-    });
-
-    window.addEventListener('load', function () {
+window.addEventListener('load', function () {
 var savedColor = localStorage.getItem("themeColor");
 if (savedColor) {
 document.documentElement.style.setProperty('--theme-color', savedColor);
@@ -1150,6 +1129,7 @@ document.querySelectorAll('.nav-link').forEach(el => el.style.color = savedColor
     });
   }
 });
+         
   </script>
 </body>
 </html>
