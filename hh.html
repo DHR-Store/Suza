@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Music Player</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+    <style>
+        /* Global Styles */
+        :root {
+            --mini-player-height: 65px;
+            --nav-height: 55px;
+            --primary-bg: #121212;
+            --secondary-bg: #1e1e1e;
+            --tertiary-bg: #282828;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-color: #1DB954; /* Spotify Green */
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+        }
+        /* Hide scrollbar */
+        body::-webkit-scrollbar { display: none; }
+        body { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Page Containers */
+        .page {
+            display: none; /* Hidden by default */
+            padding: 15px;
+            padding-bottom: calc(var(--nav-height) + 15px); /* Space for bottom nav */
+            min-height: 100vh;
+        }
+        .page.active { display: block; }
+
+        /* Loading Indicator */
+        .loading-indicator {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            display: none; /* Hidden by default */
+        }
+        .loading-indicator.active { display: block; }
+
+        /* Song Item Styling (reusable) */
+        .song-list { list-style: none; padding: 0; margin: 0; }
+        .song-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--tertiary-bg);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .song-item:hover { background-color: var(--secondary-bg); }
+        .song-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            margin-right: 15px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .song-item .song-info {
+            overflow: hidden; /* Prevent text overflow */
+        }
+        .song-item .song-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .song-item .song-artist {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+         .song-item .remove-fav-btn {
+             margin-left: auto;
+             background: none;
+             border: none;
+             color: var(--text-secondary);
+             font-size: 1.2em;
+             cursor: pointer;
+             padding: 5px;
+         }
+         .song-item .remove-fav-btn:hover { color: tomato; }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background-color: rgba(30, 30, 30, 0.9);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--tertiary-bg);
+            z-index: 15; /* Above search results, below player */
+        }
+        .nav-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            padding: 5px;
+        }
+        .nav-button i { font-size: 22px; display: block; margin-bottom: 2px; }
+        .nav-button.active, .nav-button:hover { color: var(--text-primary); }
+
+        /* Big Player Styles */
+        #playerPage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--secondary-bg); /* Darker background */
+            z-index: 20; /* Highest */
+            display: none; /* Controlled by JS */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center content vertically */
+            padding: 30px 20px;
+            overflow: hidden; /* Prevent scrolling inside player */
+        }
+        #playerPage.active { display: flex; }
+        #playerBlurBackground {
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background-size: cover;
+             background-position: center;
+             filter: blur(40px) brightness(0.5);
+             z-index: -1;
+             opacity: 0.7;
+        }
+        #playerSongImage {
+            width: 70%;
+            max-width: 280px;
+            aspect-ratio: 1 / 1;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+        #playerSongDetails { text-align: center; margin-bottom: 20px; }
+        #playerSongName { font-size: 1.4em; font-weight: 600; margin-bottom: 5px; }
+        #playerSongArtist { font-size: 1em; color: var(--text-secondary); }
+        #playerProgressContainer {
+            width: 100%;
+            height: 5px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        #playerProgressBar {
+            width: 0%;
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+        #playerTimeDisplay {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+        }
+        #playerControlsPrimary {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 30px;
+        }
+        .player-ctrl-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.8em; /* Smaller side buttons */
+            transition: transform 0.1s ease;
+        }
+        .player-ctrl-btn:active { transform: scale(0.9); }
+        #playPauseBtn { font-size: 2.8em; /* Larger play/pause */ }
+        #playerControlsSecondary {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             width: 100%;
+             max-width: 300px; /* Slightly narrower */
+             margin-top: 10px; /* Space above secondary controls */
+         }
+         .player-ctrl-btn-secondary {
+              background: none;
+              border: none;
+              color: var(--text-secondary); /* Less prominent */
+              cursor: pointer;
+              font-size: 1.5em;
+              transition: color 0.2s ease;
+          }
+          .player-ctrl-btn-secondary:hover,
+          .player-ctrl-btn-secondary.active { color: var(--accent-color); } /* Highlight active/hover */
+
+
+        /* Mini Player Styles */
+        #miniPlayer {
+            position: fixed;
+            bottom: var(--nav-height); /* Position above nav bar */
+            left: 0;
+            width: 100%;
+            height: var(--mini-player-height);
+            background-color: var(--tertiary-bg);
+            z-index: 10; /* Above nav and page content */
+            display: none; /* Hidden by default */
+            align-items: center;
+            padding: 0 15px;
+            cursor: pointer;
+            border-top: 1px solid #444;
+        }
+        #miniPlayer.active { display: flex; }
+        #miniPlayerImage {
+            width: 45px;
+            height: 45px;
+            border-radius: 4px;
+            margin-right: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        #miniPlayerInfo {
+            flex-grow: 1;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+        #miniPlayerSongName {
+            font-size: 0.9em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+         #miniPlayerSongArtist {
+             font-size: 0.75em;
+             color: var(--text-secondary);
+             white-space: nowrap;
+             overflow: hidden;
+             text-overflow: ellipsis;
+         }
+        #miniPlayerControls { margin-left: auto; flex-shrink: 0; }
+        #miniPlayPauseBtn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.8em;
+            cursor: pointer;
+        }
+
+        /* Search Page Styles */
+        #searchPage {
+             position: fixed; /* Or absolute depending on exact behavior */
+             top: 0;
+             left: 0;
+             width: 100%;
+             /* Height calculation avoids mini-player AND nav bar */
+             height: calc(100vh - var(--mini-player-height) - var(--nav-height));
+             padding: 15px;
+             background-color: var(--primary-bg);
+             z-index: 5; /* Below mini-player and nav */
+             overflow-y: auto;
+             display: none; /* Hidden by default */
+         }
+        #searchPage.active { display: block; }
+        #searchBarContainer { display: flex; margin-bottom: 15px; }
+        #searchInput {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: var(--tertiary-bg);
+            color: var(--text-primary);
+            margin-right: 10px;
+        }
+        #searchCloseBtn { /* Optional: Button to clear/close search */
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5em;
+        }
+
+        /* Adjust padding for pages when mini-player is active */
+        body.mini-player-visible .page {
+            padding-bottom: calc(var(--nav-height) + var(--mini-player-height) + 15px);
+        }
+         /* Favourites Page */
+         #favouritesPage .empty-favs {
+             text-align: center;
+             margin-top: 50px;
+             color: var(--text-secondary);
+         }
+
+    </style>
+</head>
+<body > <audio id="audioPlayer" preload="metadata"></audio>
+
+    <div id="trendingPage" class="page active">
+        <h2>Trending Songs</h2>
+        <div id="trendingLoading" class="loading-indicator active">Loading trending songs...</div>
+        <ul id="trendingList" class="song-list"></ul>
+    </div>
+
+    <div id="searchPage" class="page">
+        <div id="searchBarContainer">
+            <input type="search" id="searchInput" placeholder="Search for songs...">
+            </div>
+        <div id="searchLoading" class="loading-indicator">Searching...</div>
+        <ul id="searchResults" class="song-list"></ul>
+    </div>
+
+    <div id="favouritesPage" class="page">
+        <h2>Favourites</h2>
+        <div id="favouritesLoading" class="loading-indicator">Loading favourites...</div>
+        <ul id="favouritesList" class="song-list"></ul>
+         <p class="empty-favs" style="display: none;">No favourite songs yet. Tap the heart icon on the player!</p>
+    </div>
+
+    <div id="playerPage">
+         <div id="playerBlurBackground"></div>
+        <img id="playerSongImage" src="placeholder.jpg" alt="Album Art" />
+        <div id="playerSongDetails">
+            <h1 id="playerSongName">Song Title</h1>
+            <p id="playerSongArtist">Artist Name</p>
+        </div>
+        <div id="playerProgressContainer">
+            <div id="playerProgressBar"></div>
+        </div>
+        <div id="playerTimeDisplay">
+            <span id="currentTime">0:00</span>
+            <span id="totalDuration">0:00</span>
+        </div>
+        <div id="playerControlsPrimary">
+            <button id="prevBtn" class="player-ctrl-btn"><i class="bi bi-skip-start-fill"></i></button>
+            <button id="playPauseBtn" class="player-ctrl-btn"><i class="bi bi-play-circle-fill"></i></button>
+            <button id="nextBtn" class="player-ctrl-btn"><i class="bi bi-skip-end-fill"></i></button>
+        </div>
+         <div id="playerControlsSecondary">
+             <button id="downloadBtn" class="player-ctrl-btn-secondary"><i class="bi bi-download"></i></button>
+             <button id="repeatBtn" class="player-ctrl-btn-secondary"><i class="bi bi-repeat"></i></button>
+             <button id="favouriteBtn" class="player-ctrl-btn-secondary"><i class="bi bi-heart"></i></button> </div>
+    </div>
+
+    <div id="miniPlayer">
+        <img id="miniPlayerImage" src="placeholder.jpg" alt="Mini Album Art" />
+        <div id="miniPlayerInfo">
+            <div id="miniPlayerSongName">Song Title</div>
+             <div id="miniPlayerSongArtist">Artist Name</div>
+        </div>
+        <div id="miniPlayerControls">
+            <button id="miniPlayPauseBtn"><i class="bi bi-play-fill"></i></button>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-button active" data-page="trendingPage"><i class="bi bi-graph-up"></i>Trending</button>
+        <button class="nav-button" data-page="searchPage"><i class="bi bi-search"></i>Search</button>
+        <button class="nav-button" data-page="favouritesPage"><i class="bi bi-heart-fill"></i>Favourites</button>
+        </nav>
+
+
+      <script>
+        // ----- DOM Elements -----
+        const audioPlayer = document.getElementById('audioPlayer');
+        const pages = document.querySelectorAll('.page');
+        const navButtons = document.querySelectorAll('.nav-button');
+
+        // Trending Page
+        const trendingPage = document.getElementById('trendingPage');
+        const trendingList = document.getElementById('trendingList');
+        const trendingLoading = document.getElementById('trendingLoading');
+
+        // Search Page
+        const searchPage = document.getElementById('searchPage');
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const searchLoading = document.getElementById('searchLoading');
+
+        // Favourites Page
+        const favouritesPage = document.getElementById('favouritesPage');
+        const favouritesList = document.getElementById('favouritesList');
+        const favouritesLoading = document.getElementById('favouritesLoading');
+         const emptyFavsMessage = favouritesPage.querySelector('.empty-favs');
+
+        // Big Player
+        const playerPage = document.getElementById('playerPage');
+        const playerBlurBackground = document.getElementById('playerBlurBackground');
+        const playerSongImage = document.getElementById('playerSongImage');
+        const playerSongName = document.getElementById('playerSongName');
+        const playerSongArtist = document.getElementById('playerSongArtist');
+        const playerProgressContainer = document.getElementById('playerProgressContainer');
+        const playerProgressBar = document.getElementById('playerProgressBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const totalDurationEl = document.getElementById('totalDuration');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const repeatBtn = document.getElementById('repeatBtn');
+        const favouriteBtn = document.getElementById('favouriteBtn');
+        const downloadBtn = document.getElementById('downloadBtn'); // Assuming you have logic for this
+
+        // Mini Player
+        const miniPlayer = document.getElementById('miniPlayer');
+        const miniPlayerImage = document.getElementById('miniPlayerImage');
+        const miniPlayerInfo = document.getElementById('miniPlayerInfo'); // Get the info div
+        const miniPlayerSongName = document.getElementById('miniPlayerSongName');
+         const miniPlayerSongArtist = document.getElementById('miniPlayerSongArtist');
+        const miniPlayPauseBtn = document.getElementById('miniPlayPauseBtn');
+
+
+        // ----- State Variables -----
+        let currentQueue = []; // Array of song objects { id, name, artist, album, url, image }
+        let currentSongIndex = -1;
+        let currentSong = null; // The currently playing song object
+        let favourites = []; // Array of favourite song objects
+        let isRepeat = false;
+        let activePage = 'trendingPage'; // Keep track of the visible page (behind the player if active)
+
+        // ----- API Base URL -----
+        const API_BASE_URL = 'https://jiosaavn-api-privatecvc2.vercel.app';
+
+        // ----- Utility Functions -----
+        function formatTime(seconds) {
+            if (isNaN(seconds) || seconds < 0) return "0:00"; // Handle negative or NaN
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+        }
+
+        // Select best quality image/URL (adjust qualities as needed)
+        function getBestUrl(downloadUrls) {
+             if (!downloadUrls || downloadUrls.length === 0) return null;
+             // Prioritize higher quality
+             return downloadUrls.find(q => q.quality === '320kbps')?.link ||
+                    downloadUrls.find(q => q.quality === '160kbps')?.link ||
+                     downloadUrls.find(q => q.quality === '128kbps')?.link || // Added 128kbps as common
+                    downloadUrls.find(q => q.quality === '96kbps')?.link || // Added 96kbps
+                    downloadUrls[downloadUrls.length - 1]?.link; // Fallback to highest available
+        }
+
+        function getBestImage(images) {
+            if (!images || images.length === 0) return 'placeholder.jpg'; // Placeholder image path
+             // Prioritize larger sizes
+            return images.find(i => i.quality === '500x500')?.link ||
+                   images.find(i => i.quality === '150x150')?.link ||
+                   images[0]?.link; // Fallback
+        }
+
+        function cleanApiText(text) {
+             if (!text) return '';
+             return text.replace(/&amp;/g, '&')
+                        .replace(/&quot;/g, '"')
+                        .replace(/&#039;/g, "'")
+                         .replace(/&lt;/g, '<') // Add other common entities
+                         .replace(/&gt;/g, '>');
+        }
+
+        // ----- Loading Indicators -----
+        function showLoading(indicatorElement, show = true) {
+            indicatorElement.classList.toggle('active', show);
+        }
+
+        // ----- Page Navigation -----
+        function navigateToPage(pageId, pushState = true) {
+             if(activePage === pageId && !playerPage.classList.contains('active')) return; // Don't re-navigate unless big player is active
+
+            activePage = pageId; // Update activePage state variable
+            pages.forEach(page => {
+                page.classList.toggle('active', page.id === pageId);
+            });
+            navButtons.forEach(button => {
+                button.classList.toggle('active', button.dataset.page === pageId);
+            });
+
+             // Manage history state only if pushState is true
+             if (pushState) {
+                 // Store the page we navigated to, plus the current player state
+                  const state = {
+                      page: pageId,
+                      playerVisible: false, // Navigating to a page implies big player is hidden
+                      miniPlayerActive: miniPlayer.classList.contains('active') // Keep current mini player state
+                  };
+                  history.pushState(state, '', `#${pageId}`); // Add hash for potentially better state management
+             }
+
+            // Load content if needed
+             if (pageId === 'favouritesPage') {
+                 displayFavourites(); // Re-render favourites list
+             } else if (pageId === 'trendingPage' && trendingList.children.length === 0) {
+                  fetchTrendingSongs(); // Fetch if list is empty
+             } else if (pageId === 'searchPage') {
+                 searchInput.focus(); // Focus search input when navigating to search page
+             }
+
+             // Don't scroll on page change if player is active - player covers everything
+             if (!playerPage.classList.contains('active')) {
+                 window.scrollTo(0, 0); // Scroll to top on page change
+             }
+        }
+
+        // ----- Favourite Management -----
+        function loadFavouritesFromStorage() {
+            const storedFavourites = localStorage.getItem('favourites');
+            favourites = storedFavourites ? JSON.parse(storedFavourites) : [];
+             console.log("Loaded Favourites:", favourites);
+        }
+
+        function saveFavouritesToStorage() {
+            localStorage.setItem('favourites', JSON.stringify(favourites));
+             console.log("Saved Favourites:", favourites);
+        }
+
+         function isFavourite(songId) {
+             return favourites.some(fav => fav.id === songId);
+         }
+
+        function toggleFavourite() {
+            if (!currentSong) return;
+
+            const songId = currentSong.id;
+             const favouriteIndex = favourites.findIndex(fav => fav.id === songId);
+
+            if (favouriteIndex > -1) { // Is favourite, remove it
+                favourites.splice(favouriteIndex, 1);
+                favouriteBtn.innerHTML = '<i class="bi bi-heart"></i>'; // Update icon to not filled
+                 console.log('Removed from favourites:', currentSong.name);
+            } else { // Not favourite, add it
+                favourites.push(currentSong); // Add the whole currentSong object
+                favouriteBtn.innerHTML = '<i class="bi bi-heart-fill"></i>'; // Update icon to filled
+                 console.log('Added to favourites:', currentSong.name);
+            }
+            saveFavouritesToStorage();
+
+             // Refresh favourites list if currently viewing it
+             if (activePage === 'favouritesPage') {
+                 displayFavourites();
+             }
+        }
+
+         function updateFavouriteButton() {
+             if (!currentSong) {
+                 favouriteBtn.innerHTML = '<i class="bi bi-heart"></i>';
+                 favouriteBtn.classList.remove('active'); // Ensure active class is removed
+                 return;
+             }
+             if (isFavourite(currentSong.id)) {
+                 favouriteBtn.innerHTML = '<i class="bi bi-heart-fill"></i>'; // Filled heart
+                 favouriteBtn.classList.add('active');
+             } else {
+                 favouriteBtn.innerHTML = '<i class="bi bi-heart"></i>'; // Outline heart
+                 favouriteBtn.classList.remove('active');
+             }
+         }
+
+
+        // ----- Audio Player Logic -----
+        function playSongFromQueue(index) {
+            if (!currentQueue || index < 0 || index >= currentQueue.length) {
+                console.error("Invalid song index or empty queue:", index);
+                 // Optionally stop player or handle end of queue
+                 audioPlayer.pause();
+                 updatePlayPauseButtons(false);
+                 currentSong = null; // Clear current song state
+                 showMiniPlayer(false); // Hide mini player
+                 showPlayerPage(false); // Hide big player
+                 document.body.classList.remove('mini-player-visible'); // Remove body class
+                return;
+            }
+
+            // Stop current playback before loading new song
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            updateProgress(); // Reset UI progress
+
+            currentSongIndex = index;
+            currentSong = currentQueue[currentSongIndex]; // Store the currently selected song object
+
+            console.log("Attempting to play:", currentSong.name, "Index:", currentSongIndex, "URL:", currentSong.url);
+
+             if(!currentSong.url){
+                 console.error("Song has no valid URL:", currentSong.name);
+                 alert(`Could not play "${currentSong.name}". No valid URL found.`);
+                 // Try playing next song automatically if possible, or handle error state
+                 if (currentQueue.length > 1 && index < currentQueue.length - 1) {
+                     console.log("Skipping song with no URL, attempting next.");
+                     playSongFromQueue(index + 1); // Try the next song
+                 } else {
+                      // Handle end of queue or single non-playable song
+                      console.log("No more songs to play or single non-playable song.");
+                      currentSong = null;
+                      updatePlayPauseButtons(false);
+                      showMiniPlayer(false);
+                      showPlayerPage(false);
+                       document.body.classList.remove('mini-player-visible');
+                 }
+                 return; // Stop playback attempt for this song
+             }
+
+            audioPlayer.src = currentSong.url;
+            audioPlayer.load(); // Important for some browsers
+
+            // Update UI immediately
+            updatePlayerUI(currentSong);
+            updateMiniPlayerUI(currentSong);
+            updateFavouriteButton(); // Check if the new song is a favourite
+
+            // Play
+            audioPlayer.play().then(() => {
+                updatePlayPauseButtons(true); // Playing
+                // Show the big player and push its state to history
+                showPlayerPage(true, true);
+                 // Ensure mini player is hidden when big player is active
+                showMiniPlayer(false);
+                document.body.classList.remove('mini-player-visible');
+
+            }).catch(error => {
+                console.error("Audio Play Error:", error);
+                updatePlayPauseButtons(false);
+                 // Alert user maybe?
+                 alert(`Error playing ${currentSong.name}. It might be protected or unavailable. Details: ${error.message}`);
+                 // Could also attempt to skip to the next song here
+                 if (currentQueue.length > 1 && index < currentQueue.length - 1) {
+                     console.log("Attempting next song after playback error.");
+                     playSongFromQueue(index + 1);
+                 } else {
+                     currentSong = null; // Clear state on final error
+                     showMiniPlayer(false);
+                     showPlayerPage(false);
+                      document.body.classList.remove('mini-player-visible');
+                 }
+            });
+        }
+
+         function updatePlayerUI(song) {
+             playerSongImage.src = song.image || 'placeholder.jpg';
+             playerBlurBackground.style.backgroundImage = `url('${song.image || 'placeholder.jpg'}')`;
+             playerSongName.textContent = song.name || 'Unknown Song';
+             playerSongArtist.textContent = song.artist || song.album || 'Unknown Artist'; // Use artist first if available
+             // Reset progress
+             playerProgressBar.style.width = '0%';
+             currentTimeEl.textContent = '0:00';
+             totalDurationEl.textContent = '0:00'; // Reset duration until metadata loads
+         }
+
+         function updateMiniPlayerUI(song) {
+             miniPlayerImage.src = song.image || 'placeholder.jpg';
+             miniPlayerSongName.textContent = song.name || 'Unknown Song';
+             miniPlayerSongArtist.textContent = song.artist || song.album || 'Unknown Artist';
+         }
+
+        function togglePlayPause() {
+            if (!currentSong || !audioPlayer.src) {
+                 console.warn("No song loaded to play/pause.");
+                 return; // No song loaded
+            }
+
+            if (audioPlayer.paused || audioPlayer.ended) {
+                audioPlayer.play().catch(e => console.error("Play error:", e));
+            } else {
+                audioPlayer.pause();
+            }
+             // State update will be handled by 'play' and 'pause' events
+        }
+
+        function updatePlayPauseButtons(isPlaying) {
+            playPauseBtn.innerHTML = isPlaying ? '<i class="bi bi-pause-circle-fill"></i>' : '<i class="bi bi-play-circle-fill"></i>';
+            miniPlayPauseBtn.innerHTML = isPlaying ? '<i class="bi bi-pause-fill"></i>' : '<i class="bi bi-play-fill"></i>';
+        }
+
+         function updateProgress() {
+             if (isNaN(audioPlayer.duration)) return;
+             const percentage = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+             playerProgressBar.style.width = `${percentage}%`;
+             currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+             // Update total duration once available (usually after loadedmetadata)
+             if(totalDurationEl.textContent === '0:00' || totalDurationEl.textContent === '-:--') {
+                 totalDurationEl.textContent = formatTime(audioPlayer.duration);
+             }
+         }
+
+
+        function setProgress(e) {
+            if (!currentSong || isNaN(audioPlayer.duration) || audioPlayer.duration === 0) return;
+            const width = playerProgressContainer.clientWidth;
+            const clickX = e.offsetX;
+            // Ensure clickX is within the container bounds
+            const clickedRatio = Math.max(0, Math.min(1, clickX / width));
+            audioPlayer.currentTime = clickedRatio * audioPlayer.duration;
+        }
+
+        function playNextSong() {
+             if (!currentQueue || currentQueue.length === 0) return;
+            let nextIndex = (currentSongIndex + 1) % currentQueue.length;
+             // If currentQueue has only one song and repeat is off, stop instead of repeating
+             if (currentQueue.length === 1 && !isRepeat) {
+                 audioPlayer.pause();
+                 audioPlayer.currentTime = 0;
+                 updatePlayPauseButtons(false);
+                  // Optionally hide players
+                  // showMiniPlayer(false);
+                  // showPlayerPage(false);
+                  // document.body.classList.remove('mini-player-visible');
+                 console.log("End of queue (single song, repeat off).");
+                 return;
+             }
+            playSongFromQueue(nextIndex);
+        }
+
+        function playPrevSong() {
+             if (!currentQueue || currentQueue.length === 0) return;
+            // If played for more than 3 seconds, restart current song, else play previous
+            if (audioPlayer.currentTime > 3) {
+                audioPlayer.currentTime = 0;
+            } else {
+                let prevIndex = (currentSongIndex - 1 + currentQueue.length) % currentQueue.length;
+                 // If currentQueue has only one song, just restart it
+                 if (currentQueue.length === 1) {
+                     audioPlayer.currentTime = 0;
+                 } else {
+                    playSongFromQueue(prevIndex);
+                 }
+            }
+        }
+
+         function toggleRepeat() {
+             isRepeat = !isRepeat;
+             audioPlayer.loop = isRepeat; // Use native loop property
+             repeatBtn.classList.toggle('active', isRepeat);
+             console.log("Repeat mode:", isRepeat ? "ON" : "OFF");
+             // Update repeat button icon if needed (bi-repeat-1 for repeat one)
+             if (isRepeat) {
+                 // If you wanted repeat one vs repeat all, this is where you'd add logic
+                 repeatBtn.innerHTML = '<i class="bi bi-repeat"></i>'; // Default repeat all icon
+             } else {
+                  repeatBtn.innerHTML = '<i class="bi bi-repeat"></i>'; // Default repeat all icon (no change)
+             }
+         }
+
+        function showPlayerPage(show = true, pushState = false) {
+            playerPage.classList.toggle('active', show);
+
+             // Manage history state if pushState is true (happens when opening player)
+             if (show && pushState) {
+                 // When showing the big player, push a new state
+                  const state = {
+                      page: activePage, // Store the page that was visible underneath
+                      playerVisible: true,
+                      miniPlayerActive: false // Big player is active, mini player is not
+                  };
+                 history.pushState(state, '', '#player'); // Use a specific hash for player state
+             }
+             // Note: Minimizing the player is handled by the popstate listener
+        }
+
+         function showMiniPlayer(show = true) {
+            // Only show mini player if a song is loaded AND big player is NOT active
+            const shouldShow = show && currentSong && !playerPage.classList.contains('active');
+            miniPlayer.classList.toggle('active', shouldShow);
+            document.body.classList.toggle('mini-player-visible', shouldShow);
+             // History state for mini player is handled by page navigation and popstate
+         }
+
+
+// ----- API Fetching -----
+        async function fetchSongs(endpoint, query = '', loadingElement, listElement) {
+            showLoading(loadingElement, true);
+             listElement.innerHTML = ''; // Clear previous list items if any
+
+            let url = `${API_BASE_URL}${endpoint}`;
+             if (query) {
+                 url += `?query=${encodeURIComponent(query)}&limit=30`; // Add limit for searches
+             }
+
+             console.log("Fetching:", url);
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                 console.log("API Data:", data);
+
+                 let songs = [];
+                 // Adjust based on actual API response structure
+                 if(data?.data?.results) { // Search results structure
+                     songs = data.data.results;
+                 } else if(data?.data?.trending?.songs) { // Hypothetical trending structure
+                     songs = data.data.trending.songs;
+                 } else if (Array.isArray(data?.data)) { // Another possible structure
+                     songs = data.data;
+                 } else if (data?.results) { // Simpler structure? (less likely for Jiosaavn APIs)
+                      songs = data.results;
+                 }
+                 // Add a check for album/playlist songs if needed in future
+                 // else if (data?.data?.songs) { songs = data.data.songs; }
+
+
+                if (!songs || songs.length === 0) {
+                     listElement.innerHTML = '<p style="text-align:center; color: var(--text-secondary); padding: 20px;">No songs found.</p>';
+                    return [];
+                 }
+
+                const processedSongs = songs.map((song, index) => ({
+                    id: song.id,
+                    name: cleanApiText(song.name || song.title || 'Unknown Song'),
+                     // Jiosaavn API uses primaryArtists, artists, or album artists
+                     artist: cleanApiText(song.primaryArtists || song.artists?.all_name || song.artist || 'Unknown Artist'),
+                    album: cleanApiText(song.album?.name || song.album || 'Unknown Album'),
+                    url: getBestUrl(song.downloadUrl),
+                    image: getBestImage(song.image || song.images),
+                     // Store info needed to rebuild the song object later if only ID is available
+                     // (though fetching full details by ID would be more robust)
+                     raw_data: song // Keep original data just in case
+                })).filter(song => song.url); // Filter out songs without a playable URL
+
+
+                 // For trending and search, the displayed list *is* the potential queue if a song is clicked.
+                 // We pass the processedSongs array itself as the context for the click handler.
+                displaySongs(processedSongs, listElement, processedSongs);
+
+                return processedSongs; // Return the processed songs
+
+            } catch (error) {
+                console.error("Error fetching songs:", error);
+                listElement.innerHTML = `<p style="text-align:center; color: tomato; padding: 20px;">Failed to load songs. ${error.message}</p>`;
+                 return [];
+            } finally {
+                showLoading(loadingElement, false);
+            }
+        }
+
+         async function fetchTrendingSongs() {
+             // *** Assumption: Use a search query or known endpoint for trending ***
+             // A common pattern might be a dedicated /api/trending or /api/latest endpoint if available.
+             // If not, a broad search is a workaround.
+             // Replace 'Latest Hindi Songs' with a known trending query if the API doc suggests one,
+             // or replace /search/songs with a dedicated endpoint if available.
+             console.log("Fetching trending songs...");
+             const trendingSongs = await fetchSongs('/search/songs', 'trending hindi songs', trendingLoading, trendingList);
+             // If you want trending to be the initial playable queue automatically:
+             // currentQueue = trendingSongs;
+             console.log("Trending Songs fetched:", trendingSongs.length);
+         }
+
+         async function performSearch() {
+              const query = searchInput.value.trim();
+              if (!query) {
+                  searchResults.innerHTML = ''; // Clear results if search box is empty
+                  showLoading(searchLoading, false);
+                  return;
+              }
+              searchResults.innerHTML = ''; // Clear previous results immediately
+              console.log("Performing search for:", query);
+              const searchResultSongs = await fetchSongs('/search/songs', query, searchLoading, searchResults);
+              console.log("Search results count:", searchResultSongs.length);
+              // When a search result song is clicked, the `displaySongs` function's click handler
+              // will set `currentQueue` to the `searchResultSongs` array.
+         }
+
+
+        // ----- UI Display -----
+        function displaySongs(songs, listElement, queueContext) {
+             listElement.innerHTML = ''; // Clear previous content
+            if (!songs || songs.length === 0) {
+                 // Message is handled by fetchSongs now
+                return;
+            }
+
+            songs.forEach((song, index) => {
+                const li = document.createElement('li');
+                li.className = 'song-item';
+                li.innerHTML = `
+                    <img src="${song.image}" alt="${song.name}" loading="lazy">
+                    <div class="song-info">
+                        <div class="song-name">${song.name}</div>
+                        <div class="song-artist">${song.artist}</div>
+                    </div>
+                `;
+                li.onclick = () => {
+                    // When a song item is clicked, set the currentQueue to the provided context
+                    // (which is typically the array the song came from - trending, search results, or favourites)
+                    // and play the song using its index within that context.
+                    currentQueue = queueContext; // Set the active queue for navigation (next/prev)
+                     console.log(`Clicked song: ${song.name}, Index: ${index}, Queue length: ${currentQueue.length}`);
+                    playSongFromQueue(index); // Play the song
+                };
+                listElement.appendChild(li);
+            });
+        }
+
+         function displayFavourites() {
+             showLoading(favouritesLoading, true);
+             favouritesList.innerHTML = ''; // Clear list
+
+             if (favourites.length === 0) {
+                 emptyFavsMessage.style.display = 'block';
+             } else {
+                 emptyFavsMessage.style.display = 'none';
+                 favourites.forEach((song, index) => {
+                     const li = document.createElement('li');
+                     li.className = 'song-item';
+                     li.innerHTML = `
+                         <img src="${song.image}" alt="${song.name}" loading="lazy">
+                         <div class="song-info">
+                             <div class="song-name">${song.name}</div>
+                             <div class="song-artist">${song.artist}</div>
+                         </div>
+                         <button class="remove-fav-btn" data-id="${song.id}" title="Remove favourite"><i class="bi bi-trash"></i></button>
+                     `;
+                     // Click on song info plays it
+                     li.querySelector('.song-info').onclick = () => {
+                         // Set favourites array as the current queue for playback context
+                         currentQueue = favourites;
+                          console.log(`Clicked favourite song: ${song.name}, Index: ${index}, Queue length: ${currentQueue.length}`);
+                         playSongFromQueue(index); // Play using index within favourites list
+                     };
+                     // Click on remove button removes it
+                     li.querySelector('.remove-fav-btn').onclick = (e) => {
+                          e.stopPropagation(); // Prevent song playing when clicking remove
+                          const songIdToRemove = e.currentTarget.dataset.id;
+                          const favIndexToRemove = favourites.findIndex(fav => fav.id === songIdToRemove);
+                          if(favIndexToRemove > -1) {
+                              favourites.splice(favIndexToRemove, 1);
+                              saveFavouritesToStorage();
+                              displayFavourites(); // Re-render the list
+                               // Also update the heart icon on the main player if the removed song is currently playing
+                               if(currentSong && currentSong.id === songIdToRemove) {
+                                   updateFavouriteButton(); // Update icon to unfavourited
+                               }
+                          }
+                     };
+                     favouritesList.appendChild(li);
+                 });
+             }
+             showLoading(favouritesLoading, false);
+         }
+
+
+        // ----- Event Listeners -----
+
+        // Navigation
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                navigateToPage(button.dataset.page, true); // Push state on nav click
+            });
+        });
+
+        // Player Controls
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        miniPlayPauseBtn.addEventListener('click', togglePlayPause);
+        nextBtn.addEventListener('click', playNextSong);
+        prevBtn.addEventListener('click', playPrevSong);
+        repeatBtn.addEventListener('click', toggleRepeat);
+        favouriteBtn.addEventListener('click', toggleFavourite);
+        playerProgressContainer.addEventListener('click', setProgress);
+         // Download Button (Example - opens URL in new tab, actual download is complex)
+         downloadBtn.addEventListener('click', () => {
+             if (currentSong && currentSong.url) {
+                  // Attempt to trigger download - may not work universally due to headers/CORS
+                  // A common workaround is creating a temporary anchor tag
+                 const link = document.createElement('a');
+                 link.href = currentSong.url;
+                 link.setAttribute('download', `${currentSong.name} - ${currentSong.artist}.mp3`); // Suggest a filename
+                 document.body.appendChild(link);
+                 link.click();
+                 document.body.removeChild(link);
+                 console.log("Attempted download for:", currentSong.name);
+
+             } else {
+                 alert("No song loaded or song has no download URL.");
+             }
+         });
+
+
+        // Audio Events
+        audioPlayer.addEventListener('play', () => updatePlayPauseButtons(true));
+        audioPlayer.addEventListener('pause', () => updatePlayPauseButtons(false));
+        audioPlayer.addEventListener('ended', () => {
+            console.log("Audio ended. Repeat:", isRepeat);
+            if (!isRepeat) { // Play next only if repeat is off
+                playNextSong();
+            } else {
+                 // If loop attribute is set (repeat is true), the audio element will loop automatically
+                 // We might still want to update UI/state here if needed, but playback is handled by loop.
+                 console.log("Looping current song.");
+            }
+        });
+        audioPlayer.addEventListener('timeupdate', updateProgress);
+         audioPlayer.addEventListener('loadedmetadata', () => {
+             console.log("Metadata loaded. Duration:", audioPlayer.duration);
+             updateProgress(); // Update duration when metadata loads
+             // Check if duration is valid (sometimes it's NaN or Infinity initially)
+             if (!isNaN(audioPlayer.duration) && audioPlayer.duration > 0) {
+                  totalDurationEl.textContent = formatTime(audioPlayer.duration);
+             } else {
+                 totalDurationEl.textContent = 'Loading...'; // Or a placeholder
+             }
+         });
+         audioPlayer.addEventListener('error', (e) => {
+             console.error('Audio Player Error Event:', e.message, e.code);
+             updatePlayPauseButtons(false);
+              let errorMessage = 'An error occurred during audio playback.';
+             switch (e.target.error.code) {
+                case MediaError.MEDIA_ERR_ABORTED:
+                   errorMessage = 'Audio playback aborted.';
+                   break;
+                case MediaError.MEDIA_ERR_NETWORK:
+                   errorMessage = 'A network error caused the audio download to fail.';
+                   break;
+                case MediaError.MEDIA_ERR_DECODE:
+                   errorMessage = 'The audio playback was aborted due to a corruption or encoding problem.';
+                   break;
+                case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                   errorMessage = 'The audio could not be loaded, either because the server or network failed or because the format is not supported.';
+                   break;
+                 default:
+                     errorMessage = 'An unknown audio error occurred.';
+                     break;
+             }
+             alert(`${errorMessage} Song: ${currentSong?.name || 'Unknown'}`);
+
+             // Attempt to play the next song automatically after an error
+             if (currentQueue.length > 1 && currentSongIndex < currentQueue.length - 1) {
+                 console.log("Attempting to skip to next song after error.");
+                 playSongFromQueue(currentSongIndex + 1);
+             } else {
+                 console.log("No more songs to play or single song error.");
+                 currentSong = null; // Clear current song on final error
+                 showMiniPlayer(false);
+                 showPlayerPage(false);
+                  document.body.classList.remove('mini-player-visible');
+             }
+         });
+
+
+        // Mini Player Click -> Show Big Player
+         // Attach click listener to the miniPlayer div itself, but exclude the play/pause button
+        miniPlayerInfo.addEventListener('click', (e) => {
+             // Check if a song is loaded
+             if (currentSong) {
+                 console.log("Mini player info clicked, showing big player.");
+                 showPlayerPage(true, true); // Show big player and push state
+                 showMiniPlayer(false); // Hide mini player
+             } else {
+                 console.log("Mini player info clicked but no song is loaded.");
+             }
+        });
+         miniPlayerImage.addEventListener('click', (e) => {
+              if (currentSong) {
+                  console.log("Mini player image clicked, showing big player.");
+                  showPlayerPage(true, true); // Show big player and push state
+                  showMiniPlayer(false); // Hide mini player
+              } else {
+                  console.log("Mini player image clicked but no song is loaded.");
+              }
+         });
+
+
+        // Search Input
+         let searchDebounceTimeout;
+         searchInput.addEventListener('input', () => {
+             clearTimeout(searchDebounceTimeout);
+             searchDebounceTimeout = setTimeout(performSearch, 500); // Debounce search by 500ms
+         });
+         searchInput.addEventListener('keypress', (e) => { // Also allow Enter key
+            if (e.key === 'Enter') {
+               clearTimeout(searchDebounceTimeout); // Cancel debounce if Enter pressed
+               performSearch();
+            }
+        });
+
+        // Handle Back Button (Popstate) for Minimizing Player and Navigation
+        // Use history.replaceState on load to set a clean initial state
+        history.replaceState({ page: 'trendingPage', playerVisible: false, miniPlayerActive: false }, '', '#trendingPage');
+
+        window.addEventListener('popstate', (event) => {
+            const state = event.state;
+            console.log("Popstate event. State:", state, "Current active page:", activePage);
+
+            // Check if the big player is currently active in our UI
+            // We need to use the actual UI state, not the state object from the event,
+            // because the browser's history has *already* changed when this event fires.
+            if (playerPage.classList.contains('active')) {
+                console.log("Popstate: Big player was active. Minimizing...");
+                // The user pressed back while the big player was showing.
+                // We minimize the player.
+                showPlayerPage(false, false); // Hide big player, do NOT push state (browser already popped)
+                showMiniPlayer(true); // Show mini player
+
+                // IMPORTANT: Push a new state representing the state *after* minimizing.
+                // The state popped *from* was the big player state. The state popped *to*
+                // was likely the page state that was underneath. We now replace that target state
+                // with the state representing the same page but with the mini player visible.
+                 history.pushState({ page: activePage, playerVisible: false, miniPlayerActive: true }, '', `#${activePage}`);
+
+                 // We've handled the back action internally by changing the UI and history state.
+                 // No need to preventDefault if we pushed a new state.
+
+            } else {
+                // The big player was NOT active. This popstate is for regular page navigation or exiting.
+                // The browser's default history handling is taking the user back to a previous state.
+                // We just need to update our UI to match the state that was popped *to*, which is in `event.state`.
+                if (state && state.page) {
+                    console.log("Popstate: Navigating to page:", state.page, "Mini player active:", state.miniPlayerActive);
+                     // This was a page navigation within our app history handled by a previous pushState.
+                     // Update the UI based on the state.
+                     navigateToPage(state.page, false); // Navigate without pushing a new state (browser already handled the pop)
+                     showMiniPlayer(state.miniPlayerActive); // Restore mini player state based on the history state
+
+                } else {
+                     // This might be the very first state (null or undefined state) or an external navigation/exit.
+                     // Let default browser behavior handle it (e.g., exiting the app).
+                     console.log("Popstate: Default browser behavior or initial state reached.");
+                     // We don't prevent default, letting the browser proceed.
+                }
+            }
+        });
+
+
+        // ----- Initial Load -----
+        function initializeApp() {
+            console.log("Initializing App...");
+            loadFavouritesFromStorage();
+
+            // Check initial URL/history state to potentially restore a view (e.g., if page was refreshed)
+            // For simplicity here, we'll default to trending unless a specific hash is present
+            const initialHash = window.location.hash;
+            let targetPage = 'trendingPage';
+             let initialMiniPlayerActive = false;
+             let initialPlayerVisible = false;
+
+             // Basic check for hash to determine initial page
+            if (initialHash && initialHash.startsWith('#')) {
+                const hashPageId = initialHash.substring(1);
+                 // Check if the hash corresponds to a valid page ID
+                if (Array.from(pages).some(page => page.id === hashPageId)) {
+                    targetPage = hashPageId;
+                }
+                 // Could also check for #player hash here if you want to restore player state on refresh
+                 // This gets complex as you'd need to know WHICH song was playing.
+                 // For this example, we won't restore playback state on refresh.
+            }
+
+
+            // Set the initial history state. replaceState is used so the first back press
+            // doesn't immediately exit the app if we started from a non-root page.
+            history.replaceState({ page: targetPage, playerVisible: initialPlayerVisible, miniPlayerActive: initialMiniPlayerActive }, '', `#${targetPage}`);
+
+            // Navigate to the determined initial page without pushing a new state
+            navigateToPage(targetPage, false);
+
+            fetchTrendingSongs(); // Load trending songs on startup
+
+             // Ensure players are hidden initially until a song is played
+             showPlayerPage(false, false);
+             showMiniPlayer(false);
+             document.body.classList.remove('mini-player-visible');
+
+             // Ensure play/pause buttons show 'play' initially
+             updatePlayPauseButtons(false);
+
+             // Ensure repeat button is not active initially
+             repeatBtn.classList.remove('active');
+             isRepeat = false; // Sync JS state
+
+        }
+
+        initializeApp();
+
+    </script>
+</body>
+</html>
