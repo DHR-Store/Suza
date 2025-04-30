@@ -53,7 +53,7 @@
       font-family: 'Poppins', sans-serif;
       font-size: 2rem;
       font-weight: 600;
-      background: linear-gradient(45deg, #6a11cb, #2575fc);
+      background: linear-gradient(90deg, var(--theme-color, #00ffff), var(--theme-second-color, #00d4ff));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
        border-bottom: 1px solid #555;
@@ -93,6 +93,47 @@
       font-weight: bold;
       color: #ff0000;
     }
+    /* Bottom Navigation Bar */
+nav.navbar {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #444;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Normal Nav Link */
+.nav-link {
+  text-align: center;
+  color: var(--theme-color, white); /* Use theme color */
+  transition: transform 0.3s ease, color 0.3s ease;
+  padding: 5px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* Icon inside Nav Link */
+.nav-link i {
+  font-size: 24px;
+}
+
+/* Hover Effect */
+.nav-link:hover {
+  color: var(--theme-color, cyan); /* Dynamic hover color */
+  transform: scale(1.1);
+}
+
+/* Active Link */
+.nav-link.active {
+  color: var(--theme-color, cyan); /* Dynamic active color */
+  font-weight: bold;
+}
   </style>
 </head>
 <body>
@@ -124,6 +165,14 @@
       <li>Loading schedule...</li>
     </ul>
   </div>
+    <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="suzatvhome.html" class="nav-link"><i class="bi bi-house-door"></i><br></a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
+      <a href="sonykal.html" class="nav-link"><i class="bi bi-tv-fill"></i><br></a>
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear"></i><br></a>
+    </div>
+    </nav>
   
   <script>
     // Handle orientation and fullscreen functions
@@ -242,6 +291,37 @@
 
     // Call the function once the page has loaded.
     document.addEventListener('DOMContentLoaded', loadUpcomingShows);
+
+    window.addEventListener('load', function () {
+  // Apply Dynamic Color Gradient for Text
+  var savedColor = localStorage.getItem('themeColor');
+  var primaryColor = savedColor ? savedColor : '#00c3ff'; // Default primary color
+  var secondaryColor = '#ff5722'; // Secondary color
+
+  // Apply Gradient to the text
+  document.querySelectorAll('h3').forEach(function (element) {
+    element.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    element.style.color = 'transparent';
+    element.style.webkitBackgroundClip = 'text';
+  });
+});
+window.addEventListener('load', function () {
+  var savedColor = localStorage.getItem("themeColor");
+  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
+  
+  if (savedColor) {
+    if (currentPage === 'sonykal.html') {
+      // Sirf search icon ka color change
+      document.querySelector('.nav-link[href="sonykal.html"] i').style.color = savedColor;
+    }
+    // Baaki sab icons white karna
+    document.querySelectorAll('.nav-link i').forEach(function (icon) {
+      if (icon.closest('a').getAttribute('href') !== 'sonykal.html') {
+        icon.style.color = 'white';
+      }
+    });
+  }
+});
 
   </script>
 
