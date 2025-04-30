@@ -128,21 +128,24 @@
         }
 
         nav.navbar {
-  background: transparent;
-  backdrop-filter: blur(8px);
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 0;
-  border-top: 1px solid #444;
+  background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid #444;
+      padding: 10px 0;
+      font-size: 15px;
+      height: 60px;
+      z-index: 1000;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
 }
 
         .nav-link {
             text-align: center;
-            color: white;
+            color: var(--text-secondary);
             transition: all 0.3s ease-in-out;
             padding: 5px;
             border-radius: 10px;
@@ -154,13 +157,27 @@
         }
 
         .nav-link:hover {
-            color: cyan;
+            color: var(--theme-color, cyan);
             transform: scale(1.1);
         }
        .nav-link.active {
   color: cyan;
   font-weight: bold;
           }
+            /* Color Palette */
+    .color-palette {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .color-box {
+      width: 30px;
+      height: 30px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 2px solid white;
+    }
     </style>
 </head>
 <body>
@@ -168,15 +185,6 @@
     <header>Settings</header>
 
     <div class="settings-container">
-        <div class="setting-item">
-            <span><i class="bi bi-moon"></i> Dark Mode</span>
-            <div class="toggle-switch" id="toggle-darkmode"></div>
-        </div>
-
-        <div class="setting-item" id="privacy-policy">
-            <span><i class="bi bi-shield-lock"></i> Privacy Policy</span>
-            <i class="bi bi-chevron-right"></i>
-        </div>
 
         <div class="setting-item" id="about">
             <span><i class="bi bi-info-circle"></i> About</span>
@@ -199,15 +207,26 @@
             <span><i class="bi bi-tv"></i>SUZA-TV</span>
             <i class="bi bi-chevron-right"></i>
         </div>
-    </div>
+        <div class="setting-item">
+  <span><i class="bi bi-palette"></i> Change Theme Color</span>
+  <input type="color" id="colorPicker" style="margin-left:auto;">
+</div>
 
-    <!-- Privacy Policy Modal -->
-    <div id="privacyModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
-            <h2>Privacy Policy</h2>
-            <p>Your privacy is important to us. We do not collect any personal data without your permission.</p>
-        </div>
+<div class="color-palette">
+  <div class="color-box" style="background-color: #00c3ff;" data-color="#00c3ff"></div>
+  <div class="color-box" style="background-color: #ff5722;" data-color="#ff5722"></div>
+  <div class="color-box" style="background-color: #4caf50;" data-color="#4caf50"></div>
+  <div class="color-box" style="background-color: #e91e63;" data-color="#e91e63"></div>
+  <div class="color-box" style="background-color: #ffc107;" data-color="#ffc107"></div>
+</div>
+
+<!-- New Hex Code Input -->
+<div class="setting-item">
+  <span><i class="bi bi-code"></i> Enter Hex Code</span>
+  <input type="text" id="hexInput" placeholder="#00c3ff" style="margin-left:auto; width:120px; padding:3px 8px; border-radius:5px; border:none;">
+</div>
+
+        
     </div>
 
     <!-- About Modal -->
@@ -242,19 +261,6 @@
         e.preventDefault();
       }
     });
-        
-        // Dark Mode Toggle
-        document.getElementById("toggle-darkmode").addEventListener("click", function () {
-            document.body.classList.toggle("light-mode");
-            this.classList.toggle("active");
-            localStorage.setItem("darkMode", document.body.classList.contains("light-mode") ? "off" : "on");
-        });
-
-        // Load Dark Mode Setting
-        if (localStorage.getItem("darkMode") === "off") {
-            document.body.classList.add("light-mode");
-            document.getElementById("toggle-darkmode").classList.add("active");
-        }
 
         // Open Modal
         function openModal(id) {
@@ -289,27 +295,59 @@ document.getElementById("SUZA-TV").addEventListener("click", function () {
 });
             
       // Wait until the DOM is loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    // Get the current file name from the URL (default to home.html if empty)
-    var path = window.location.pathname.split("/").pop();
-    if (path === '') {
-      path = 'settings.html';
-    }
-    
-    // Select all nav links inside the navbar
-    var navLinks = document.querySelectorAll('nav.navbar .nav-link');
-    
-    // Loop through each nav link and add active class if href matches current path
-    navLinks.forEach(function(link) {
-      var href = link.getAttribute('href');
-      if (href === path) {
-        link.classList.add('active');
+  function applyThemeColor(color) {
+  document.documentElement.style.setProperty('--theme-color', color);
+  
+  document.querySelectorAll('.nav-link').forEach(el => el.style.color = color);
+  
+  const currentPage = window.location.pathname.split('/').pop();
+  if (currentPage === 'settings.html') {
+    document.getElementById("gear-icon").style.color = color;
+  } else {
+    document.querySelectorAll('.nav-link').forEach(function(icon) {
+      if (icon.closest('a').getAttribute('href') === 'settings.html') {
+        icon.style.color = color;
       } else {
-        link.classList.remove('active');
+        icon.style.color = 'white';
       }
     });
+  }
+}
+
+// Load from localStorage on page load
+window.addEventListener('load', function() {
+  const savedColor = localStorage.getItem("themeColor");
+  if (savedColor) applyThemeColor(savedColor);
+});
+
+// Color Picker Input
+document.getElementById("colorPicker").addEventListener("input", function(e) {
+  const color = e.target.value;
+  localStorage.setItem("themeColor", color);
+  applyThemeColor(color);
+});
+
+// Predefined Palette
+document.querySelectorAll('.color-box').forEach(function(box) {
+  box.addEventListener('click', function() {
+    const color = this.getAttribute('data-color');
+    localStorage.setItem("themeColor", color);
+    applyThemeColor(color);
   });
-    
+});
+
+// Hex Input
+document.getElementById("hexInput").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    const hexColor = e.target.value.trim();
+    if (/^#([0-9A-Fa-f]{6})$/.test(hexColor)) {
+      localStorage.setItem("themeColor", hexColor);
+      applyThemeColor(hexColor);
+    } else {
+      alert("Please enter a valid Hex code (e.g., #ff0000)");
+    }
+  }
+});
     
     </script>
 
