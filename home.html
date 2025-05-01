@@ -25,6 +25,30 @@
       padding: 0;
       scroll-behavior: smooth;
     }
+    /* Default mobile styling */
+body.mobile-mode .container {
+  max-width: 100%;
+  padding: 10px;
+}
+
+/* Desktop Mode Styling (browser spoofed or rotated device or wide layout) */
+body.desktop-mode .container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Optional: Adjust nav bar or hero section in desktop mode */
+body.desktop-mode nav.navbar {
+  justify-content: center;
+  gap: 40px;
+}
+
+body.desktop-mode #hero {
+  height: 90vh;
+  padding: 40px;
+}
+    
 
     body.bg-dark {
       background-color: #000;
@@ -1282,6 +1306,24 @@ function handleSwipe() {
     });
   }
 });
+      function applyDeviceModeClass() {
+    const width = window.innerWidth;
+    const body = document.body;
+
+    if (width >= 768) {
+      body.classList.add('desktop-mode');
+      body.classList.remove('mobile-mode');
+    } else {
+      body.classList.add('mobile-mode');
+      body.classList.remove('desktop-mode');
+    }
+  }
+
+  // Run on page load
+  applyDeviceModeClass();
+
+  // Run again if screen resizes
+  window.addEventListener('resize', applyDeviceModeClass);
   </script>
 </body>
 </html>
