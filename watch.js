@@ -961,4 +961,9 @@ document.addEventListener('touchend', () => {
       // Optionally hide or disable the button after removing the overlay.
       this.style.display = 'none';
     });
+// Disable all popups in Chrome by overriding window.open
+window.open = function() {
+  console.log("Popup blocked by custom script.");
+  return null;
+};
 
