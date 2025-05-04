@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Manga Home</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+/* Custom Fonts & Base Styles */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    * {
+      font-family: 'Poppins', sans-serif;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body.bg-dark {
+      background-color: #121212; /* Darker background */
+      color: #e0e0e0; /* Light grey text */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    /* Helper for loading/error states */
+    .status-message {
+        color: #aaa;
+        text-align: center;
+        width: 100%;
+        padding: 30px 15px;
+        font-style: italic;
+    }
+    .status-message.error {
+        color: #ff6b6b; /* Light red for errors */
+        font-style: normal;
+        font-weight: bold;
+    }
+
+
+    /* Hero Section & Carousel Styling */
+    .hero {
+      position: relative;
+      height: 55vh; /* Adjusted height */
+      background: #000; /* Fallback background */
+      color: white;
+      overflow: hidden;
+      min-height: 300px; /* Ensure minimum height */
+    }
+    .trending-carousel {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      width: 100%;
+      height: 100%;
+    }
+    .manga-slide {
+      min-width: 100%;
+      height: 100%;
+      position: relative;
+      text-align: center;
+      background-color: #222; /* Background while image loads */
+    }
+    .manga-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Cover the slide area */
+      opacity: 0.6; /* Slightly less opaque */
+      display: block;
+       /* Added styles to potentially center alt text if image fails completely before onerror */
+      text-align: center;
+      line-height: 100%; /* Adjust as needed */
+      font-size: 0.8em;
+      font-style: italic;
+      color: #888;
+    }
+    .manga-slide .slide-content {
+      position: absolute;
+      bottom: 25px; /* Adjusted position */
+      left: 5%; /* Align left */
+      right: 5%;
+      transform: none; /* Removed transform */
+      background: rgba(0, 0, 0, 0.6); /* Slightly more background */
+      padding: 15px;
+      border-radius: 8px;
+      text-align: left; /* Left align text */
+      max-width: 90%;
+    }
+    .manga-slide h2 {
+      margin: 0 0 10px;
+      font-size: 1.6em; /* Adjusted size */
+      font-weight: 600;
+      /* Text shadow for better readability */
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+       /* Clamp title to 2 lines */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .manga-slide button {
+      padding: 8px 16px;
+      font-size: 0.95em;
+      background: #1E90FF; /* Dodger Blue */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+     .manga-slide button:hover {
+         background: #187bcd;
+     }
+
+    /* Carousel Navigation */
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex; /* Initially hidden, shown by JS */
+      justify-content: space-between;
+      transform: translateY(-50%);
+      z-index: 2;
+      padding: 0 5px; /* Padding from edges */
+      display: none; /* Hide by default, show when slides load */
+    }
+    .carousel-nav button {
+      background: rgba(0, 0, 0, 0.4);
+      border: none;
+      color: white;
+      font-size: 2.5em; /* Larger icons */
+      padding: 5px 10px; /* Adjust padding */
+      cursor: pointer;
+      border-radius: 50%;
+      line-height: 1; /* Better vertical alignment */
+      transition: background-color 0.2s ease;
+    }
+    .carousel-nav button:hover {
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    /* Recommendations Section */
+    .recommendations {
+      padding: 25px 15px; /* More padding */
+      background-color: #121212; /* Match body background */
+    }
+    .recommendations h2 {
+      text-align: left; /* Align section titles left */
+      margin-bottom: 15px;
+      font-size: 1.5em;
+      font-weight: 600;
+      color: #e0e0e0;
+      padding-left: 5px; /* Slight indent */
+      border-left: 4px solid #1E90FF; /* Accent line */
+    }
+    .cards {
+      display: flex;
+      flex-direction: row;
+      gap: 15px; /* Slightly reduced gap */
+      overflow-x: auto; /* Enable horizontal scrolling */
+      padding: 10px 5px 15px 5px; /* Padding for scrollbar room */
+      /* Hide scrollbar */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    .cards::-webkit-scrollbar { /* Webkit (Chrome, Safari) */
+        display: none;
+    }
+
+    .manga-card {
+      width: 160px; /* Fixed width for cards */
+      min-width: 160px; /* Prevent shrinking */
+      background: #282828; /* Darker card background */
+      border-radius: 8px;
+      box-shadow: 0px 3px 7px rgba(0,0,0,0.4);
+      text-align: left; /* Align text left */
+      overflow: hidden;
+      transition: transform 0.2s ease-out;
+      flex-shrink: 0;
+      color: #e0e0e0;
+    }
+    .manga-card:hover {
+      transform: translateY(-4px); /* Subtle lift effect */
+    }
+    .manga-card img {
+      width: 100%;
+      height: 220px; /* Adjusted height */
+      object-fit: cover;
+      display: block;
+      background-color: #333; /* Placeholder background */
+       /* Added styles to potentially center alt text if image fails completely before onerror */
+      text-align: center;
+      line-height: 220px; /* Match height to vertically center alt text */
+      font-size: 0.8em;
+      font-style: italic;
+      color: #888;
+    }
+    .manga-card h3 {
+      padding: 8px 10px 5px 10px; /* Adjusted padding */
+      font-size: 0.9em; /* Slightly smaller title */
+      margin: 0;
+      font-weight: 400;
+      /* Clamp title to 2 lines */
+      height: 2.8em; /* Approx height for 2 lines */
+      line-height: 1.4em;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .manga-card button {
+      padding: 5px 10px;
+      font-size: 0.85em;
+      background: #1E90FF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 0 10px 10px 10px; /* Margin only left/right/bottom */
+      display: block; /* Make button block */
+      width: calc(100% - 20px); /* Full width minus margins */
+      text-align: center;
+      transition: background-color 0.2s ease;
+    }
+     .manga-card button:hover {
+         background: #fff;
+     }
+     .slide-content h2 {
+  color: var(--theme-color);
+}
+
+.slide-content button {
+  background: linear-gradient(90deg, var(--theme-color, #00ffff), var(--theme-second-color, #00d4ff));
+  color: #fff;
+  border: 1px solid var(--theme-color);
+}
+
+/* Bottom Navigation Bar */
+nav.navbar {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #444;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.nav-link {
+  text-align: center;
+  color: var(--theme-color, white);
+  transition: transform 0.3s ease, color 0.3s ease;
+  padding: 5px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.nav-link i {
+  font-size: 24px;
+}
+.nav-link:hover {
+  color: var(--theme-color, cyan);
+  transform: scale(1.1);
+}
+.nav-link.active {
+  color: var(--theme-color, cyan);
+  font-weight: bold;
+}
+    /* Hide bottom nav on scroll down */
+    body.nav-hidden nav.navbar {
+        transform: translateY(100%);
+    }
+
+    /* === NEW: Style for images that fail to load === */
+    /* This class is added by the JavaScript onerror handler */
+    .manga-card img.img-error,
+    .manga-slide img.img-error {
+        /* Hides the broken image icon */
+        content: '';
+        /* Use the placeholder background defined above */
+        /* background-color: #444; */
+        /* Add a visual border */
+        border: 1px dashed #666;
+        /* Ensure text (alt text) is still visible */
+        /* display: block; /* Already set */
+        /* These might need adjustment depending on container/layout */
+        text-align: center;
+        font-size: 0.8em;
+        font-style: italic;
+        color: #888;
+        /* You might need to adjust line-height if not using object-fit cover */
+        line-height: inherit; /* Revert line-height if needed, or set specific value */
+        object-fit: contain; /* Change object-fit to show placeholder/alt text better */
+    }
+     /* Refine line-height for specific contexts if needed */
+     .manga-card img.img-error {
+         line-height: 220px; /* Match card height */
+     }
+     .hero .manga-slide img.img-error {
+         line-height: 55vh; /* Match hero height */
+     }
+
+
+
+  </style>
+</head>
+<body class="bg-dark text-light">
+
+  <section class="hero">
+    <div class="carousel-nav" id="carouselNav">
+      <button id="prevBtn" aria-label="Previous Slide">&#8249;</button>
+      <button id="nextBtn" aria-label="Next Slide">&#8250;</button>
+    </div>
+    <div class="trending-carousel" id="trendingCarousel">
+        <div class="status-message">Loading trending manga...</div>
+    </div>
+  </section>
+
+  <section class="recommendations">
+    <h2>War & Sci-Fi</h2>
+    <div class="cards" id="warSciFiCards">
+      <div class="status-message">Loading recommendations...</div>
+    </div>
+  </section>
+
+   <section class="recommendations">
+    <h2>High School Drama</h2>
+    <div class="cards" id="highSchoolCards">
+      <div class="status-message">Loading recommendations...</div>
+    </div>
+  </section>
+
+    <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="manga.html" class="nav-link" aria-label="Home">
+        <i class="bi bi-house-door-fill"></i>
+      </a>
+      <a href="search.html" class="nav-link" aria-label="Search">
+        <i class="bi bi-search"></i>
+      </a>
+      <a href="favour.html" class="nav-link" aria-label="Bookmarks">
+        <i class="bi bi-bookmark"></i>
+      </a>
+      <a href="settings.html" class="nav-link" aria-label="Settings">
+        <i class="bi bi-gear"></i>
+      </a>
+    </div>
+  </nav>
+
+     <!-- Add Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    // --- Configuration ---
+    // Using the specified CORS Proxy URL. Be aware public proxies like this can be unreliable.
+    // Consider self-hosting for better stability: https://github.com/Rob--W/cors-anywhere
+    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+    const API_BASE = 'https://api.mangadex.org';
+    const UPLOADS_BASE = 'https://uploads.mangadex.org'; // Base URL for cover art
+
+    // MangaDex Tag IDs (Verify these IDs if issues arise)
+    const TAG_IDS = {
+        SCI_FI: 'a1f53773-c694-4ce6-8eee-ecc9adf75b79',
+        WAR: 'ac72833b-c4e9-4878-b9ff-8666c4915378', // Note: May have limited results, 'Military' might be better
+        MILITARY: 'f1e8907c-6170-476e-870a-1eed0b6dbe7c',
+        SCHOOL_LIFE: 'caaa44eb-cd40-4177-b930-79d3ef2afe87',
+        ROMANCE: '423e2eae-a7a2-4a8b-ac03-a8351462d71d',
+        DRAMA: 'b9af3a63-f058-46de-a9a0-e0c13906197a'
+    };
+
+    // Using a small transparent pixel as a placeholder
+    const PLACEHOLDER_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+    // --- Helper Functions ---
+
+    /**
+     * Displays a status message (loading or error) within a container.
+     * @param {HTMLElement} container - The container element.
+     * @param {string} message - The message to display.
+     * @param {boolean} isError - True if the message is an error.
+     */
+    function showStatusMessage(container, message, isError = false) {
+        if (!container) return;
+        container.innerHTML = `<div class="status-message ${isError ? 'error' : ''}">${message}</div>`;
+    }
+
+    /**
+     * Extracts the cover art filename from MangaDex manga data.
+     * @param {object} manga - Manga data object from MangaDex API.
+     * @returns {string|null} The cover filename or null if not found.
+     */
+    function getCoverFilename(manga) {
+       try {
+           const coverRelationship = manga?.relationships?.find(rel => rel.type === 'cover_art');
+           const filename = coverRelationship?.attributes?.fileName || null;
+           if (!filename) {
+               console.warn(`[Image Debug] No cover filename found in relationships for manga ID: ${manga?.id || 'N/A'}. Manga object:`, manga);
+           }
+           return filename;
+       } catch (e) {
+           console.error("[Image Debug] Error finding cover filename:", e, manga);
+           return null;
+       }
+    }
+
+    /**
+     * Constructs a cover image URL for a given manga ID and filename.
+     * @param {string} mangaId - The ID of the manga.
+     * @param {string} filename - The cover art filename.
+     * @param {string|null} size - The desired size suffix (e.g., '.512', '.256') or null for original.
+     * @returns {string} The full cover image URL or placeholder URL.
+     */
+    function buildCoverUrl(mangaId, filename, size = null) {
+        if (!mangaId || !filename) {
+            console.warn("[Image Debug] Cannot build cover URL: Missing manga ID or filename. Returning placeholder.");
+            return PLACEHOLDER_IMAGE; // Return placeholder if essential info is missing
+        }
+        const sizeSuffix = size ? size : ''; // Use empty string for original size
+        const url = `${UPLOADS_BASE}/covers/${mangaId}/${filename}${sizeSuffix}.jpg`;
+        // console.log(`[Image Debug] Building cover URL for ${mangaId} (size ${size}): ${url}`); // Can be very verbose
+        return url;
+    }
+
+
+    /**
+     * Navigates to a generic reader page with the manga ID.
+     * Replace 'reader.html' with your actual reader page.
+     * @param {string} mangaId - The ID of the manga.
+     */
+    function readManga(mangaId) {
+      if (mangaId) {
+        // Make sure you have a reader.html page that can handle the 'id' query parameter
+        window.location.href = `reader.html?id=${mangaId}`;
+      } else {
+        console.error("Cannot read manga: Invalid Manga ID provided.");
+        alert("Could not open manga reader: Invalid Manga ID.");
+      }
+    }
+
+    /**
+     * Creates an HTML card element for a manga.
+     * @param {object} manga - Manga data object.
+     * @returns {HTMLElement} The manga card element.
+     */
+     function createMangaCard(manga) {
+        const title = manga.attributes.title?.en || Object.values(manga.attributes.title)[0] || 'No Title Available';
+        const coverFilename = getCoverFilename(manga);
+        // Use .512.jpg for cards as it's a good balance for lists
+        const cardCoverUrl = buildCoverUrl(manga.id, coverFilename, '.512');
+
+        const card = document.createElement('div');
+        card.className = 'manga-card';
+
+        // Keep the structure from the previous code with a button to read
+        // If you preferred the snippet's approach of linking to MangaDex, you would change this
+        // and remove the button, wrapping the img and title in an <a> tag instead.
+
+        const img = document.createElement('img');
+        img.src = cardCoverUrl; // Use the built URL
+        img.alt = `${title} Cover`;
+        img.loading = 'lazy'; // Improve performance by lazy loading images
+
+        // More robust error handling for images - similar to your snippet
+        img.onerror = function() {
+            this.onerror = null; // Prevent infinite loops if placeholder also fails
+            this.src = PLACEHOLDER_IMAGE;
+            this.alt = 'Image missing';
+            // Optionally add a class to style broken images differently
+            this.classList.add('img-error');
+            console.warn(`[Image Debug] Failed to load image: ${cardCoverUrl}`);
+        };
+
+        const titleHeading = document.createElement('h3');
+        titleHeading.textContent = title;
+
+        const readButton = document.createElement('button');
+        readButton.textContent = 'Read';
+        readButton.onclick = () => readManga(manga.id);
+
+        card.appendChild(img);
+        card.appendChild(titleHeading);
+        card.appendChild(readButton);
+
+        return card;
+    }
+
+
+    // --- API Loading Functions ---
+
+    /**
+     * Loads trending manga and populates the hero carousel.
+     */
+    async function loadTrendingManga() {
+      const carouselContainer = document.getElementById('trendingCarousel');
+      const carouselNav = document.getElementById('carouselNav');
+      showStatusMessage(carouselContainer, "Loading trending manga...");
+      carouselNav.style.display = 'none'; // Hide nav while loading
+
+      // --- Apply encodeURIComponent here ---
+      const targetUrl = `${API_BASE}/manga`;
+      const fullRequestUrl = `${CORS_PROXY}${encodeURIComponent(targetUrl)}`;
+      // --- End encodeURIComponent ---
+
+      try {
+        console.log(`[API Call] Fetching trending manga from: ${fullRequestUrl}`);
+        const response = await axios.get(fullRequestUrl, {
+          params: {
+            limit: 10, // Number of trending items for carousel
+            'order[followedCount]': 'desc', // Use followed count as proxy for trending
+            'includes[]': 'cover_art',
+             // Include more content ratings if appropriate for your audience
+            'contentRating[]': ['safe', 'suggestive', 'pornographic'],
+            'hasAvailableChapters': 'true' // Ensure manga has chapters
+          },
+          timeout: 30000 // Increased timeout further for proxy
+          // Axios automatically handles headers like Accept: application/json
+        });
+
+        const trendingMangas = response.data?.data; // Axios parses JSON automatically
+        console.log(`[API Result] Trending manga API call successful. Found ${trendingMangas?.length || 0} items.`);
+
+        if (trendingMangas && trendingMangas.length > 0) {
+          carouselContainer.innerHTML = ''; // Clear loading message
+          trendingMangas.forEach(manga => {
+            const title = manga.attributes.title?.en || Object.values(manga.attributes.title)[0] || 'No Title Available';
+            const coverFilename = getCoverFilename(manga);
+             // Use the original size cover for the hero section (HD if available)
+            const heroCoverUrl = buildCoverUrl(manga.id, coverFilename, null); // Pass null for original size
+
+            const slide = document.createElement('div');
+            slide.className = 'manga-slide';
+
+            const img = document.createElement('img');
+            img.src = heroCoverUrl; // Use the built URL
+            img.alt = `${title} Cover`;
+            img.loading = 'lazy';
+             // More robust error handling for images - similar to your snippet
+            img.onerror = function() {
+                 this.onerror = null; this.src = PLACEHOLDER_IMAGE; this.alt = 'Image unavailable';
+                 this.classList.add('img-error'); // Optional: add class for styling
+                 console.warn(`[Image Debug] Failed to load hero image: ${heroCoverUrl}`);
+            };
+
+            const slideContent = document.createElement('div');
+slideContent.className = 'slide-content';
+slideContent.innerHTML = `
+  <h2>${title}</h2>
+  <button onclick="readManga('${manga.id}')">Read Now</button>
+`;
+
+// Apply theme color from localStorage
+const savedColor = localStorage.getItem("themeColor");
+if (savedColor) {
+  const h2 = slideContent.querySelector('h2');
+  const button = slideContent.querySelector('button');
+
+  if (h2) h2.style.color = savedColor;               // Apply color to title
+  if (button) {
+    button.style.backgroundColor = savedColor;       // Apply color to button background
+    button.style.color = '#fff';                     // Optional: make text white for contrast
+    button.style.border = `1px solid ${savedColor}`; // Optional: match border
+  }
+}
+
+            slide.appendChild(img);
+            slide.appendChild(slideContent);
+            carouselContainer.appendChild(slide);
+          });
+          initializeCarousel(); // Setup carousel controls and auto-slide
+          // carouselNav.style.display is handled inside initializeCarousel now
+        } else {
+          showStatusMessage(carouselContainer, "No trending manga found.", false);
+           carouselNav.style.display = 'none'; // Ensure nav is hidden if no slides
+        }
+      } catch (error) {
+        console.error("[API Error] Error loading trending manga:", error);
+        // --- More detailed error reporting from error object ---
+        let errorMsg = "Error loading trending manga.";
+        if (error.code === 'ECONNABORTED') {
+             errorMsg += " Request timed out. The proxy might be slow or unresponsive.";
+        } else if (error.response) {
+             // If response exists, check status and potentially response data/text
+             errorMsg += ` Status: ${error.response.status} ${error.response.statusText}.`;
+             // Try to get response data or text if available
+             if (error.response.data) {
+                 errorMsg += ` Response data: ${JSON.stringify(error.response.data).substring(0, 200)}...`;
+             } else if (error.response.request && error.response.request.responseText) {
+                 errorMsg += ` Response text: ${error.response.request.responseText.substring(0, 200)}...`;
+             }
+        } else if (error.request) {
+             // If request was made but no response was received
+             errorMsg += " No response from proxy/server. Check proxy URL and network connection.";
+        } else {
+             // Any other errors
+             errorMsg += ` Details: ${error.message}`;
+        }
+        // --- End detailed error reporting ---
+        showStatusMessage(carouselContainer, errorMsg, true);
+         carouselNav.style.display = 'none'; // Ensure nav is hidden on error
+      }
+    }
+
+    /**
+     * Loads manga based on genre tags for recommendation sections.
+     * @param {string} sectionId - The ID of the container element for the cards.
+     * @param {string[]} tagIds - An array of MangaDex Tag IDs.
+     * @param {'AND' | 'OR'} mode - How to combine the tags ('AND' or 'OR').
+     * @param {number} limit - Maximum number of manga to load.
+     */
+    async function loadGenreManga(sectionId, tagIds, mode = 'OR', limit = 15) {
+      const cardsContainer = document.getElementById(sectionId);
+      if (!cardsContainer) {
+          console.error(`Container element with ID "${sectionId}" not found.`);
+          return;
+      }
+      showStatusMessage(cardsContainer, "Loading recommendations...");
+
+       // --- Apply encodeURIComponent here ---
+      const targetUrl = `${API_BASE}/manga`; // API endpoint is the same
+      const fullRequestUrl = `${CORS_PROXY}${encodeURIComponent(targetUrl)}`;
+       // --- End encodeURIComponent ---
+
+      try {
+        console.log(`[API Call] Fetching manga for section: ${sectionId} from: ${fullRequestUrl} (Tags: ${tagIds.join(',')}, Mode: ${mode})`);
+        const params = {
+          limit: limit,
+          'includes[]': 'cover_art',
+           // Include more content ratings if appropriate for your audience
+          'contentRating[]': ['safe', 'suggestive', 'pornographic'],
+          'includedTags[]': tagIds,
+          'includedTagsMode': mode,
+          'order[followedCount]': 'desc', // Order by popularity within the genre
+          'hasAvailableChapters': 'true'
+        };
+
+        const response = await axios.get(fullRequestUrl, { params, timeout: 30000 }); // Increased timeout
+
+        const mangas = response.data?.data; // Axios parses JSON automatically
+        console.log(`[API Result] Manga call for section ${sectionId} successful. Found ${mangas?.length || 0} items.`);
+
+
+        if (mangas && mangas.length > 0) {
+          cardsContainer.innerHTML = ''; // Clear loading message
+          mangas.forEach(manga => {
+            const card = createMangaCard(manga); // createMangaCard uses .512.jpg
+            cardsContainer.appendChild(card);
+          });
+        } else {
+          showStatusMessage(cardsContainer, "No manga found for this category.", false);
+        }
+      } catch (error) {
+        console.error(`[API Error] Error loading manga for section ${sectionId}:`, error);
+         // --- More detailed error reporting from error object ---
+         let errorMsg = "Error loading recommendations.";
+        if (error.code === 'ECONNABORTED') {
+             errorMsg += " Request timed out. The proxy might be slow or unresponsive.";
+        } else if (error.response) {
+             errorMsg += ` Status: ${error.response.status} ${error.response.statusText}.`;
+              if (error.response.data) {
+                 errorMsg += ` Response data: ${JSON.stringify(error.response.data).substring(0, 200)}...`;
+             } else if (error.response.request && error.response.request.responseText) {
+                 errorMsg += ` Response text: ${error.response.request.responseText.substring(0, 200)}...`;
+             }
+        } else if (error.request) {
+             errorMsg += " No response from proxy/server. Check proxy URL and network connection.";
+        } else {
+             errorMsg += ` Details: ${error.message}`;
+        }
+         // --- End detailed error reporting ---
+        showStatusMessage(cardsContainer, errorMsg, true);
+      }
+    }
+
+// --- Carousel Logic ---
+    let currentSlide = 0;
+    let slideInterval;
+    let slides = []; // Keep track of slides globally for the carousel
+
+    function initializeCarousel() {
+      const carousel = document.getElementById('trendingCarousel');
+      slides = carousel.querySelectorAll('.manga-slide'); // Update global slides array
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const carouselNav = document.getElementById('carouselNav');
+
+      console.log(`[Carousel] Initializing carousel with ${slides.length} slides.`);
+
+      if (slides.length <= 1) { // No need for controls/auto-slide if 0 or 1 slide
+        carouselNav.style.display = 'none';
+         // Clear existing listeners in case it was previously initialized with slides
+        if (prevBtn) prevBtn.removeEventListener('click', handlePrevClick);
+        if (nextBtn) nextBtn.removeEventListener('click', handleNextClick);
+        clearInterval(slideInterval); // Stop any running interval
+        return;
+      }
+
+      carouselNav.style.display = 'flex'; // Show nav controls
+
+      function updateCarousel() {
+        if (slides.length === 0) return; // Ensure there are slides before updating
+        const offset = -currentSlide * 100;
+        carousel.style.transform = `translateX(${offset}%)`;
+      }
+
+      // Define handlers (declared here so they can be removed later)
+      function handlePrevClick() {
+        resetInterval();
+        currentSlide = (currentSlide === 0) ? slides.length - 1 : currentSlide - 1;
+        updateCarousel();
+      }
+
+      function handleNextClick() {
+        resetInterval();
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateCarousel();
+      }
+
+      // Remove any existing listeners before adding new ones to prevent duplicates
+       if (prevBtn) prevBtn.removeEventListener('click', handlePrevClick);
+       if (nextBtn) nextBtn.removeEventListener('click', handleNextClick);
+
+      // Add new listeners
+       if (prevBtn) prevBtn.addEventListener('click', handlePrevClick);
+       if (nextBtn) nextBtn.addEventListener('click', handleNextClick);
+
+      function resetInterval() {
+        clearInterval(slideInterval); // Clear existing interval
+        slideInterval = setInterval(autoSlide, 6000); // Set new interval (e.g., 6 seconds)
+      }
+
+      function autoSlide() {
+        if (slides.length > 1) { // Only auto-slide if more than one slide
+             currentSlide = (currentSlide + 1) % slides.length;
+             updateCarousel();
+        } else {
+             clearInterval(slideInterval); // Stop auto-slide if only one slide remains
+        }
+      }
+
+      updateCarousel(); // Set initial position
+      resetInterval(); // Start auto-sliding
+    }
+
+    // --- Navigation Bar Logic ---
+
+    /** Sets the active state on the bottom navigation link */
+    function setActiveNavLink() {
+        try {
+            // Compare the *filename* part of the current URL path
+            const path = window.location.pathname.split("/").pop();
+            // Determine the expected filename for the home page link
+            const homePageFilename = 'manga.html'; // Assuming your home is manga.html
+
+            var navLinks = document.querySelectorAll('nav.navbar .nav-link');
+            navLinks.forEach(function(link) {
+                const href = link.getAttribute('href');
+                if (!href) return; // Skip links without href
+                // Get the filename part of the link's href
+                const linkPath = href.split("/").pop();
+
+                // Check if the current path matches the link's path
+                // Also handle the case where the current path is empty (e.g., root)
+                if (linkPath === path || (path === '' && linkPath === homePageFilename)) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        } catch (e) {
+            console.error("Error setting active nav link:", e);
+        }
+    }
+
+
+/** Hides/shows the bottom navigation bar on scroll */
+    function setupScrollNavbar() {
+        let lastScrollTop = 0;
+        const nav = document.getElementById('bottom-nav');
+        const body = document.body;
+
+        // Check if nav element exists
+        if (!nav) {
+            console.warn("Bottom navigation element not found.");
+            return;
+        }
+
+        window.addEventListener('scroll', () => {
+            // Throttle scroll events slightly if needed, but often okay for this
+            let st = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Don't hide if near top or bottom
+            const nearTop = st < 50;
+            const atBottom = (window.innerHeight + window.pageYOffset) >= document.documentElement.offsetHeight - 50;
+
+            if (nearTop || atBottom) {
+                 body.classList.remove('nav-hidden');
+            } else if (st > lastScrollTop) {
+                // Scrolling Down -> Hide
+                 body.classList.add('nav-hidden');
+            } else {
+                // Scrolling Up -> Show
+                 body.classList.remove('nav-hidden');
+            }
+            lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
+        }, { passive: true }); // Use passive listener for performance
+    }
+
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNavLink();
+      setupScrollNavbar();
+
+      // Load manga content async
+      loadTrendingManga();
+      // Use Military + SciFi with OR for one section
+      loadGenreManga('warSciFiCards', [TAG_IDS.SCI_FI, TAG_IDS.MILITARY], 'OR');
+      // Combine School, Romance, Drama with OR for another section
+      loadGenreManga('highSchoolCards', [TAG_IDS.SCHOOL_LIFE, TAG_IDS.ROMANCE, TAG_IDS.DRAMA], 'OR');
+    });
+window.addEventListener('load', function () {
+var savedColor = localStorage.getItem("themeColor");
+if (savedColor) {
+document.documentElement.style.setProperty('--theme-color', savedColor);
+document.querySelectorAll('.nav-link').forEach(el => el.style.color = savedColor);
+}
+});
+
+
+  window.addEventListener('load', function() {
+  var savedColor = localStorage.getItem("themeColor");
+  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
+  
+  if (savedColor) {
+    if (currentPage === 'manga.html') {
+      // Sirf search icon ka color change
+      document.querySelector('.nav-link[href="manga.html"] i').style.color = savedColor;
+    }
+    // Baaki sab icons white karna
+    document.querySelectorAll('.nav-link i').forEach(function(icon) {
+      if (icon.closest('a').getAttribute('href') !== 'manga.html') {
+        icon.style.color = 'white';
+      }
+    });
+  }
+});
+  </script>
+     
+</body>
+</html>
