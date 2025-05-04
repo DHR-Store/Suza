@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Manga Details</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+
+  <style>
+    /* Consistent Font & Base Styles */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif; /* Use Poppins */
+      scroll-behavior: smooth;
+    }
+    body {
+      background-color: #121212; /* Match home page dark background */
+      color: #e0e0e0; /* Match home page light text */
+      overflow-x: hidden;
+    }
+     /* Use Bootstrap's bg-dark and text-light classes where appropriate in HTML */
+:root {
+  --theme-color: #ff0000;
+}
+
+    /* Hero section with cover image */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 350px; /* Slightly taller hero */
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 40px; /* More space below content */
+    }
+     /* Style for failed hero background */
+    .hero.hero-error {
+         background-image: none !important; /* Remove any broken image */
+         background-color: #333; /* Show a solid background */
+         /* Potentially center alt-text like content here if needed */
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.8) 90%);
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 0 20px; /* Add horizontal padding */
+      width: 100%; /* Take full width */
+      max-width: 700px; /* Limit content width */
+      color: white; /* Ensure text is white over dark gradient */
+    }
+    .hero-content h1 {
+      font-size: 28px;
+      margin-bottom: 15px; /* More space below title */
+      font-weight: 600;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* Add text shadow */
+      /* Clamp title to max 3 lines */
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .fav-btn {
+      background: rgba(255, 255, 255, 0.1); /* Semi-transparent light background */
+      border: 1px solid #e0e0e0; /* Light border */
+      color: #e0e0e0; /* Light text */
+      padding: 8px 20px; /* Adjusted padding */
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 25px; /* Pill shape */
+      transition: 0.3s ease;
+      backdrop-filter: blur(5px); /* Add blur effect */
+    }
+    .fav-btn i {
+        margin-right: 5px; /* Space between icon and text */
+    }
+    .fav-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #fff;
+      color: #fff;
+    }
+    .fav-btn.favourited {
+      background: #1E90FF; /* Use accent color */
+      color: #fff;
+      border-color: #1E90FF;
+    }
+    .fav-btn.favourited:hover {
+      background: #187bcd;
+      border-color: #187bcd;
+    }
+    /* Manga details */
+    .manga-details {
+      max-width: 700px; /* Match hero content width */
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    .manga-details h2 {
+      font-size: 24px; /* Slightly larger heading */
+      margin-bottom: 15px;
+      font-weight: 600;
+      color: #e0e0e0;
+       padding-left: 10px;
+       border-left: 4px solid #1E90FF; /* Accent line */
+    }
+     .manga-details p {
+         font-size: 1rem; /* Standard paragraph size */
+         line-height: 1.6;
+     }
+    .detail-item strong {
+      color: #b0b0b0; /* Muted color for labels */
+      margin-right: 5px;
+    }
+    /* Chapters list */
+    #chapterList {
+      max-width: 700px; /* Match details width */
+      margin: 20px auto 80px auto; /* Add space at bottom for nav */
+      padding: 0 20px;
+    }
+    #chapterList h2 {
+      margin-bottom: 15px;
+      font-size: 24px;
+      font-weight: 600;
+      color: #e0e0e0;
+       padding-left: 10px;
+       border-left: 4px solid #1E90FF; /* Accent line */
+    }
+    .chapter-item {
+      background: #1c1c1c; /* Darker background */
+      border: 1px solid #333; /* Subtle border */
+      margin: 10px 0;
+      padding: 15px; /* More padding */
+      border-radius: 8px; /* Rounded corners */
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      color: #e0e0e0;
+      font-size: 1rem;
+    }
+    .chapter-item:hover {
+      background: #282828; /* Darker hover background */
+      transform: none; /* Remove scale effect */
+    }
+    /* Toast container (Bootstrap 5) */
+    .toast-container {
+      position: fixed;
+      bottom: 70px; /* Position above the fixed bottom nav */
+      right: 20px;
+      z-index: 1055;
+    }
+     /* Bootstrap toast styling adjustments */
+    .toast {
+        background-color: rgba(40, 40, 40, 0.9); /* Darker, slightly transparent */
+        color: #e0e0e0;
+        border: none;
+        backdrop-filter: blur(5px);
+    }
+    .toast .btn-close {
+        color: #e0e0e0;
+        opacity: 0.8;
+    }
+     .toast.text-bg-success {
+         background-color: rgba(40, 167, 69, 0.9) !important; /* Green */
+         color: white;
+     }
+      .toast.text-bg-warning {
+         background-color: rgba(255, 193, 7, 0.9) !important; /* Yellow */
+         color: #212529; /* Dark text for warning */
+     }
+       .toast.text-bg-danger {
+         background-color: rgba(220, 53, 69, 0.9) !important; /* Red */
+         color: white;
+     }
+
+    /* Bottom Navigation Bar - Updated for details page */
+     /* Keep this consistent with manga.html if you want shared styles */
+    nav.navbar {
+      background: rgba(25, 25, 25, 0.8); /* Darker semi-transparent */
+      backdrop-filter: blur(10px); /* Stronger blur */
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0; /* Adjusted padding */
+      border-top: 1px solid #383838; /* Darker border */
+      transition: transform 0.3s ease-in-out;
+      z-index: 1000;
+    }
+     /* Ensure links are styled correctly (removed <br>) */
+     nav.navbar .container-fluid {
+         padding: 0 10px; /* Add some padding */
+     }
+    .nav-link {
+      text-align: center;
+      color: #b0b0b0; /* Muted icon color */
+      transition: transform 0.2s ease, color 0.2s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 13px; /* Smaller text if needed */
+      text-decoration: none;
+      flex-grow: 1; /* Distribute space evenly */
+      max-width: 25%; /* Ensure items don't get too wide */
+    }
+    .nav-link i {
+      font-size: 22px; /* Slightly smaller icons */
+      display: block; /* Icon on top */
+      margin-bottom: 2px; /* Space between icon and text */
+    }
+    .nav-link:hover {
+      color: #ffffff; /* White on hover */
+      transform: translateY(-2px); /* Slight lift */
+    }
+    .nav-link.active {
+      color: #1E90FF; /* Use accent color for active */
+      font-weight: 600;
+    }
+     /* Apply class from JS to hide nav on scroll down */
+    body.nav-hidden nav.navbar {
+        transform: translateY(100%);
+    }
+     /* Styles for loading/error messages in sections */
+     .section-status-message {
+        color: #aaa;
+        text-align: center;
+        width: 100%;
+        padding: 15px 0;
+        font-style: italic;
+        font-size: 0.9rem;
+     }
+     .section-status-message.error {
+         color: #ff6b6b;
+         font-style: normal;
+         font-weight: normal;
+     }
+
+  </style>
+</head>
+<body class="bg-dark text-light">
+  <div class="hero" id="heroSection">
+    <div class="hero-content">
+      <h1 id="mangaTitle">Loading...</h1>
+      <button class="fav-btn" id="favouriteButton" onclick="toggleFavourite()">
+        <i class="bi bi-heart"></i> Favourite
+      </button>
+    </div>
+  </div>
+  <div class="manga-details">
+    <h2>Details</h2>
+    <p class="detail-item" id="altTitles"><strong>Alternative Titles:</strong> Loading...</p>
+    <p class="detail-item" id="authors"><strong>Authors:</strong> Loading...</p>
+    <p class="detail-item" id="artists"><strong>Artists:</strong> Loading...</p>
+    <p class="detail-item" id="releaseDate"><strong>Release Date:</strong> Loading...</p>
+     <p class="detail-item" id="status"><strong>Status:</strong> Loading...</p>
+     <p class="detail-item" id="genres"><strong>Genres:</strong> Loading...</p>
+    <p class="detail-item" id="synopsis"><strong>Synopsis:</strong> Loading...</p>
+  </div>
+  <div id="chapterList">
+    <h2>Chapters</h2>
+    <p class="section-status-message">Loading chapters...</p>
+  </div>
+
+  <div class="toast-container">
+    <div id="favToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          Manga added to favourites!
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+    <div id="removedFavToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          Manga removed from favourites.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+    <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="manga.html" class="nav-link" aria-label="Home">
+        <i class="bi bi-house-door"></i>
+      </a>
+      <a href="search.html" class="nav-link" aria-label="Search">
+        <i class="bi bi-search"></i>
+      </a>
+      <a href="favour.html" class="nav-link active" aria-label="Bookmarks">
+        <i class="bi bi-bookmark"></i>
+      </a>
+      <a href="settings.html" class="nav-link" aria-label="Settings">
+        <i class="bi bi-gear"></i>
+      </a>
+    </div>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // --- Configuration ---
+    // Your CORS Proxy URL
+    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+    const API_BASE = 'https://api.mangadex.org';
+    const UPLOADS_BASE = 'https://uploads.mangadex.org'; // Base URL for cover art
+
+    // Placeholder image (transparent pixel)
+    const PLACEHOLDER_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+    // Get mangaId from URL
+    const params = new URLSearchParams(window.location.search);
+    const mangaId = params.get("id");
+
+    // Redirect if no mangaId is provided
+    if (!mangaId) {
+        console.error("No manga ID provided in URL.");
+        // You might want to redirect to an error page or the home page
+        window.location.href = 'manga.html'; // Redirect to home for now
+    }
+
+
+    // Get DOM elements
+    const heroSection = document.getElementById("heroSection");
+    const mangaTitleEl = document.getElementById("mangaTitle");
+    const altTitlesEl = document.getElementById("altTitles"); // New element for alt titles
+    const authorsEl = document.getElementById("authors");   // New element for authors
+    const artistsEl = document.getElementById("artists");   // New element for artists
+    const releaseDateEl = document.getElementById("releaseDate");
+    const statusEl = document.getElementById("status");       // New element for status
+    const genresEl = document.getElementById("genres");       // New element for genres
+    const synopsisEl = document.getElementById("synopsis");
+    const chapterListDiv = document.getElementById("chapterList");
+    const favouriteButton = document.getElementById("favouriteButton");
+    const favToastEl = document.getElementById("favToast");
+    const removedFavToastEl = document.getElementById("removedFavToast");
+
+
+    // --- Helper Functions (Copied from home page code) ---
+
+    /**
+     * Extracts the cover art filename from MangaDex manga data.
+     * @param {object} manga - Manga data object from MangaDex API.
+     * @returns {string|null} The cover filename or null if not found.
+     */
+    function getCoverFilename(manga) {
+       try {
+           const coverRelationship = manga?.relationships?.find(rel => rel.type === 'cover_art');
+           return coverRelationship?.attributes?.fileName || null;
+       } catch (e) {
+           console.error("[Image Debug] Error finding cover filename:", e, manga);
+           return null;
+       }
+    }
+
+    /**
+     * Constructs a cover image URL for a given manga ID and filename.
+     * @param {string} mangaId - The ID of the manga.
+     * @param {string} filename - The cover art filename.
+     * @param {string|null} size - The desired size suffix (e.g., '.512', '.256') or null for original.
+     * @returns {string} The full cover image URL.
+     */
+    function buildCoverUrl(mangaId, filename, size = null) {
+        if (!mangaId || !filename) {
+            console.warn("[Image Debug] Cannot build cover URL: Missing manga ID or filename. Returning placeholder.");
+             // Return a visual indicator for the background if possible, or just the placeholder
+             // For background, returning an invalid URL or null might be better for CSS error state
+            return null; // Indicate failure for background image
+        }
+        const sizeSuffix = size ? size : ''; // Use empty string for original size
+        return `${UPLOADS_BASE}/covers/${mangaId}/${filename}${sizeSuffix}.jpg`;
+    }
+
+     /**
+     * Shows a Bootstrap toast notification.
+     * @param {string} message - The message to display.
+     * @param {HTMLElement} toastEl - The toast element to show.
+     */
+    function showToast(message, toastEl) {
+      if (!toastEl) {
+        console.error("Toast element not found.");
+        return;
+      }
+      toastEl.querySelector(".toast-body").textContent = message;
+      // Ensure toast is hidden before showing to reset animation
+      const bootstrapToast = new bootstrap.Toast(toastEl, { delay: 3000 });
+      bootstrapToast.show();
+    }
+
+
+    // --- Favourite Logic ---
+
+    // Function to check if the current manga is in favourites
+    function isMangaFavourited() {
+      const favourites = JSON.parse(localStorage.getItem("favouriteManga") || "[]");
+      return favourites.some(item => item.mangaId === mangaId);
+    }
+
+    // Function to update the favourite button's appearance
+    function updateFavouriteButton() {
+      if (!favouriteButton) return;
+      if (isMangaFavourited()) {
+        favouriteButton.classList.add("favourited");
+        favouriteButton.innerHTML = '<i class="bi bi-heart-fill"></i> Favourited';
+      } else {
+        favouriteButton.classList.remove("favourited");
+        favouriteButton.innerHTML = '<i class="bi bi-heart"></i> Favourite';
+      }
+    }
+
+    // Toggle manga favourite status in localStorage
+    function toggleFavourite() {
+        if (!mangaId || !mangaTitleEl.textContent || mangaTitleEl.textContent === "Loading...") {
+            console.warn("Cannot favourite manga: ID or title not loaded yet.");
+            // Optionally show a temporary message to the user
+            return;
+        }
+      let favourites = JSON.parse(localStorage.getItem("favouriteManga") || "[]");
+      const mangaIndex = favourites.findIndex(item => item.mangaId === mangaId);
+
+      if (mangaIndex === -1) {
+        // Add to favourites
+        const newFavourite = { mangaId: mangaId, title: mangaTitleEl.textContent };
+         // Add other useful data if available, e.g., cover filename, author, etc.
+         // const coverFilename = getCoverFilename(/* pass fetched manga data object here if available */);
+         // if(coverFilename) newFavourite.coverFilename = coverFilename;
+         // You'd need to store the full manga object or specific details when fetching info
+
+        favourites.push(newFavourite);
+        localStorage.setItem("favouriteManga", JSON.stringify(favourites));
+        showToast("Manga added to favourites!", favToastEl);
+        updateFavouriteButton();
+      } else {
+        // Remove from favourites
+        favourites.splice(mangaIndex, 1);
+        localStorage.setItem("favouriteManga", JSON.stringify(favourites));
+        showToast("Manga removed from favourites.", removedFavToastEl);
+        updateFavouriteButton();
+      }
+    }
+
+
+    // --- Fetch Manga Details & Chapters ---
+
+    // Fetch Manga Details & Cover
+    async function fetchMangaInfo() {
+      // --- Apply encodeURIComponent here ---
+      // Include relevant relationships like cover_art, author, artist
+      const targetUrl = `${API_BASE}/manga/${mangaId}?includes[]=cover_art&includes[]=author&includes[]=artist`;
+      const fullRequestUrl = `${CORS_PROXY}${encodeURIComponent(targetUrl)}`;
+      // --- End encodeURIComponent ---
+
+      try {
+        console.log(`[API Call] Fetching manga details from: ${fullRequestUrl}`);
+        const response = await axios.get(fullRequestUrl, { timeout: 30000 }); // Increased timeout
+
+        const data = response.data.data; // Axios parses JSON automatically
+        const attr = data.attributes;
+        console.log(`[API Result] Manga details API call successful for ID: ${mangaId}.`);
+
+        // --- Populate Details ---
+        mangaTitleEl.textContent = attr.title?.en || Object.values(attr.title || {})[0] || "Untitled Manga"; // Handle object format
+        document.title = mangaTitleEl.textContent + " - Details"; // Update page title
+
+        // Alternative Titles
+        if (altTitlesEl) {
+            const altTitles = attr.altTitles
+                ?.map(alt => Object.values(alt)[0]) // Get the title string from the language object
+                .filter(Boolean) // Remove empty strings
+                .join(', ');
+            altTitlesEl.innerHTML = `<strong>Alternative Titles:</strong> ${altTitles || "None"}`;
+        }
+
+        // Authors and Artists
+        const authors = data.relationships
+            ?.filter(rel => rel.type === 'author')
+            .map(rel => rel.attributes?.name)
+            .filter(Boolean)
+            .join(', ') || "Unknown";
+         if (authorsEl) authorsEl.innerHTML = `<strong>Authors:</strong> ${authors}`;
+
+         const artists = data.relationships
+            ?.filter(rel => rel.type === 'artist')
+            .map(rel => rel.attributes?.name)
+             .filter(Boolean)
+            .join(', ') || "Unknown";
+         if (artistsEl) artistsEl.innerHTML = `<strong>Artists:</strong> ${artists}`;
+
+
+ // Release Date
+        releaseDateEl.innerHTML = `<strong>Release Date:</strong> ${attr.year || "Unknown"}`;
+
+         // Status
+        statusEl.innerHTML = `<strong>Status:</strong> ${attr.status || "Unknown"}`;
+
+        // Genres (Tags)
+         if (genresEl) {
+             const genres = attr.tags
+                 ?.map(tagRel => tagRel.attributes?.name?.en) // Get tag name (English)
+                 .filter(Boolean) // Remove null/undefined names
+                 .join(', ');
+             genresEl.innerHTML = `<strong>Genres:</strong> ${genres || "Unknown"}`;
+         }
+
+
+        // Synopsis
+        let description = attr.description?.en || Object.values(attr.description || {})[0] || "No synopsis available."; // Handle object format
+         // Basic sanitization to prevent HTML injection if needed, but assuming API is clean
+        synopsisEl.innerHTML = `<strong>Synopsis:</strong> ${description}`;
+
+        // --- Set Cover Image ---
+        const coverFilename = getCoverFilename(data);
+        // Use a larger size for the hero background, e.g., .512 or original (null)
+        const coverUrl = buildCoverUrl(mangaId, coverFilename, '.512'); // Use .512 for background
+
+        if (heroSection) {
+             if (coverUrl) {
+                 heroSection.style.backgroundImage = `url('${coverUrl}')`;
+                 heroSection.classList.remove('hero-error'); // Remove error class if successful
+             } else {
+                 // Handle case where buildCoverUrl returned null (missing ID/filename)
+                  heroSection.style.backgroundImage = 'none';
+                  heroSection.classList.add('hero-error'); // Add error class
+                  console.warn("[Image Debug] Could not set hero background image due to missing cover data.");
+             }
+         }
+
+        // Update favourite button appearance after fetching manga info
+        updateFavouriteButton();
+
+      } catch (error) {
+        console.error(`[API Error] Error fetching manga info for ID ${mangaId}:`, error);
+         // --- More detailed error reporting from error object ---
+        let errorMsg = "Error loading manga details.";
+        if (error.code === 'ECONNABORTED') {
+             errorMsg += " Request timed out. Proxy/API slow.";
+        } else if (error.response) {
+             errorMsg += ` Status: ${error.response.status} ${error.response.statusText}.`;
+        } else if (error.request) {
+             errorMsg += " No response from proxy/server.";
+        } else {
+             errorMsg += ` Details: ${error.message}`;
+        }
+         // --- End detailed error reporting ---
+        // Display error in relevant sections if possible
+        mangaTitleEl.textContent = "Error";
+         if(altTitlesEl) altTitlesEl.innerHTML = `<strong>Alternative Titles:</strong> ${errorMsg}`;
+         if(authorsEl) authorsEl.innerHTML = `<strong>Authors:</strong> ${errorMsg}`;
+         if(artistsEl) artistsEl.innerHTML = `<strong>Artists:</strong> ${errorMsg}`;
+        releaseDateEl.innerHTML = `<strong>Release Date:</strong> ${errorMsg}`;
+         if(statusEl) statusEl.innerHTML = `<strong>Status:</strong> ${errorMsg}`;
+         if(genresEl) genresEl.innerHTML = `<strong>Genres:</strong> ${errorMsg}`;
+        synopsisEl.innerHTML = `<strong>Synopsis:</strong> ${errorMsg}`;
+         if(heroSection) {
+             heroSection.style.backgroundImage = 'none';
+             heroSection.classList.add('hero-error'); // Add error class
+         }
+      }
+    }
+
+    // Fetch list of chapters
+    async function fetchChapters() {
+       const chapterStatusEl = chapterListDiv.querySelector('.section-status-message');
+        if (chapterStatusEl) chapterStatusEl.textContent = 'Loading chapters...'; // Reset loading message
+
+      // --- Apply encodeURIComponent here ---
+      const targetUrl = `${API_BASE}/manga/${mangaId}/feed`;
+      const fullRequestUrl = `${CORS_PROXY}${encodeURIComponent(targetUrl)}`;
+      // --- End encodeURIComponent ---
+
+      try {
+        console.log(`[API Call] Fetching chapters from: ${fullRequestUrl}`);
+        const response = await axios.get(fullRequestUrl, {
+          params: {
+            // Use contentRating[] filter for chapters too if you used it for manga lists
+            'translatedLanguage[]': 'en', // Fetch only English chapters
+            'order[volume]': 'asc', // Order by volume then chapter
+            'order[chapter]': 'asc',
+            limit: 500, // Increased limit to get more chapters at once
+             offset: 0 // Start from the beginning
+          },
+          timeout: 30000 // Increased timeout
+        });
+
+        const chapters = response.data.data;
+        console.log(`[API Result] Chapters API call successful. Found ${chapters?.length || 0} chapters.`);
+
+        // Clear previous content (loading message or error)
+        chapterListDiv.innerHTML = "<h2>Chapters</h2>";
+
+
+        if (!chapters || chapters.length === 0) {
+          chapterListDiv.innerHTML += "<p class='section-status-message'>No chapters found.</p>";
+          return;
+        }
+
+        // Sort chapters by volume and then chapter number numerically
+        chapters.sort((a, b) => {
+            const volA = parseFloat(a.attributes.volume) || 0;
+            const volB = parseFloat(b.attributes.volume) || 0;
+            const chapA = parseFloat(a.attributes.chapter) || 0;
+            const chapB = parseFloat(b.attributes.chapter) || 0;
+
+            if (volA !== volB) {
+                return volA - volB;
+            }
+            return chapA - chapB;
+        });
+
+
+        chapters.forEach(chapter => {
+          const div = document.createElement("div");
+          div.className = "chapter-item";
+          const chapterNum = chapter.attributes.chapter || "Oneshot";
+          const volumeNum = chapter.attributes.volume ? `Vol. ${chapter.attributes.volume} ` : '';
+          const chapterTitle = chapter.attributes.title || "";
+          div.textContent = `${volumeNum}Chapter ${chapterNum} ${chapterTitle ? "- " + chapterTitle : ""}`;
+
+          // Redirect to read.html with query parameters
+          div.onclick = () => {
+            const chapterId = chapter.id;
+            // Pass the full chapter title including volume/number
+            const title = encodeURIComponent(div.textContent);
+            window.location.href = `read.html?chapterId=${chapterId}&mangaId=${mangaId}&title=${title}`;
+          };
+          chapterListDiv.appendChild(div);
+        });
+      } catch (error) {
+        console.error(`[API Error] Error fetching chapters for ID ${mangaId}:`, error);
+        let errorMsg = "Error loading chapters.";
+         if (error.code === 'ECONNABORTED') {
+             errorMsg += " Request timed out.";
+        } else if (error.response) {
+             errorMsg += ` Status: ${error.response.status}.`;
+        } else if (error.request) {
+             errorMsg += " No response from server.";
+        } else {
+             errorMsg += ` Details: ${error.message}`;
+        }
+        chapterListDiv.innerHTML = `<h2>Chapters</h2><p class='section-status-message error'>${errorMsg}</p>`;
+      }
+    }
+
+     // --- Navigation Bar Logic (Copied/adapted from home page) ---
+
+    /** Sets the active state on the bottom navigation link */
+    function setActiveNavLink() {
+        try {
+            // Compare the *filename* part of the current URL path
+            const path = window.location.pathname.split("/").pop();
+            // Determine the expected filename for the 'Saved' page link (this page)
+            const savedPageFilename = 'favour.html'; // Assuming this details page is linked from/related to favour.html
+
+            var navLinks = document.querySelectorAll('nav.navbar .nav-link');
+            navLinks.forEach(function(link) {
+                const href = link.getAttribute('href');
+                if (!href) return;
+                const linkPath = href.split("/").pop();
+
+                 // Check if the current path matches the link's path
+                 // For the details page, we might want 'Saved' to be active if navigated from there,
+                 // or just leave 'Home' active depending on desired behavior.
+                 // Let's keep 'Home' active by default unless on Search/Saved/Settings pages.
+                 // If path is empty or index.html, assume it's the Home page.
+                 // If current page is details.html, none of the fixed nav links truly match its filename.
+                 // We could add logic here to highlight based on referrer, or just leave it.
+                 // Let's add a simple check: if current path matches a link path, activate it.
+                 // This means details.html won't have an active nav item unless its URL is changed or special logic added.
+                 // For simplicity, we'll just rely on the filename match.
+
+                if (linkPath === path) {
+                    link.classList.add('active');
+                 } else {
+                    link.classList.remove('active');
+                }
+            });
+             // Manual override for this page if needed: favourite icon might be highlighted
+             // document.querySelector('nav.navbar .nav-link[href="favour.html"]').classList.add('active');
+             // Decided against manual override - let the filename match logic handle it or leave none active.
+
+        } catch (e) {
+            console.error("Error setting active nav link:", e);
+        }
+    }
+
+     /** Hides/shows the bottom navigation bar on scroll */
+    function setupScrollNavbar() {
+        let lastScrollTop = 0;
+        const nav = document.getElementById('bottom-nav');
+        const body = document.body;
+
+        if (!nav) {
+            console.warn("Bottom navigation element not found.");
+            return;
+        }
+
+        window.addEventListener('scroll', () => {
+            let st = window.pageYOffset || document.documentElement.scrollTop;
+
+            const nearTop = st < 50;
+            // Check against document height, but also ensure there's *actual* scrollable content
+            const isScrollable = document.documentElement.scrollHeight > window.innerHeight;
+            const atBottom = isScrollable && (window.innerHeight + window.pageYOffset) >= document.documentElement.offsetHeight - 50;
+
+
+            if (nearTop || atBottom || !isScrollable) {
+                 body.classList.remove('nav-hidden');
+            } else if (st > lastScrollTop) {
+                body.classList.add('nav-hidden');
+            } else {
+                body.classList.remove('nav-hidden');
+            }
+            lastScrollTop = st <= 0 ? 0 : st;
+        }, { passive: true });
+    }
+
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', function() {
+        // Only fetch data if mangaId is available
+        if (mangaId) {
+            fetchMangaInfo();
+            fetchChapters();
+            // Initial button state based on localStorage
+            updateFavouriteButton();
+        }
+        setActiveNavLink(); // Set active nav link
+        setupScrollNavbar(); // Setup scroll hide/show nav
+    });
+    
+    // Auto-save last visited page name when any nav-link is clicked
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function () {
+      const currentPage = window.location.pathname.split('/').pop();
+      localStorage.setItem('lastVisitedPage', currentPage);
+    });
+  });
+});
+
+
+function highlightLastVisitedNav() {
+  const lastPage = localStorage.getItem("lastVisitedPage");
+  const themeColor = localStorage.getItem("themeColor") || '#ff0000';
+
+  if (!lastPage) return;
+
+  document.querySelectorAll('.nav-link').forEach(link => {
+    const href = link.getAttribute('href');
+    const icon = link.querySelector('i');
+
+    if (href === lastPage) {
+      if (icon) {
+        icon.style.color = themeColor;
+      } else {
+        link.style.color = themeColor;
+      }
+    } else {
+      if (icon) {
+        icon.style.color = 'white';
+      } else {
+        link.style.color = 'white';
+      }
+    }
+  });
+}
+
+window.addEventListener('load', highlightLastVisitedNav);
+
+  </script>
+</body>
+</html>

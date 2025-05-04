@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Read Manga</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Consistent Font & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif; /* Use Poppins */
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden; /* Prevent scrolling */
+      user-select: none; /* Prevent text selection */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    /* Container for manga page */
+    #readerContainer {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden; /* Clip scaled image */
+    }
+     /* Loading/Error message overlay */
+     #loadingStatus {
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+         color: #aaa;
+         font-size: 1.2em;
+         text-align: center;
+         z-index: 50; /* Below buttons/info */
+     }
+     #loadingStatus.error {
+         color: #ff6b6b;
+         font-weight: bold;
+     }
+
+    /* Manga page image styling */
+    #mangaImage {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      margin: auto;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1); /* Initial scale 1 */
+      transform-origin: center center; /* Zoom from center */
+      transition: transform 0.3s ease-in-out;
+      user-select: none; /* Prevent image drag */
+      -webkit-user-drag: none; /* Prevent image drag on webkit */
+    }
+     /* Style for failed image */
+     #mangaImage.img-error {
+         background-color: #333; /* Show background on error */
+         content: ''; /* Hide broken image icon */
+         border: 2px dashed #666;
+         object-fit: contain; /* Adjust fit */
+     }
+
+
+    /* Floating button common style */
+    .fab {
+      position: fixed;
+      background: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
+      border: none;
+      color: #1E90FF; /* Accent color */
+      width: 45px; /* Slightly smaller */
+      height: 45px; /* Slightly smaller */
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px; /* Slightly smaller icon */
+      cursor: pointer;
+      z-index: 150; /* Higher z-index */
+      box-shadow: 0 3px 8px rgba(0,0,0,0.6); /* More prominent shadow */
+      transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+      backdrop-filter: blur(5px); /* Add blur */
+    }
+    .fab:hover {
+      background: #1E90FF; /* Accent color on hover */
+      color: #fff; /* White icon on hover */
+      transform: scale(1.1); /* Subtle hover effect */
+    }
+     .fab:active {
+         transform: scale(0.95); /* Click feedback */
+     }
+
+    /* Back button - top left */
+    #backBtn {
+      top: 15px;
+      left: 15px;
+    }
+    /* Zoom in button - top right */
+    #zoomInBtn {
+      top: 15px;
+      right: 15px;
+    }
+    /* Zoom out button - below zoom in */
+    #zoomOutBtn {
+      top: 70px; /* Adjusted position */
+      right: 15px;
+    }
+    /* Prev page button - bottom left */
+    #prevPage {
+      bottom: 65px; /* Position above bottom nav */
+      left: 15px;
+    }
+    /* Next page button - bottom right */
+    #nextPage {
+      bottom: 65px; /* Position above bottom nav */
+      right: 15px;
+    }
+     /* Disable button style */
+    .fab:disabled {
+         background: rgba(0, 0, 0, 0.3);
+         color: #666;
+         cursor: not-allowed;
+         box-shadow: none;
+         transform: none !important;
+     }
+
+
+    /* Page info display - top center */
+    #pageInfo {
+      position: fixed;
+      top: 15px; /* Adjusted position */
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6); /* Darker background */
+      padding: 8px 15px; /* Adjusted padding */
+      border-radius: 20px;
+      font-size: 1rem; /* Standard size */
+      color: #fff;
+      z-index: 100;
+      backdrop-filter: blur(5px);
+    }
+    /* Chapter title display - above page info */
+    #chapterTitle {
+      position: fixed;
+      top: 55px; /* Adjusted position */
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.1rem; /* Adjusted size */
+      color: #fff;
+      z-index: 100;
+      max-width: 80%; /* Prevent title from being too wide */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Bottom Navigation Bar - Consistent with other pages */
+    nav.navbar {
+      background: rgba(25, 25, 25, 0.8); /* Darker semi-transparent */
+      backdrop-filter: blur(10px); /* Stronger blur */
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0; /* Adjusted padding */
+      border-top: 1px solid #383838; /* Darker border */
+      transition: transform 0.3s ease-in-out;
+      z-index: 1000; /* Ensure it's on top */
+    }
+     nav.navbar .container-fluid {
+         padding: 0 10px; /* Add some padding */
+     }
+    .nav-link {
+      text-align: center;
+      color: #b0b0b0; /* Muted icon color */
+      transition: transform 0.2s ease, color 0.2s ease;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 13px; /* Smaller text if needed */
+      text-decoration: none;
+      flex-grow: 1; /* Distribute space evenly */
+      max-width: 25%; /* Ensure items don't get too wide */
+    }
+    .nav-link i {
+      font-size: 22px; /* Slightly smaller icons */
+      display: block; /* Icon on top */
+      margin-bottom: 2px; /* Space between icon and text */
+    }
+    .nav-link:hover {
+      color: #ffffff; /* White on hover */
+      transform: translateY(-2px); /* Slight lift */
+    }
+    .nav-link.active {
+      color: #1E90FF; /* Use accent color for active */
+      font-weight: 600;
+    }
+     /* Apply class from JS to hide nav on scroll down (if scroll is enabled) */
+    body.nav-hidden nav.navbar {
+        transform: translateY(100%);
+    }
+
+  </style>
+</head>
+<body class="bg-dark"> <div id="readerContainer">
+    <img id="mangaImage" src="" alt="Manga Page" />
+     <div id="loadingStatus">Loading chapter...</div> <div id="pageInfo"></div> <div id="chapterTitle">Loading...</div> <button id="backBtn" class="fab" title="Back">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <button id="zoomInBtn" class="fab" title="Zoom In">
+      <i class="bi bi-zoom-in"></i>
+    </button>
+    <button id="zoomOutBtn" class="fab" title="Zoom Out">
+      <i class="bi bi-zoom-out"></i>
+    </button>
+    <button id="prevPage" class="fab" title="Previous">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button id="nextPage" class="fab" title="Next">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+      <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
+    <div class="container-fluid d-flex justify-content-around">
+      <a href="manga.html" class="nav-link" aria-label="Home">
+        <i class="bi bi-house-door"></i>
+      </a>
+      <a href="search.html" class="nav-link" aria-label="Search">
+        <i class="bi bi-search"></i>
+      </a>
+      <a href="favour.html" class="nav-link" aria-label="Bookmarks">
+        <i class="bi bi-bookmark"></i>
+      </a>
+      <a href="settings.html" class="nav-link" aria-label="Settings">
+        <i class="bi bi-gear"></i>
+      </a>
+    </div>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // --- Configuration ---
+    // Your CORS Proxy URL
+    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+    const API_BASE = 'https://api.mangadex.org';
+    // UPLOADS_BASE is not needed here as we get baseUrl from /at-home endpoint
+
+    // Placeholder image (transparent pixel) - used for failed individual pages
+    const PLACEHOLDER_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+
+    // Read query parameters: chapterId, mangaId, title
+    const params = new URLSearchParams(window.location.search);
+    const chapterId = params.get("chapterId");
+    const mangaId = params.get("mangaId");
+    const chapterTitleText = params.get("title");
+
+    // Redirect if essential info is missing
+    if (!chapterId) {
+        console.error("No chapter ID provided in URL.");
+        // Redirect to manga details page if mangaId is available, else home
+        window.location.href = mangaId ? `details.html?id=${mangaId}` : 'manga.html';
+    }
+
+    // Get DOM elements
+    const mangaImage = document.getElementById("mangaImage");
+    const pageInfo = document.getElementById("pageInfo");
+    const chapterTitleEl = document.getElementById("chapterTitle");
+    const loadingStatusEl = document.getElementById("loadingStatus"); // Get loading status element
+
+    const backBtn = document.getElementById("backBtn");
+    const zoomInBtn = document.getElementById("zoomInBtn");
+    const zoomOutBtn = document.getElementById("zoomOutBtn");
+    const prevPageBtn = document.getElementById("prevPage");
+    const nextPageBtn = document.getElementById("nextPage");
+
+    // Optional audio element
+    // const flipSound = document.getElementById("flipSound");
+
+
+    let currentPages = []; // Array of image URLs
+    let currentPageIndex = 0;
+    let preloadedImages = {}; // Cache for Image objects
+    let isFlipping = false; // Flag to prevent rapid clicks/swipes
+    let currentZoom = 1;
+     let isImageZoomed = false; // Track if image is zoomed beyond 1x
+
+    // Set initial display text
+    chapterTitleEl.textContent = chapterTitleText ? decodeURIComponent(chapterTitleText) : "Loading Chapter...";
+    pageInfo.textContent = "Loading...";
+    loadingStatusEl.textContent = "Loading chapter...";
+
+
+    // Fetch Chapter Page Data (Proxy this API call)
+    async function fetchChapter() {
+        // --- Apply encodeURIComponent here ---
+        // The /at-home endpoint gets the base URL and filenames for the chapter pages
+        const targetUrl = `${API_BASE}/at-home/server/${chapterId}`;
+        const fullRequestUrl = `${CORS_PROXY}${encodeURIComponent(targetUrl)}`;
+        // --- End encodeURIComponent ---
+
+        loadingStatusEl.textContent = "Loading chapter...";
+        loadingStatusEl.classList.remove('error');
+        console.log(`[API Call] Fetching chapter page data from: ${fullRequestUrl}`);
+
+
+      try {
+        const response = await axios.get(fullRequestUrl, { timeout: 30000 }); // Increased timeout
+
+        const data = response.data; // Axios parses JSON automatically
+        console.log(`[API Result] Chapter page data API call successful.`);
+
+        if (data && data.result === 'ok' && data.baseUrl && data.chapter?.data) {
+            const baseUrl = data.baseUrl;
+            const chapterData = data.chapter;
+            // Construct the full image URLs using the baseUrl and filenames
+            currentPages = chapterData.data.map(page => `${baseUrl}/data/${chapterData.hash}/${page}`);
+
+            if (currentPages.length === 0) {
+                loadingStatusEl.textContent = "No pages found for this chapter.";
+                loadingStatusEl.classList.remove('error');
+                pageInfo.textContent = "0 / 0";
+                // Disable navigation buttons
+                 prevPageBtn.disabled = true;
+                 nextPageBtn.disabled = true;
+                return;
+            }
+
+            // Preload all pages for smoother navigation
+            preloadPages();
+
+            // Set initial page
+            currentPageIndex = 0;
+            updatePage(); // Display the first page
+
+            loadingStatusEl.style.display = 'none'; // Hide loading message on success
+
+        } else {
+             // Handle unexpected API response format
+             console.error("[API Error] Unexpected data format from at-home API:", data);
+             throw new Error("Invalid page data received from server.");
+        }
+
+      } catch (error) {
+        console.error(`[API Error] Error loading chapter page data for ID ${chapterId}:`, error);
+        let errorMsg = "Error loading pages.";
+         if (error.code === 'ECONNABORTED') {
+             errorMsg += " Request timed out. Proxy/API slow.";
+        } else if (error.response) {
+             errorMsg += ` Status: ${error.response.status} ${error.response.statusText}.`;
+        } else if (error.request) {
+             errorMsg += " No response from proxy/server.";
+        } else {
+             errorMsg += ` Details: ${error.message}`;
+        }
+        loadingStatusEl.textContent = errorMsg;
+        loadingStatusEl.classList.add('error');
+        pageInfo.textContent = "Error";
+         // Disable navigation buttons on error
+        prevPageBtn.disabled = true;
+        nextPageBtn.disabled = true;
+      }
+    }
+
+    // Preload images in the background
+    function preloadPages() {
+        console.log(`[Preload] Starting preloading of ${currentPages.length} pages.`);
+        // Reset cache
+        preloadedImages = {};
+      currentPages.forEach((url, index) => {
+        const img = new Image();
+        img.src = url;
+        img.onerror = () => {
+             console.warn(`[Image Load Error] Failed to preload image ${index}: ${url}. Using placeholder.`);
+             // Use placeholder if preloading fails
+             img.src = PLACEHOLDER_IMAGE;
+             img.classList.add('img-error'); // Add error class
+        }
+        preloadedImages[index] = img;
+      });
+       console.log(`[Preload] Preloading initiated for ${currentPages.length} pages.`);
+    }
+
+    // Update the displayed page image and info
+    function updatePage() {
+      if (currentPages.length === 0 || isFlipping) return;
+
+      // Get the preloaded image element
+      const imgElement = preloadedImages[currentPageIndex];
+
+      if (!imgElement) {
+          console.error(`[Page Error] Preloaded image element not found for index ${currentPageIndex}.`);
+           mangaImage.src = PLACEHOLDER_IMAGE; // Fallback to placeholder
+           mangaImage.classList.add('img-error');
+           pageInfo.textContent = `Error / ${currentPages.length}`;
+           // Still update button states
+           prevPageBtn.disabled = currentPageIndex === 0;
+           nextPageBtn.disabled = currentPageIndex === currentPages.length - 1;
+          return;
+      }
+
+      isFlipping = true;
+
+      // Apply flip animation transform
+      // Store current scale before animation
+      const currentScale = currentZoom; // Use the current zoom level
+      mangaImage.style.transform = `translate(-50%, -50%) scaleX(0) scale(${currentScale})`;
+
+
+      setTimeout(() => {
+        // Update the source to the actual preloaded image source
+        mangaImage.src = imgElement.src;
+        // Copy error class if present on the preloaded image
+        if (imgElement.classList.contains('img-error')) {
+            mangaImage.classList.add('img-error');
+        } else {
+            mangaImage.classList.remove('img-error');
+        }
+
+        // Update page info
+        pageInfo.textContent = `Page ${currentPageIndex + 1} / ${currentPages.length}`;
+
+        // Reset transform with current zoom and scaleX(1)
+        mangaImage.style.transform = `translate(-50%, -50%) scaleX(1) scale(${currentScale})`;
+
+        // Play flip sound if audio element exists and is loaded
+        // if (flipSound) {
+        //     flipSound.currentTime = 0;
+        //     flipSound.play().catch(e => console.warn("Failed to play flip sound:", e));
+        // }
+
+        // Update button states
+        prevPageBtn.disabled = currentPageIndex === 0;
+        nextPageBtn.disabled = currentPageIndex === currentPages.length - 1;
+
+        // Allow flipping again after animation
+        setTimeout(() => {
+          isFlipping = false;
+        }, 300); // Match CSS transition duration
+      }, 150); // Half of the transition duration for the flip
+
+    }
+
+    // Reset zoom level
+    function resetZoom() {
+         currentZoom = 1;
+         isImageZoomed = false;
+         mangaImage.style.transform = `translate(-50%, -50%) scale(1)`;
+         // Remove pinch-to-zoom listeners if added
+         removeZoomListeners();
+    }
+
+    // --- Event Listeners ---
+
+    // Back button click
+    backBtn.onclick = () => {
+        // Navigate back to the details page if mangaId is known, otherwise home
+      window.location.href = mangaId ? `details.html?id=${mangaId}` : 'manga.html';
+    };
+
+    // Zoom In button click
+    zoomInBtn.onclick = () => {
+      currentZoom = Math.min(3, currentZoom + 0.2); // Max zoom 3x
+      isImageZoomed = currentZoom > 1;
+      mangaImage.style.transform = `translate(-50%, -50%) scale(${currentZoom})`;
+       if (isImageZoomed) {
+           // Add event listeners for panning when zoomed
+           addPanListeners();
+            // Add listeners for pinch-to-zoom if on touch device
+           addZoomListeners();
+       } else {
+           removePanListeners();
+           removeZoomListeners();
+       }
+    };
+
+    // Zoom Out button click
+    zoomOutBtn.onclick = () => {
+      currentZoom = Math.max(1, currentZoom - 0.2); // Min zoom 1x
+       isImageZoomed = currentZoom > 1;
+      mangaImage.style.transform = `translate(-50%, -50%) scale(${currentZoom})`;
+       if (!isImageZoomed) {
+           // Remove panning listeners when zoomed out
+           removePanListeners();
+           removeZoomListeners();
+           // Reset image position if it was panned
+           mangaImage.style.left = '50%';
+           mangaImage.style.top = '50%';
+       }
+    };
+
+    // Previous page button click
+    prevPageBtn.onclick = () => {
+      if (isFlipping || currentPageIndex === 0) return;
+      currentPageIndex--;
+      resetZoom(); // Reset zoom when changing page
+      updatePage();
+    };
+
+    // Next page button click
+    nextPageBtn.onclick = () => {
+      if (isFlipping || currentPageIndex === currentPages.length - 1) return;
+      currentPageIndex++;
+      resetZoom(); // Reset zoom when changing page
+      updatePage();
+    };
+
+  // --- Panning (when zoomed) ---
+    let isPanning = false;
+    let startX, startY, startLeft, startTop;
+
+    function addPanListeners() {
+        // Avoid adding duplicates
+        removePanListeners();
+
+        mangaImage.addEventListener('mousedown', startPan);
+        mangaImage.addEventListener('touchstart', startPan, { passive: true }); // Use passive for touch start
+
+        // Add to document so panning can continue even if mouse leaves image
+        document.addEventListener('mousemove', pan);
+        document.addEventListener('touchmove', pan, { passive: true });
+
+        document.addEventListener('mouseup', endPan);
+        document.addEventListener('touchend', endPan);
+    }
+
+    function removePanListeners() {
+        mangaImage.removeEventListener('mousedown', startPan);
+        mangaImage.removeEventListener('touchstart', startPan);
+        document.removeEventListener('mousemove', pan);
+        document.removeEventListener('touchmove', pan);
+        document.removeEventListener('mouseup', endPan);
+        document.removeEventListener('touchend', endPan);
+    }
+
+
+    function startPan(event) {
+        if (!isImageZoomed || isFlipping) return; // Only pan if zoomed and not flipping
+
+        isPanning = true;
+        // Prevent default drag behavior, but allow pinch-to-zoom on touch
+        if (event.type === 'mousedown' || (event.type === 'touchstart' && event.touches.length === 1)) {
+             event.preventDefault();
+        }
+
+
+        const clientX = event.type === 'touchstart' ? event.touches[0].clientX : event.clientX;
+        const clientY = event.type === 'touchstart' ? event.touches[0].clientY : event.clientY;
+
+        startX = clientX;
+        startY = clientY;
+
+        // Get the current position (relative to initial 50% center)
+        const currentTransform = window.getComputedStyle(mangaImage).transform; // e.g., matrix(...)
+        const matrix = new DOMMatrixReadOnly(currentTransform);
+        // The translation values are matrix.e and matrix.f
+        // However, we need the *current* position relative to the viewport/container, not just the translation offset
+        const rect = mangaImage.getBoundingClientRect();
+        startLeft = rect.left; // Current left edge relative to viewport
+        startTop = rect.top; // Current top edge relative to viewport
+
+        // We need to calculate the offset from the *center* position (50%, 50%)
+        const containerRect = readerContainer.getBoundingClientRect();
+        const containerCenterX = containerRect.left + containerRect.width / 2;
+        const containerCenterY = containerRect.top + containerRect.height / 2;
+
+        // The image's current "logical" center *relative to the container's center*
+        // This is complex due to the initial translate(-50%, -50%)
+        // A simpler approach is to calculate the image's current center and work from there.
+        const imageCenterX = rect.left + rect.width / 2;
+        const imageCenterY = rect.top + rect.height / 2;
+
+        // We'll pan by adjusting the 'left' and 'top' CSS properties
+        // Reset transform to just 'scale' temporarily to avoid conflicting translation
+         mangaImage.style.transition = 'none'; // Disable transition during pan
+         mangaImage.style.transform = `scale(${currentZoom})`;
+         // Set initial left/top based on current position
+         mangaImage.style.left = `${imageCenterX}px`;
+         mangaImage.style.top = `${imageCenterY}px`;
+         mangaImage.style.position = 'absolute'; // Ensure left/top work
+
+
+    }
+
+    function pan(event) {
+        if (!isPanning || isFlipping) return;
+
+        const clientX = event.type === 'touchmove' ? event.touches[0].clientX : event.clientX;
+        const clientY = event.type === 'touchmove' ? event.touches[0].clientY : event.clientY;
+
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+
+        // Calculate new position
+        let newLeft = startLeft + dx;
+        let newTop = startTop + dy;
+
+        // Optional: Add bounds checking to prevent panning too far outside the image
+        // This requires calculating the image boundaries relative to the container
+        const containerRect = readerContainer.getBoundingClientRect();
+        const imageRect = mangaImage.getBoundingClientRect();
+
+        const maxLeft = containerRect.width - imageRect.width; // Furthest left edge can go
+        const maxTop = containerRect.height - imageRect.height; // Furthest top edge can go
+
+        // Clamp the new position within bounds
+        newLeft = Math.max(Math.min(newLeft, 0), maxLeft);
+        newTop = Math.max(Math.min(newTop, 0), maxTop);
+
+
+        // Apply new position
+        mangaImage.style.left = `${newLeft}px`;
+        mangaImage.style.top = `${newTop}px`;
+        mangaImage.style.transform = `scale(${currentZoom})`; // Reapply scale
+
+        // Update start positions for the next move event
+        startX = clientX;
+        startY = clientY;
+        startLeft = newLeft;
+        startTop = newTop;
+    }
+
+    function endPan() {
+        if (!isPanning) return;
+        isPanning = false;
+        mangaImage.style.transition = 'transform 0.3s ease-in-out'; // Restore transition
+         // Note: Panning changed 'left'/'top'. Zooming changes 'transform'.
+         // Need to make sure these play nice. When zoomed out (scale 1), 'left'/'top' should reset.
+         // This is handled in resetZoom and zoomOutBtn.
+    }
+
+    // --- Pinch-to-Zoom (Touch Devices) ---
+    let initialDistance = 0;
+    let lastZoom = 1;
+
+    function addZoomListeners() {
+         // Avoid adding duplicates
+         removeZoomListeners();
+
+         mangaImage.addEventListener('touchstart', handleTouchStart, { passive: false }); // Need active to prevent default
+         mangaImage.addEventListener('touchmove', handleTouchMove, { passive: false });
+         mangaImage.addEventListener('touchend', handleTouchEnd);
+         mangaImage.addEventListener('touchcancel', handleTouchEnd);
+    }
+
+    function removeZoomListeners() {
+         mangaImage.removeEventListener('touchstart', handleTouchStart);
+         mangaImage.removeEventListener('touchmove', handleTouchMove);
+         mangaImage.removeEventListener('touchend', handleTouchEnd);
+         mangaImage.removeEventListener('touchcancel', handleTouchEnd);
+    }
+
+    function getDistance(touches) {
+         const dx = touches[0].clientX - touches[1].clientX;
+         const dy = touches[0].clientY - touches[1].clientY;
+         return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function handleTouchStart(event) {
+        if (event.touches.length === 2) {
+             // Prevent default behavior like scrolling/page zoom
+             event.preventDefault();
+             initialDistance = getDistance(event.touches);
+             lastZoom = currentZoom; // Store current zoom before pinching
+             // If panning was active with 1 finger, stop it
+             isPanning = false;
+             mangaImage.style.transition = 'none'; // Disable transition during pinch
+        } else if (event.touches.length === 1) {
+            // If one finger, prepare for potential pan
+            startPan(event); // Use the startPan logic
+        }
+    }
+
+    function handleTouchMove(event) {
+         if (event.touches.length === 2) {
+              event.preventDefault(); // Prevent default zoom
+              const currentDistance = getDistance(event.touches);
+              if (initialDistance > 0) {
+                  const scale = currentDistance / initialDistance;
+                  // Apply zoom relative to the state when pinch started
+                  currentZoom = Math.max(1, Math.min(lastZoom * scale, 3)); // Clamp zoom 1x to 3x
+                  isImageZoomed = currentZoom > 1;
+
+                  // Reapply transform - pinch-zoom logic often conflicts with panning translation
+                  // A simpler approach for touch pinch+pan is often to let the browser handle it
+                  // or use a dedicated library. Manually combining is complex.
+                  // Let's reset position and just apply scale for now, pan will re-engage
+                  // if the user then tries to drag with one finger while zoomed.
+                  mangaImage.style.left = '50%';
+                  mangaImage.style.top = '50%';
+                  mangaImage.style.transform = `translate(-50%, -50%) scale(${currentZoom})`;
+
+                  if (!isImageZoomed) {
+                       // If zoomed back out, remove pan/zoom listeners
+                       removePanListeners();
+                       removeZoomListeners(); // This ends the touch handling anyway
+                  }
+              }
+         } else if (event.touches.length === 1) {
+             // If one finger, continue pan
+             pan(event); // Use the pan logic
+         }
+    }
+
+     function handleTouchEnd() {
+         isPanning = false; // Ensure pan ends
+         mangaImage.style.transition = 'transform 0.3s ease-in-out'; // Restore transition
+
+         // If zoom ended below 1, reset it
+         if (currentZoom < 1) {
+             resetZoom();
+         }
+     }
+
+
+    // --- Navigation Bar Logic (Copied/adapted from other pages) ---
+
+    /** Sets the active state on the bottom navigation link */
+    function setActiveNavLink() {
+        try {
+            const path = window.location.pathname.split("/").pop();
+            var navLinks = document.querySelectorAll('nav.navbar .nav-link');
+            navLinks.forEach(function(link) {
+                const href = link.getAttribute('href');
+                if (!href) return;
+                const linkPath = href.split("/").pop();
+
+                 // Activate the link if the current page filename matches the link's href filename
+                 // For read.html, none of the fixed nav links will match its filename unless customized.
+                 // This means no nav item will be active by default on the reader page.
+                if (linkPath === path) {
+                    link.classList.add('active');
+                 } else {
+                    link.classList.remove('active');
+                }
+            });
+        } catch (e) {
+            console.error("Error setting active nav link:", e);
+        }
+    }
+
+     /** Hides/shows the bottom navigation bar on scroll */
+     // Note: Body overflow is hidden for the reader, so scroll events won't fire normally.
+     // This function might not be needed or functional on this specific page unless overflow is changed.
+    function setupScrollNavbar() {
+        // Check if nav element exists
+        const nav = document.getElementById('bottom-nav');
+        if (!nav) {
+            console.warn("Bottom navigation element not found.");
+            return;
+        }
+        // Since body is overflow hidden, scrolling won't happen.
+        // This logic is probably not useful on the reader page.
+        // Keep the listener but acknowledge it might not fire.
+         let lastScrollTop = 0;
+         const body = document.body;
+         window.addEventListener('scroll', () => {
+            console.log("Scroll event fired on reader page (body overflow is hidden, likely won't happen)");
+             let st = window.pageYOffset || document.documentElement.scrollTop;
+             const nearTop = st < 50;
+             const isScrollable = document.documentElement.scrollHeight > window.innerHeight;
+             const atBottom = isScrollable && (window.innerHeight + window.pageYOffset) >= document.documentElement.offsetHeight - 50;
+
+             if (nearTop || atBottom || !isScrollable) {
+                  body.classList.remove('nav-hidden');
+             } else if (st > lastScrollTop) {
+                 body.classList.add('nav-hidden');
+             } else {
+                 body.classList.remove('nav-hidden');
+             }
+             lastScrollTop = st <= 0 ? 0 : st;
+         }, { passive: true });
+    }
+
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', function() {
+        // Only fetch chapter data if chapterId is available
+        if (chapterId) {
+            fetchChapter();
+        }
+        setActiveNavLink(); // Set active nav link
+        setupScrollNavbar(); // Setup scroll hide/show nav (likely non-functional here)
+    });
+
+  </script>
+</body>
+</html>
