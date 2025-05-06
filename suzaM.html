@@ -1725,6 +1725,132 @@ document.querySelectorAll('#playerControlsPrimary i').forEach(icon => {
         document.addEventListener("DOMContentLoaded", function () {
   document.body.style.webkitTapHighlightColor = "transparent";
 });
+
+        function minimizePlayer() {
+  if (!playerPage.classList.contains('active')) return; // Already minimized or hidden
+  
+  console.log("Minimizing player...");
+  showPlayerPage(false); // Hide big player
+  showMiniPlayer(true); // Show mini player
+  
+  // Optional: Update history state to reflect minimized state, similar to back button
+  // This helps if you want the *next* back button press to potentially navigate away
+  // from the current page view (e.g., back to trending). If you don't want this, remove the pushState line.
+  try {
+    history.pushState({ page: activePage, playerVisible: false, miniPlayerActive: true }, '');
+  } catch (e) {
+    // Handle potential SecurityError if pushState is restricted (e.g., file:// protocol)
+    console.warn("Could not push history state:", e);
+  }
+  
+}
+
+
+window.addEventListener('popstate', (event) => {
+    const state = event.state;
+
+    if (playerPage.classList.contains('active')) {
+        // If the big player is active, minimize it using the new function
+        minimizePlayer();
+        // NOTE: minimizePlayer now handles pushing the history state if needed.
+        // We might not need to push state again here explicitly unless the logic differs.
+        // Consider if the state pushed by minimizePlayer is sufficient.
+
+    } else if (state && state.page && state.page !== activePage) {
+         // If state indicates a different page should be active, navigate
+         navigateToPage(state.page);
+     } else if (!state && activePage !== 'trendingPage') { // Fallback if state is null/unexpected
+          navigateToPage('trendingPage'); // Go back to a default page
+          history.replaceState({ page: 'trendingPage', playerVisible: false, miniPlayerActive: miniPlayer.classList.contains('active') }, ''); // Replace state
+     }
+    // ... potentially other logic from your existing popstate ...
+    else {
+          console.log("Popstate: Unhandled state or at initial state.");
+          // Allow default browser back behavior if nothing else matched
+          // Or force navigation to trending: navigateToPage('trendingPage');
+      }
+});
+// ----- Scroll/Swipe Down to Minimize Player Logic -----
+
+let touchStartY = 0;
+let touchStartX = 0;
+let isPotentialVerticalSwipe = false;
+const minSwipeDistanceY = 75; // Pixels to swipe down to trigger minimize
+const maxSwipeDistanceX = 50; // Max horizontal pixels allowed during vertical swipe
+
+playerPage.addEventListener('touchstart', (e) => {
+    // Only track if the touch starts directly on the player page background
+    // or non-interactive elements, not on buttons or the progress bar
+    const targetTag = e.target.tagName.toLowerCase();
+    const targetId = e.target.id;
+    const targetClass = e.target.classList;
+
+    if (targetTag === 'button' || targetId === 'playerProgressContainer' || targetClass.contains('player-ctrl-btn') || targetClass.contains('player-ctrl-btn-secondary') || e.target.closest('#playerProgressContainer')) {
+        isPotentialVerticalSwipe = false;
+        return; // Don't track swipes starting on controls
+    }
+
+    if (e.touches.length === 1) { // Only track single finger swipes
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+        isPotentialVerticalSwipe = true; // Reset flag
+        // console.log("Touch Start Y:", touchStartY);
+    }
+}, { passive: true }); // Use passive: true where preventDefault is not needed
+
+playerPage.addEventListener('touchmove', (e) => {
+    if (!isPotentialVerticalSwipe || e.touches.length !== 1) {
+        return; // Not tracking or multi-touch
+    }
+
+    const currentY = e.touches[0].clientY;
+    const currentX = e.touches[0].clientX;
+    const deltaY = currentY - touchStartY;
+    const deltaX = currentX - touchStartX;
+
+    // console.log("Touch Move DeltaY:", deltaY, "DeltaX:", deltaX);
+
+    // Check for a clear downward swipe
+    if (deltaY > minSwipeDistanceY && Math.abs(deltaX) < maxSwipeDistanceX) {
+        // Minimize the player
+        minimizePlayer();
+        isPotentialVerticalSwipe = false; // Reset after triggering minimize
+        // Optional: Prevent default only if we handled the swipe?
+        // e.preventDefault(); // Be careful with this, might block legitimate scrolling elsewhere if conditions aren't perfect
+    } else if (Math.abs(deltaX) >= maxSwipeDistanceX || deltaY < -20) {
+         // If significant horizontal movement or upward movement occurs, invalidate the swipe
+         isPotentialVerticalSwipe = false;
+    }
+    // Do NOT prevent default scroll unless we are absolutely sure we want to minimize here
+}, { passive: false }); // Need passive: false ONLY if we intend to call preventDefault
+
+
+playerPage.addEventListener('touchend', (e) => {
+    // Reset flags on touch end
+    isPotentialVerticalSwipe = false;
+    touchStartY = 0;
+    touchStartX = 0;
+});
+
+playerPage.addEventListener('touchcancel', (e) => {
+     // Reset flags if the touch is cancelled (e.g., by the browser)
+     isPotentialVerticalSwipe = false;
+     touchStartY = 0;
+     touchStartX = 0;
+ });
+
+
+// Add wheel event listener for mouse scroll down
+playerPage.addEventListener('wheel', (e) => {
+    // deltaY is positive when scrolling down
+    // console.log("Wheel DeltaY:", e.deltaY);
+    if (e.deltaY > 20) { // Add a small threshold to avoid accidental triggers
+        minimizePlayer();
+        // Optional: Prevent the default scroll action for the wheel event if desired
+        // e.preventDefault();
+    }
+}, { passive: true }); // passive: true is fine if we don't call preventDefault
+        
 </script>
      
 </body>
