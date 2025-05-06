@@ -176,6 +176,10 @@
         }
         .nav-button i { font-size: 22px; display: block; margin-bottom: 2px; }
         .nav-button.active, .nav-button:hover { color: var(--theme-color, cyan); }
+           /* Hide the bottom navigation bar */
+        .bottom-nav.hidden {
+        display: none;
+    }
 
         /* Big Player Styles */
         #playerPage {
@@ -594,6 +598,7 @@
         // Use querySelectorAll for pages and nav buttons to automatically include new ones
         const pages = document.querySelectorAll('.page');
         const navButtons = document.querySelectorAll('.nav-button');
+        const bottomNav = document.querySelector('.bottom-nav');
 
         // Home Page (New)
         // Home Page (New)
@@ -1069,21 +1074,35 @@ const topStudioLoading = document.getElementById('topStudioLoading');// Renamed
          }
 
         function showPlayerPage(show = true, pushState = false) {
-            playerPage.classList.toggle('active', show);
+    playerPage.classList.toggle('active', show);
 
-             // Manage history state if pushState is true (happens when opening player)
-             if (show && pushState) {
-                 // When showing the big player, push a new state
-                  const state = {
-                      page: activePage, // Store the page that was visible underneath
-                      playerVisible: true,
-                      miniPlayerActive: false // Big player is active, mini player is not
-                  };
-                 history.pushState(state, '', '#player'); // Use a specific hash for player state
-                  console.log("History: Pushed state for player page.");
-             }
-             // Note: Minimizing the player is handled by the popstate listener
-        }
+    // --- ADD THIS LOGIC ---
+    if (show) {
+        // If showing the big player, hide the navigation bar
+        bottomNav.classList.add('hidden');
+        console.log("Hiding bottom navigation.");
+    } else {
+        // If hiding the big player, show the navigation bar
+        bottomNav.classList.remove('hidden');
+        console.log("Showing bottom navigation.");
+    }
+    // --- END ADDED LOGIC ---
+
+
+     // Manage history state if pushState is true (happens when opening player)
+     if (show && pushState) {
+         // When showing the big player, push a new state
+          const state = {
+              page: activePage, // Store the page that was visible underneath
+              playerVisible: true,
+              miniPlayerActive: false // Big player is active, mini player is not
+          };
+         history.pushState(state, '', '#player'); // Use a specific hash for player state
+          console.log("History: Pushed state for player page.");
+     }
+     // Note: Minimizing the player is handled by the popstate listener
+}
+
 
          function showMiniPlayer(show = true) {
             // Only show mini player if a song is loaded AND big player is NOT active
