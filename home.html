@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -372,6 +374,12 @@ nav.navbar {
   color: var(--theme-color, cyan); /* Dynamic active color */
   font-weight: bold;
 }
+
+    @media (min-width: 768px) {
+  #bottom-nav {
+    display: none;
+  }
+}
     
 
     
@@ -382,6 +390,59 @@ nav.navbar {
       z-index: 1050;
       min-width: 255px;
         }
+
+   body.desktop-mode {
+  height: 200%;
+}
+
+body.desktop-mode .nav_bar_container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50px;
+  height: 100vh;
+  background: black;
+  color: white;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: width 0.2s ease;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  box-shadow: 0 0 10px #666666;
+  z-index: 1000;
+}
+
+body.desktop-mode .nav_bar_container:hover {
+  width: 200px;
+  overflow-y: auto;
+}
+
+body.desktop-mode .nav_bar_container ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+body.desktop-mode .nav_items {
+  font-size: 22px;
+  padding: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+body.desktop-mode .nav_items:hover {
+  background: #666666;
+  transition: background 0.3s ease;
+}
+
+body.desktop-mode .fa {
+  margin-right: 20px;
+  min-width: 30px;
+  text-align: center;
+}
+
+ 
   </style>
 </head>
 
@@ -493,6 +554,16 @@ nav.navbar {
       <a href="settings.html" class="nav-link"><i class="bi bi-gear"></i><br></a>
     </div>
   </nav>
+
+ <div class="nav_bar_container">
+ <ul>
+  <li class="nav_items"><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
+  <li class="nav_items"><a href="search.html"><i class="fa fa-search"></i> Search</a></li>
+  <li class="nav_items"><a href="watchlist.html"><i class="fa fa-bookmark"></i> Watchlist</a></li>
+  <li class="nav_items"><a href="settings.html"><i class="fa fa-cog"></i> Settings</a></li>
+</ul>
+
+</div>
       <!-- Notification card -->
   <div id="notification" class="alert alert-success alert-dismissible fade show" role="alert">
     <!-- Bootstrap TV icon -->
