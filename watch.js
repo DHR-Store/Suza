@@ -282,7 +282,7 @@ function loadEpisodeSourceTVMaze(season, episode, title, epName) {
   } else if (embedProvider === "multiembed") {
     src = `https://multiembed.mov/?video_id=${currentImdb}&s=${season}&e=${episode}`;
   } else if (embedProvider === "player4u") {
-    src = `https://player4u.xyz/embed?key=${epName}&s=${season}&e=${episode}`;
+    src = `https://player4u.xyz/embed?key=${epName}`;
   } else {
     src = `https://vidapi.xyz/embed/tv/${currentImdb}?&s=${season}&e=${episode}`;
   }
