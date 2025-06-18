@@ -18,6 +18,8 @@
       --text-secondary: #b3b3b3;
       --accent-color: #1DB954;
       /* Spotify Green */
+      --theme-color: #00c3ff;
+      --theme-second-color: #00d4ff;
     }
 
     * {
@@ -145,6 +147,38 @@
       /* Make album clickable */
     }
 
+    .song-item .song-duration {
+      font-size: 0.8em;
+      color: var(--text-secondary);
+      margin-left: 10px; /* Space between song info and duration */
+      flex-shrink: 0;
+    }
+
+    .song-item .song-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Space between duration and heart icon */
+        margin-left: auto; /* Push actions to the right */
+        flex-shrink: 0;
+    }
+
+    .song-item .favorite-icon {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 1.2em;
+        cursor: pointer;
+        padding: 5px;
+        transition: color 0.2s ease;
+    }
+
+    .song-item .favorite-icon.active {
+        color: var(--accent-color); /* Highlight for favourited songs */
+    }
+    .song-item .favorite-icon:hover {
+        color: var(--accent-color);
+    }
+
     .song-item .remove-fav-btn {
       margin-left: auto;
       /* Push button to the right */
@@ -192,6 +226,7 @@
       color: var(--text-primary);
       text-decoration: none;
       /* If using links */
+      position: relative; /* For heart icon positioning */
     }
 
     .horizontal-scroll-item img {
@@ -234,6 +269,26 @@
       /* Make album clickable */
     }
 
+    .horizontal-scroll-item .favorite-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0,0,0,0.5);
+        border-radius: 50%;
+        padding: 4px;
+        font-size: 1.1em;
+        color: var(--text-secondary);
+        transition: color 0.2s ease, background 0.2s ease;
+    }
+    .horizontal-scroll-item .favorite-icon.active {
+        color: var(--accent-color);
+        background: rgba(0,0,0,0.7);
+    }
+    .horizontal-scroll-item .favorite-icon:hover {
+        color: var(--accent-color);
+    }
+
+
     /* Bottom Navigation */
     .bottom-nav {
       background: rgba(0, 0, 0, 0.8);
@@ -272,7 +327,7 @@
 
     .nav-button.active,
     .nav-button:hover {
-      color: var(--theme-color, cyan);
+      color: var(--theme-color);
     }
 
     /* Hide the bottom navigation bar */
@@ -398,7 +453,7 @@
     .player-ctrl-btn {
       background: none;
       border: none;
-      color: linear-gradient(90deg, var(--theme-color, #00ffff), var(--theme-second-color, #00d4ff));
+      color: var(--theme-color);
       cursor: pointer;
       font-size: 1.8em;
       /* Smaller side buttons */
@@ -406,8 +461,7 @@
     }
 
     #playerControlsPrimary i {
-      color: linear-gradient(90deg, var(--theme-color, #00ffff), var(--theme-second-color, #00d4ff));
-      /* Ya कोई bhi color jaise #00ff00, blue, etc. */
+      color: var(--theme-color);
     }
 
     .player-ctrl-btn:active {
@@ -466,10 +520,20 @@
       padding: 0 15px;
       cursor: pointer;
       border-top: 1px solid #444;
+      flex-direction: column; /* Stack info and progress bar */
+      justify-content: center;
     }
 
     #miniPlayer.active {
       display: flex;
+    }
+
+    #miniPlayerContent {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        flex-grow: 1;
+        padding-top: 5px; /* Adjust padding for progress bar */
     }
 
     #miniPlayerInfo {
@@ -534,6 +598,26 @@
       /* Add padding to make click target easier */
     }
 
+    #miniProgressBarContainer {
+        width: calc(100% - 30px); /* Adjust for padding */
+        height: 3px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+        margin-top: 5px; /* Space above progress bar */
+        position: absolute;
+        bottom: 0;
+        left: 15px;
+    }
+
+    #miniProgressBar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--theme-color), var(--theme-second-color));
+        border-radius: 2px;
+        transition: width 0.1s linear;
+    }
+
+
     /* Search Page Styles */
     #searchPage {
       /* Keep this styling, pages now just have padding and scrolling */
@@ -561,6 +645,103 @@
       color: var(--text-secondary);
       font-size: 1.5em;
     }
+
+    /* Search History */
+    #searchHistoryContainer {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    #searchHistoryContainer h3 {
+        font-size: 1.1em;
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+    }
+
+    #searchHistoryList {
+        list-style: none;
+        padding: 0;
+    }
+
+    .search-history-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--tertiary-bg);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .search-history-item:hover {
+        background-color: var(--secondary-bg);
+    }
+
+    .search-history-item span {
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .search-history-item .delete-history-btn {
+        background: none;
+        border: none;
+        color: tomato;
+        font-size: 1em;
+        cursor: pointer;
+        padding: 5px;
+        margin-left: 10px;
+    }
+    .clear-history-btn {
+        background: none;
+        border: 1px solid var(--text-secondary);
+        color: var(--text-secondary);
+        padding: 8px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        margin-top: 10px;
+        display: block;
+        width: fit-content;
+    }
+    .clear-history-btn:hover {
+        background-color: var(--tertiary-bg);
+    }
+
+    /* YouTube Link Input */
+    #youtubeLinkSection {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--tertiary-bg);
+    }
+    #youtubeLinkSection h3 {
+        font-size: 1.1em;
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+    }
+    #youtubeLinkInput {
+        width: calc(100% - 70px);
+        padding: 10px 15px;
+        border: none;
+        border-radius: 20px;
+        background-color: var(--tertiary-bg);
+        color: var(--text-primary);
+        margin-right: 10px;
+    }
+    #playYoutubeLinkBtn {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+    #youtubeMessage {
+        margin-top: 15px;
+        color: orange;
+        font-size: 0.9em;
+    }
+
 
     /* Favourites Page */
     #favouritesPage .empty-favs {
@@ -659,7 +840,7 @@
     #section-title {
       font-size: 26px;
       font-weight: bold;
-      background: linear-gradient(90deg, var(--theme-color, #00ffff), var(--theme-second-color, #00d4ff));
+      background: linear-gradient(90deg, var(--theme-color), var(--theme-second-color));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       display: inline-block;
@@ -692,6 +873,22 @@
     <div id="searchBarContainer">
       <input type="search" id="searchInput" placeholder="Search for songs, artists, albums...">
     </div>
+    <!-- Search History Section -->
+    <div id="searchHistoryContainer">
+        <h3>Recent Searches</h3>
+        <ul id="searchHistoryList"></ul>
+        <button id="clearSearchHistoryBtn" class="clear-history-btn" style="display: none;">Clear History</button>
+    </div>
+    <!-- YouTube Link Section -->
+    <div id="youtubeLinkSection">
+        <h3>Play from YouTube Link (Audio Only)</h3>
+        <div style="display: flex; align-items: center;">
+            <input type="text" id="youtubeLinkInput" placeholder="Paste YouTube link here..." style="flex-grow: 1; margin-right: 10px;">
+            <button id="playYoutubeLinkBtn">Go</button>
+        </div>
+        <p id="youtubeMessage" style="display: none;"></p>
+    </div>
+
     <div id="searchLoading" class="loading-indicator">Searching...</div>
     <ul id="searchResults" class="song-list"></ul>
   </div>
@@ -796,16 +993,21 @@
   </div>
 
   <div id="miniPlayer">
-    <img id="miniPlayerImage" src="https://placehold.co/45x45/282828/b3b3b3?text=No+Image" alt="Mini Album Art" />
-    <div id="miniPlayerInfo">
-      <div id="miniPlayerDetails">
-        <div id="miniPlayerSongName">Song Title</div>
-        <div id="miniPlayerSongArtist">Artist Name</div>
-        <div id="miniPlayerSongAlbum"></div> <!-- New Album Element -->
-      </div>
+    <div id="miniPlayerContent">
+        <img id="miniPlayerImage" src="https://placehold.co/45x45/282828/b3b3b3?text=No+Image" alt="Mini Album Art" />
+        <div id="miniPlayerInfo">
+            <div id="miniPlayerDetails">
+                <div id="miniPlayerSongName">Song Title</div>
+                <div id="miniPlayerSongArtist">Artist Name</div>
+                <div id="miniPlayerSongAlbum"></div> <!-- New Album Element -->
+            </div>
+        </div>
+        <div id="miniPlayerControls">
+            <button id="miniPlayPauseBtn"><i class="bi bi-play-fill"></i></button>
+        </div>
     </div>
-    <div id="miniPlayerControls">
-      <button id="miniPlayPauseBtn"><i class="bi bi-play-fill"></i></button>
+    <div id="miniProgressBarContainer">
+        <div id="miniProgressBar"></div>
     </div>
   </div>
 
@@ -843,6 +1045,13 @@
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
     const searchLoading = document.getElementById('searchLoading');
+    const searchHistoryList = document.getElementById('searchHistoryList');
+    const searchHistoryContainer = document.getElementById('searchHistoryContainer');
+    const clearSearchHistoryBtn = document.getElementById('clearSearchHistoryBtn');
+    const youtubeLinkInput = document.getElementById('youtubeLinkInput');
+    const playYoutubeLinkBtn = document.getElementById('playYoutubeLinkBtn');
+    const youtubeMessage = document.getElementById('youtubeMessage');
+
 
     // Favourites Page
     const favouritesPage = document.getElementById('favouritesPage');
@@ -897,15 +1106,17 @@
     const miniPlayerSongArtist = document.getElementById('miniPlayerSongArtist');
     const miniPlayerSongAlbum = document.getElementById('miniPlayerSongAlbum');
     const miniPlayPauseBtn = document.getElementById('miniPlayPauseBtn');
+    const miniProgressBar = document.getElementById('miniProgressBar');
 
 
     // ----- State Variables -----
-    let currentQueue = []; // Array of song objects { id, name, artist, album, url, image }
+    let currentQueue = []; // Array of song objects { id, name, artist, album, url, image, duration }
     let currentSongIndex = -1;
     let currentSong = null; // The currently playing song object
     let favourites = []; // Array of favourite song objects
     let isRepeat = false;
     let activePage = 'homePage'; // Keep track of the visible page (behind the player if active)
+    let searchHistory = []; // Array of search queries
 
     // ----- IndexedDB Variables -----
     let db;
@@ -927,22 +1138,24 @@
 
     function getBestUrl(downloadUrls) {
       if (!downloadUrls || downloadUrls.length === 0) return null;
+      // Prefer 320kbps, then 160kbps, then 128kbps, then 96kbps, fallback to last
       const preferredQualities = ['320kbps', '160kbps', '128kbps', '96kbps'];
       for (const quality of preferredQualities) {
         const found = downloadUrls.find(q => q.quality === quality);
         if (found) return found.link;
       }
-      return downloadUrls[downloadUrls.length - 1]?.link;
+      return downloadUrls[downloadUrls.length - 1]?.link; // Fallback to the last available quality
     }
 
     function getBestImage(images) {
       if (!images || images.length === 0) return 'https://placehold.co/150x150/282828/b3b3b3?text=No+Image';
+      // Prefer 500x500, then 150x150, then 120x120, then 60x60, fallback to first
       const preferredQualities = ['500x500', '150x150', '120x120', '60x60'];
       for (const quality of preferredQualities) {
         const found = images.find(i => i.quality === quality);
         if (found) return found.link;
       }
-      return images[0]?.link;
+      return images[0]?.link; // Fallback to the first available image size
     }
 
     function cleanApiText(text) {
@@ -968,18 +1181,37 @@
                     <div class="song-artist" ${song.artistId ? `data-artist-id="${song.artistId}"` : ''}>${cleanApiText(song.artist)}</div>
                     <div class="song-album" ${song.albumId ? `data-album-id="${song.albumId}"` : ''}>${cleanApiText(song.album)}</div>
                 </div>
-                ${activePage === 'favouritesPage' ? '<button class="remove-fav-btn"><i class="bi bi-x-circle-fill"></i></button>' : ''}
+                <div class="song-actions">
+                    <span class="song-duration">${formatTime(song.duration || 0)}</span>
+                    <button class="favorite-icon ${isFavourite(song.id) ? 'active' : ''}" data-song-id="${song.id}">
+                        <i class="bi ${isFavourite(song.id) ? 'bi-heart-fill' : 'bi-heart'}"></i>
+                    </button>
+                    ${activePage === 'favouritesPage' ? '<button class="remove-fav-btn"><i class="bi bi-x-circle-fill"></i></button>' : ''}
+                </div>
             `;
 
       li.addEventListener('click', (e) => {
-        // Ensure click is not on sub-elements for navigation/removal
-        if (!e.target.closest('.remove-fav-btn') && !e.target.closest('.song-artist') && !e.target.closest('.song-album')) {
+        // Ensure click is not on sub-elements for navigation/removal/favourite
+        if (!e.target.closest('.remove-fav-btn') && !e.target.closest('.song-artist') && !e.target.closest('.song-album') && !e.target.closest('.favorite-icon')) {
           // When playing from downloaded page, use the local URLs
           const songToPlay = { ...song, url: audioUrl, image: imageUrl };
           currentQueue = [songToPlay];
           playSongFromQueue(0);
         }
       });
+
+      // Event listener for the favorite icon on the list item
+      const favIconBtn = li.querySelector('.favorite-icon');
+      if (favIconBtn) {
+          favIconBtn.addEventListener('click', (e) => {
+              e.stopPropagation(); // Prevent playing the song when clicking the heart icon
+              toggleFavourite(song.id); // Pass the song ID to the toggle function
+              // Update the icon on the list item immediately
+              favIconBtn.classList.toggle('active', isFavourite(song.id));
+              favIconBtn.querySelector('i').classList.toggle('bi-heart-fill', isFavourite(song.id));
+              favIconBtn.querySelector('i').classList.toggle('bi-heart', !isFavourite(song.id));
+          });
+      }
 
       const albumEl = li.querySelector('.song-album');
       if (albumEl && song.albumId && !isDownloaded) { // Only navigate for non-downloaded songs (external API)
@@ -1017,13 +1249,29 @@
                 <div class="song-name">${cleanApiText(song.name)}</div>
                 <div class="song-artist" ${song.artistId ? `data-artist-id="${song.artistId}"` : ''}>${cleanApiText(song.artist)}</div>
                 <div class="song-album" ${song.albumId ? `data-album-id="${song.albumId}"` : ''}>${cleanApiText(song.album)}</div>
+                <button class="favorite-icon ${isFavourite(song.id) ? 'active' : ''}" data-song-id="${song.id}">
+                    <i class="bi ${isFavourite(song.id) ? 'bi-heart-fill' : 'bi-heart'}"></i>
+                </button>
             `;
       div.addEventListener('click', (e) => {
-        if (!e.target.closest('.song-artist') && !e.target.closest('.song-album')) {
+        if (!e.target.closest('.song-artist') && !e.target.closest('.song-album') && !e.target.closest('.favorite-icon')) {
           currentQueue = [song];
           playSongFromQueue(0);
         }
       });
+
+      // Event listener for the favorite icon on the list item
+      const favIconBtn = div.querySelector('.favorite-icon');
+      if (favIconBtn) {
+          favIconBtn.addEventListener('click', (e) => {
+              e.stopPropagation(); // Prevent playing the song when clicking the heart icon
+              toggleFavourite(song.id); // Pass the song ID to the toggle function
+              // Update the icon on the list item immediately
+              favIconBtn.classList.toggle('active', isFavourite(song.id));
+              favIconBtn.querySelector('i').classList.toggle('bi-heart-fill', isFavourite(song.id));
+              favIconBtn.querySelector('i').classList.toggle('bi-heart', !isFavourite(song.id));
+          });
+      }
 
       const albumEl = div.querySelector('.song-album');
       if (albumEl && song.albumId) {
@@ -1091,6 +1339,7 @@
         // Optionally clear search results when navigating to search page
         // searchInput.value = '';
         // searchResults.innerHTML = '';
+        displaySearchHistory();
       }
 
       if (!playerPage.classList.contains('active')) {
@@ -1123,28 +1372,38 @@
       return favourites.some(fav => fav.id === songId);
     }
 
-    function toggleFavourite() {
-      if (!currentSong) {
-        console.warn("No song loaded to toggle favourite.");
+    function toggleFavourite(songIdFromList = null) {
+      let songToToggle = currentSong;
+      if (songIdFromList) {
+          songToToggle = currentQueue.find(s => s.id === songIdFromList) || favourites.find(s => s.id === songIdFromList) || null;
+      }
+
+      if (!songToToggle) {
+        console.warn("No song loaded or specified to toggle favourite.");
         return;
       }
 
-      const songId = currentSong.id;
+      const songId = songToToggle.id;
       const favouriteIndex = favourites.findIndex(fav => fav.id === songId);
 
       if (favouriteIndex > -1) {
         favourites.splice(favouriteIndex, 1);
-        console.log('Removed from favourites:', currentSong.name);
+        console.log('Removed from favourites:', songToToggle.name);
       } else {
-        favourites.push(currentSong);
-        console.log('Added to favourites:', currentSong.name);
+        favourites.push(songToToggle);
+        console.log('Added to favourites:', songToToggle.name);
       }
       saveFavouritesToStorage();
 
-      updateFavouriteButton();
-
+      updateFavouriteButton(); // Update the big player button
+      // Re-render the current page to update all heart icons
       if (activePage === 'favouritesPage') {
         displayFavourites();
+      } else if (activePage === 'searchPage' && searchInput.value) {
+          displaySearchResults(searchInput.value);
+      } else if (activePage === 'homePage') {
+        fetchTrendingSongs(); // Re-fetch to update icons, could be optimized
+        fetchNewAlbums();
       }
     }
 
@@ -1189,7 +1448,8 @@
 
       if (!currentSong?.url) {
         console.error("Song has no valid URL:", currentSong?.name);
-        alert(`Could not play "${currentSong?.name || 'this song'}". No valid URL found.`);
+        // Using custom modal/message instead of alert()
+        showMessage(`Could not play "${currentSong?.name || 'this song'}". No valid URL found.`);
         if (currentQueue.length > 1 && index < currentQueue.length - 1) {
           console.log("Skipping song with no URL, attempting next.");
           playSongFromQueue(index + 1);
@@ -1217,8 +1477,9 @@
         document.body.classList.remove('mini-player-visible');
       }).catch(error => {
         console.error("Audio Play Error:", error);
+        // Using custom modal/message instead of alert()
+        showMessage(`Error playing ${currentSong?.name || 'the song'}. It might be protected or unavailable. Details: ${error.message}`);
         updatePlayPauseButtons(false);
-        alert(`Error playing ${currentSong?.name || 'the song'}. It might be protected or unavailable. Details: ${error.message}`);
         if (currentQueue.length > 1 && index < currentQueue.length - 1) {
           console.log("Attempting next song after playback error.");
           playSongFromQueue(index + 1);
@@ -1233,6 +1494,39 @@
       });
     }
 
+    // A simple message display function (instead of alert)
+    function showMessage(message, type = 'info') {
+        const messageBox = document.createElement('div');
+        messageBox.style.cssText = `
+            position: fixed;
+            bottom: 80px; /* Above mini player */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: ${type === 'error' ? 'tomato' : '#333'};
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            max-width: 80%;
+            text-align: center;
+        `;
+        messageBox.textContent = message;
+        document.body.appendChild(messageBox);
+
+        setTimeout(() => {
+            messageBox.style.opacity = '1';
+        }, 10); // Small delay to trigger transition
+
+        setTimeout(() => {
+            messageBox.style.opacity = '0';
+            messageBox.addEventListener('transitionend', () => messageBox.remove());
+        }, 3000); // Message disappears after 3 seconds
+    }
+
+
     function updatePlayerUI(song) {
       playerSongImage.src = song?.image || 'https://placehold.co/280x280/282828/b3b3b3?text=No+Image';
       playerBlurBackground.style.backgroundImage = `url('${song?.image || 'https://placehold.co/280x280/282828/b3b3b3?text=No+Image'}')`;
@@ -1241,7 +1535,7 @@
       playerSongAlbum.textContent = song?.album || '';
       playerProgressBar.style.width = '0%';
       currentTimeEl.textContent = '0:00';
-      totalDurationEl.textContent = '0:00';
+      totalDurationEl.textContent = formatTime(song.duration || 0);
     }
 
     function updateMiniPlayerUI(song) {
@@ -1249,6 +1543,7 @@
       miniPlayerSongName.textContent = song?.name || 'Unknown Song';
       miniPlayerSongArtist.textContent = song?.artist || 'Unknown Artist';
       miniPlayerSongAlbum.textContent = song?.album || '';
+      miniProgressBar.style.width = '0%';
     }
 
     function togglePlayPause() {
@@ -1270,10 +1565,13 @@
 
     function updateProgress() {
       if (isNaN(audioPlayer.duration)) {
+        playerProgressBar.style.width = '0%';
+        miniProgressBar.style.width = '0%';
         return;
       }
       const percentage = (audioPlayer.currentTime / audioPlayer.duration) * 100;
       playerProgressBar.style.width = `${percentage}%`;
+      miniProgressBar.style.width = `${percentage}%`; // Update mini player progress bar
       currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
       if (!isNaN(audioPlayer.duration) && audioPlayer.duration > 0 && totalDurationEl.textContent === '0:00') {
         totalDurationEl.textContent = formatTime(audioPlayer.duration);
@@ -1348,6 +1646,8 @@
       playerPage.classList.toggle('active', show);
       if (show) {
         bottomNav.classList.add('hidden');
+        document.body.classList.remove('mini-player-visible'); // Hide mini-player when big player is active
+        showMiniPlayer(false); // Ensure mini player is off
         console.log("Hiding bottom navigation.");
       } else {
         bottomNav.classList.remove('hidden');
@@ -1409,6 +1709,13 @@
       }
 
       try {
+        // Check if the song is already downloaded
+        const existingSong = await getDownloadedSongById(song.id);
+        if (existingSong) {
+            showMessage(`"${song.name}" is already downloaded.`);
+            return;
+        }
+
         const transaction = db.transaction(['downloaded_songs', 'audio_blobs', 'image_blobs'], 'readwrite');
         const songStore = transaction.objectStore('downloaded_songs');
         const audioStore = transaction.objectStore('audio_blobs');
@@ -1434,6 +1741,7 @@
           artistId: song.artistId,
           album: song.album,
           albumId: song.albumId,
+          duration: song.duration || 0, // Save duration
           audioBlobKey: song.id, // Reference to audio blob in store
           imageBlobKey: song.id, // Reference to image blob in store
           local_audio_url: localAudioUrl, // Temporary URL for immediate use/display
@@ -1441,9 +1749,13 @@
         };
         await songStore.put(songData);
 
-        await transaction.complete;
+        await new Promise((resolve, reject) => {
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = (event) => reject(event.target.error);
+        });
+
         console.log('Song saved to IndexedDB:', song.name);
-        alert(`"${song.name}" downloaded and saved successfully!`);
+        showMessage(`"${song.name}" downloaded and saved successfully!`);
 
         // If on the downloaded songs page, refresh the list
         if (activePage === 'downloadedSongsPage') {
@@ -1451,9 +1763,21 @@
         }
       } catch (error) {
         console.error('Failed to save song to IndexedDB:', error);
-        alert(`Failed to download and save "${song.name}".`);
+        showMessage(`Failed to download and save "${song.name}".`, 'error');
       }
     }
+
+    async function getDownloadedSongById(songId) {
+        if (!db) await openIndexedDB();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction('downloaded_songs', 'readonly');
+            const store = transaction.objectStore('downloaded_songs');
+            const request = store.get(songId);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (event) => reject(event.target.error);
+        });
+    }
+
 
     async function getDownloadedSongs() {
       if (!db) {
@@ -1573,9 +1897,10 @@
             albumId: albumId,
             url: getBestUrl(song.downloadUrl || (song.more_info?.encrypted_media_url ? [{ link: song.more_info.encrypted_media_url, quality: 'auto' }] : null)),
             image: getBestImage(song.image || song.images),
+            duration: song.duration ? parseInt(song.duration, 10) : 0, // Parse duration to integer
             raw_data: song
           };
-        }).filter(song => song.url);
+        }).filter(song => song.url); // Filter out songs without a playable URL
 
         processedSongs.forEach(song => {
           const item = displayFn(song);
@@ -1599,7 +1924,7 @@
 
     async function fetchTrendingSongs() {
       // Using a generic search for "trending songs" as there's no direct trending endpoint on saavn.me
-      await fetchData('/search/songs', { query: 'trending songs', limit: 20 }, trendingHeroLoading, trendingHero, createHorizontalScrollItem);
+      currentQueue = await fetchData('/search/songs', { query: 'trending songs', limit: 20 }, trendingHeroLoading, trendingHero, createHorizontalScrollItem);
     }
 
     async function fetchNewAlbums() {
@@ -1613,6 +1938,7 @@
         showLoading(searchLoading, false);
         return;
       }
+      saveSearchQuery(query); // Save search query
       fetchData('/search/songs', { query: query, limit: 50 }, searchLoading, searchResults, createSongItem);
     }
 
@@ -1652,6 +1978,7 @@
 
             if (audioBlob && imageBlob) {
               // Revoke previous URLs if they exist before creating new ones
+              // This is crucial to prevent memory leaks if URLs are recreated
               if (song.local_audio_url && song.local_audio_url.startsWith('blob:')) {
                 URL.revokeObjectURL(song.local_audio_url);
               }
@@ -1664,8 +1991,9 @@
               const songItem = createSongItem(song, true); // Pass true to indicate it's a downloaded song
               downloadedSongList.appendChild(songItem);
             } else {
-              console.warn(`Missing blob for downloaded song: ${song.name}`);
+              console.warn(`Missing blob for downloaded song: ${song.name}. Attempting to remove corrupted entry.`);
               // Optionally remove corrupt entry from DB or show error
+              // await deleteDownloadedSong(song.id); // Uncomment if you want to auto-clean corrupt entries
             }
           }
         }
@@ -1675,6 +2003,25 @@
       } finally {
         showLoading(downloadedSongsLoading, false);
       }
+    }
+
+    async function deleteDownloadedSong(songId) {
+        if (!db) await openIndexedDB();
+        try {
+            const transaction = db.transaction(['downloaded_songs', 'audio_blobs', 'image_blobs'], 'readwrite');
+            await transaction.objectStore('downloaded_songs').delete(songId);
+            await transaction.objectStore('audio_blobs').delete(songId);
+            await transaction.objectStore('image_blobs').delete(songId);
+            await new Promise((resolve, reject) => {
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = (event) => reject(event.target.error);
+            });
+            console.log(`Downloaded song ${songId} removed from IndexedDB.`);
+            // You might want to revoke Object URLs if they are still active
+            displayDownloadedSongs(); // Refresh list
+        } catch (error) {
+            console.error(`Error deleting downloaded song ${songId}:`, error);
+        }
     }
 
 
@@ -1718,17 +2065,19 @@
     // ----- Download Function -----
     downloadBtn.addEventListener('click', async () => {
       if (!currentSong || !currentSong.url) {
-        alert('No song loaded or song URL is unavailable for download.');
+        showMessage('No song loaded or song URL is unavailable for download.', 'error');
         return;
       }
 
       const songName = cleanApiText(currentSong.name);
       const artistName = cleanApiText(currentSong.artist);
 
-      // Save to IndexedDB
+      // Save to IndexedDB (handles checking if already downloaded)
+      // This function already handles adding the song to the IndexedDB
+      // and refreshing the downloaded songs page if active.
       await saveDownloadedSong(currentSong);
 
-      // Also trigger direct file download (as requested)
+      // Also trigger direct file download to the user's local file system
       try {
         // Download song audio
         const audioResponse = await fetch(currentSong.url);
@@ -1755,13 +2104,73 @@
           document.body.removeChild(imageLink);
           URL.revokeObjectURL(imageBlobUrl); // Clean up the object URL
         }
-        // alert(`"${songName}" has been downloaded to your device.`); // Removed as saveDownloadedSong already alerts
+        showMessage(`Direct download of "${songName}" initiated.`);
       } catch (error) {
         console.error("Error initiating direct file download:", error);
-        alert(`Failed to directly download "${songName}" to your device.`);
+        showMessage(`Failed to directly download "${songName}" to your device.`, 'error');
       }
     });
 
+
+    // ----- Search History Functions -----
+    function loadSearchHistory() {
+        try {
+            const storedHistory = localStorage.getItem('searchHistory');
+            searchHistory = storedHistory ? JSON.parse(storedHistory) : [];
+            displaySearchHistory();
+        } catch (e) {
+            console.error("Error loading search history:", e);
+            searchHistory = [];
+        }
+    }
+
+    function saveSearchQuery(query) {
+        const trimmedQuery = query.trim();
+        if (trimmedQuery && !searchHistory.includes(trimmedQuery)) {
+            searchHistory.unshift(trimmedQuery); // Add to the beginning
+            searchHistory = searchHistory.slice(0, 10); // Keep only the last 10 queries
+            localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+            displaySearchHistory();
+        }
+    }
+
+    function deleteSearchHistoryItem(queryToDelete) {
+        searchHistory = searchHistory.filter(q => q !== queryToDelete);
+        localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+        displaySearchHistory();
+    }
+
+    function clearAllSearchHistory() {
+        searchHistory = [];
+        localStorage.removeItem('searchHistory');
+        displaySearchHistory();
+    }
+
+    function displaySearchHistory() {
+        searchHistoryList.innerHTML = '';
+        if (searchHistory.length === 0) {
+            searchHistoryContainer.style.display = 'none';
+            clearSearchHistoryBtn.style.display = 'none';
+            return;
+        }
+        searchHistoryContainer.style.display = 'block';
+        clearSearchHistoryBtn.style.display = 'block';
+
+        searchHistory.forEach(query => {
+            const li = document.createElement('li');
+            li.classList.add('search-history-item');
+            li.innerHTML = `<span><i class="bi bi-clock-history"></i> ${query}</span><button class="delete-history-btn"><i class="bi bi-x-circle-fill"></i></button>`;
+            li.querySelector('span').addEventListener('click', () => {
+                searchInput.value = query;
+                displaySearchResults(query);
+            });
+            li.querySelector('.delete-history-btn').addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent search from triggering when deleting
+                deleteSearchHistoryItem(query);
+            });
+            searchHistoryList.appendChild(li);
+        });
+    }
 
     // ----- Event Listeners -----
 
@@ -1774,14 +2183,40 @@
     });
 
     // Search input
-    searchInput.addEventListener('input', () => {
-      displaySearchResults(searchInput.value);
+    searchInput.addEventListener('change', () => { // Use change to save on enter/blur
+        displaySearchResults(searchInput.value);
     });
-    searchInput.addEventListener('search', () => {
+    searchInput.addEventListener('search', () => { // For search input clear button
       if (!searchInput.value) {
         searchResults.innerHTML = '';
         showLoading(searchLoading, false);
       }
+    });
+    clearSearchHistoryBtn.addEventListener('click', clearAllSearchHistory);
+
+    // YouTube Link input
+    playYoutubeLinkBtn.addEventListener('click', () => {
+        const youtubeUrl = youtubeLinkInput.value.trim();
+        // IMPORTANT: Direct YouTube video/audio playback from arbitrary links using the YouTube Data API or other direct methods
+        // within a client-side HTML application is highly restricted due to:
+        // 1. CORS (Cross-Origin Resource Sharing) policies: Browsers typically block requests for media content from different origins
+        //    unless the server explicitly allows it, which YouTube's servers do not for direct media files.
+        // 2. YouTube API Terms of Service: Direct access to audio streams is generally not permitted without using their official
+        //    iframe player API, which embeds a full video player, not just audio.
+        // 3. API Key Security: Embedding an API key directly in client-side JavaScript is insecure as it can be easily extracted and misused.
+        // For these reasons, full YouTube video/audio playback would typically require a server-side proxy
+        // or more complex integrations that are beyond the scope of a single client-side HTML file.
+        // The current message serves to inform the user about this limitation.
+        if (youtubeUrl) {
+            youtubeMessage.textContent = "Direct YouTube video playback is not supported due to API restrictions and browser security policies. Please use the search function to find songs.";
+            youtubeMessage.style.display = 'block';
+        } else {
+            youtubeMessage.textContent = "Please paste a YouTube link.";
+            youtubeMessage.style.display = 'block';
+        }
+        setTimeout(() => {
+            youtubeMessage.style.display = 'none';
+        }, 5000); // Message disappears after 5 seconds
     });
 
 
@@ -1791,7 +2226,7 @@
     nextBtn.addEventListener('click', playNextSong);
     prevBtn.addEventListener('click', playPrevSong);
     repeatBtn.addEventListener('click', toggleRepeat);
-    favouriteBtn.addEventListener('click', toggleFavourite);
+    favouriteBtn.addEventListener('click', () => toggleFavourite()); // No ID needed for big player toggle
     playerProgressContainer.addEventListener('click', setProgress);
 
     // Audio events
@@ -1816,7 +2251,7 @@
 
     // Clicking mini player opens big player
     miniPlayer.addEventListener('click', (e) => {
-      if (!e.target.closest('#miniPlayPauseBtn')) {
+      if (!e.target.closest('#miniPlayPauseBtn') && currentSong) { // Ensure there's a song to play
         showPlayerPage(true, true);
       }
     });
@@ -1846,10 +2281,105 @@
     });
 
 
+    // ----- Player Page Scroll/Swipe to Minimize (Existing and New Image Swipe) -----
+    let touchStartY = 0;
+    let touchStartX = 0;
+    let isPotentialVerticalSwipe = false;
+    const swipeThresholdY = 50;
+    const maxSwipeDistanceX = 30; // Max horizontal movement for a vertical swipe
+
+    let imgTouchStartX = 0;
+    const imgSwipeThresholdX = 50; // Min horizontal swipe for next/prev song
+
+    function minimizePlayer() {
+      if (playerPage.classList.contains('active')) {
+        showPlayerPage(false, false);
+        showMiniPlayer(true);
+        const currentState = history.state || { page: activePage, playerVisible: false, miniPlayerActive: true };
+        currentState.playerVisible = false;
+        currentState.miniPlayerActive = true;
+        history.replaceState(currentState, '', `#${activePage}`);
+        console.log("History: Replaced state to hide player.");
+      }
+    }
+
+    // Existing: Player page vertical swipe down to minimize
+    playerPage.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+        isPotentialVerticalSwipe = true;
+      }
+    }, { passive: true });
+
+    playerPage.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1 && isPotentialVerticalSwipe) {
+        const deltaY = e.touches[0].clientY - touchStartY;
+        const deltaX = e.touches[0].clientX - touchStartX;
+
+        if (deltaY > swipeThresholdY && Math.abs(deltaX) < maxSwipeDistanceX) {
+          minimizePlayer();
+          isPotentialVerticalSwipe = false; // Reset to prevent multiple triggers
+        } else if (Math.abs(deltaX) >= maxSwipeDistanceX || deltaY < -20) {
+          isPotentialVerticalSwipe = false; // Not a vertical swipe down
+        }
+      }
+    }, { passive: false }); // Use passive: false for touchmove to allow preventDefault
+
+    playerPage.addEventListener('touchend', (e) => {
+      isPotentialVerticalSwipe = false;
+      touchStartY = 0;
+      touchStartX = 0;
+    });
+
+    playerPage.addEventListener('touchcancel', (e) => {
+      isPotentialVerticalSwipe = false;
+      touchStartY = 0;
+      touchStartX = 0;
+    });
+
+    // Existing: Player page wheel scroll down to minimize
+    playerPage.addEventListener('wheel', (e) => {
+      if (e.deltaY > 20) { // Scrolling down
+        minimizePlayer();
+      }
+    }, { passive: true });
+
+
+    // New: Player Song Image horizontal swipe for next/prev song
+    playerSongImage.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            imgTouchStartX = e.touches[0].clientX;
+        }
+    }, { passive: true }); // Passive true because we only read, not prevent default here
+
+    playerSongImage.addEventListener('touchend', (e) => {
+        if (e.changedTouches.length === 1) {
+            const deltaX = e.changedTouches[0].clientX - imgTouchStartX;
+            if (deltaX < -imgSwipeThresholdX) { // Swiped left
+                playNextSong();
+            } else if (deltaX > imgSwipeThresholdX) { // Swiped right
+                playPrevSong();
+            }
+        }
+    });
+
+    // New: Player Song Image wheel scroll for next/prev song (Horizontal scroll on trackpad/mouse)
+    playerSongImage.addEventListener('wheel', (e) => {
+        e.preventDefault(); // Prevent page scrolling
+        if (e.deltaX > 0) { // Scrolling right (visual) -> next song
+            playNextSong();
+        } else if (e.deltaX < 0) { // Scrolling left (visual) -> previous song
+            playPrevSong();
+        }
+    }, { passive: false }); // Passive false to allow preventDefault
+
+
     // ----- Initialization -----
     document.addEventListener('DOMContentLoaded', async () => {
       await openIndexedDB(); // Open IndexedDB when DOM is ready
       loadFavouritesFromStorage();
+      loadSearchHistory(); // Load search history on startup
 
       const initialPage = window.location.hash.substring(1) || 'homePage';
       navigateToPage(initialPage, false);
@@ -1871,9 +2401,14 @@
     function applyThemeColor(color) {
       document.documentElement.style.setProperty('--theme-color', color);
       document.documentElement.style.setProperty('--theme-second-color', color);
-      document.getElementById('playerControlsPrimary').querySelectorAll('i').forEach(icon => {
+      // Update the inline color for player controls primary buttons if they were directly set
+      // This part might be redundant if the CSS variable is used directly everywhere.
+      // But keeping it for robustness if there's a mix.
+      document.getElementById('playerControlsPrimary').querySelectorAll('.player-ctrl-btn i').forEach(icon => {
         icon.style.color = color;
       });
+      // Also update the mini player play/pause button color
+      miniPlayPauseBtn.style.color = color; // Apply theme color to mini-player button
     }
 
     const savedThemeColor = localStorage.getItem('themeColor');
@@ -1913,67 +2448,6 @@
         localStorage.setItem('themeColor', color);
       });
     });
-
-    // Gesture controls for playerPage (swipe down to minimize)
-    let touchStartY = 0;
-    let touchStartX = 0;
-    let isPotentialVerticalSwipe = false;
-    const swipeThresholdY = 50;
-    const maxSwipeDistanceX = 30;
-
-    function minimizePlayer() {
-      if (playerPage.classList.contains('active')) {
-        showPlayerPage(false, false);
-        showMiniPlayer(true);
-        const currentState = history.state || { page: activePage, playerVisible: false, miniPlayerActive: true };
-        currentState.playerVisible = false;
-        currentState.miniPlayerActive = true;
-        history.replaceState(currentState, '', `#${activePage}`);
-        console.log("History: Replaced state to hide player.");
-      }
-    }
-
-    playerPage.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1) {
-        touchStartY = e.touches[0].clientY;
-        touchStartX = e.touches[0].clientX;
-        isPotentialVerticalSwipe = true;
-      }
-    }, { passive: true });
-
-    playerPage.addEventListener('touchmove', (e) => {
-      if (e.touches.length === 1 && isPotentialVerticalSwipe) {
-        const deltaY = e.touches[0].clientY - touchStartY;
-        const deltaX = e.touches[0].clientX - touchStartX;
-
-        if (deltaY > swipeThresholdY && Math.abs(deltaX) < maxSwipeDistanceX) {
-          minimizePlayer();
-          isPotentialVerticalSwipe = false;
-        } else if (Math.abs(deltaX) >= maxSwipeDistanceX || deltaY < -20) {
-          isPotentialVerticalSwipe = false;
-        }
-      }
-    }, { passive: false });
-
-
-    playerPage.addEventListener('touchend', (e) => {
-      isPotentialVerticalSwipe = false;
-      touchStartY = 0;
-      touchStartX = 0;
-    });
-
-    playerPage.addEventListener('touchcancel', (e) => {
-      isPotentialVerticalSwipe = false;
-      touchStartY = 0;
-      touchStartX = 0;
-    });
-
-
-    playerPage.addEventListener('wheel', (e) => {
-      if (e.deltaY > 20) {
-        minimizePlayer();
-      }
-    }, { passive: true });
 
   </script>
 </body>
