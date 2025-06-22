@@ -5148,16 +5148,6 @@ document.querySelectorAll('a').forEach(function(link) {
     });
 });
 
-// Extra: Make images unselectable and undraggable
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('img').forEach(function(img) {
-        img.setAttribute('draggable', 'false');
-        img.style.pointerEvents = 'none';
-        img.style.userSelect = 'none';
-    });
-
-    document.body.style.userSelect = 'none'; // prevent text selection
-});
 
     </script>
     </body>
