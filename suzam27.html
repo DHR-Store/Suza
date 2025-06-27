@@ -5263,9 +5263,60 @@
     }, { passive: false });
     
     // ----- NEW: Static Data for Home Page -----
-     const genres = [
+    const genres = [
       { name: 'Pop', color: '#8d67ab', backgroundImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
       { name: 'Chill', color: '#527a92', backgroundImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Rock', color: '#e8115b', backgroundImage: 'https://images.unsplash.com/photo-1586443486689-dc61a6ec9bd3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Classical', color: '#ba5d07', backgroundImage: 'https://images.unsplash.com/photo-1519340333755-d4d4b6d3c3d2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Arabic', color: '#b491c8', backgroundImage: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Commute', color: '#e13300', backgroundImage: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Bollywood', color: '#148a08', backgroundImage: 'https://images.unsplash.com/photo-1622466551091-42fdc8d4787c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Romance', color: '#d84000', backgroundImage: 'https://images.unsplash.com/photo-1526045612212-70caf35c14df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Hip-Hop', color: '#f0c000', backgroundImage: 'https://images.unsplash.com/photo-1550639524-a2b7094a9d1e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Indie', color: '#00b3ff', backgroundImage: 'https://images.unsplash.com/photo-1511376777868-611b54f68947?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Dance', color: '#ff6f00', backgroundImage: 'https://images.unsplash.com/photo-1531497865144-0464ef8fb9c9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Devotional', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1588854337221-4b7f709b07c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Punjabi', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1572099606225-ec07b7e2a27e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Tamil', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1624707071426-07f0877df929?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Telugu', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1579548122080-c5f636f33050?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Kannada', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1578221446535-744b5f1eaa0b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Malayalam', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1589987607627-0572c16a20ab?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Bengali', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1551271030-48c5c539a5c3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Gujarati', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1582108303740-84ff7b7be71c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Marathi', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1570458436416-81fc1b7f0e8d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Haryanvi', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1611080626919-7a9e9f3d6a23?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Rajasthani', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1609433329571-e60c68066c3f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Bhojpuri', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1552928880-a48ae8e1c55c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Odia', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1626262208537-e62f63aa2b6c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Assamese', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1598387840829-12baea0f3e6f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Urdu', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1573164574014-cb89e39749b4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Ghazals', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1560944527-e82f951a1606?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Sufi', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1585241581523-fbfe1f1dc734?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Folk', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Instrumental', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1598387840829-12baea0f3e6f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'World Music', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1508051123996-69f8caf4891b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Soundtracks', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Fitness', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Meditation', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1554357452-9086ab53d9a3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Sleep', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1589820296154-d77a1e8cfc07?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Nature Sounds', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1496317556649-f930d733eea0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Podcasts', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1582134266007-52f8b1a1cbdc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Audiobooks', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Jpop', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'J-pop', color: '#ff4083', backgroundImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'K-pop', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1542751110-97427bbecf20?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Cpop', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1609591066336-e80181e18a42?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Latin', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1598387841473-74978e6c1f33?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Reggae', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1588065871357-37862f92ddea?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Blues', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Jazz', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1583573636262-2f72c93d837d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Country', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Funk', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1521747116042-5a810fda9664?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHxwaG90by1wYWdlfHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Soul', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHxwaG90by1wYWdlfHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Disco', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHxwaG90by1wYWdlfHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Experimental', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHxwaG90by1wYWdlfHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Ambient', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHxwaG90by1wYWdlfHx8&auto=format&fit=crop&w=400&q=80' },
+      { name: 'Lo-fi', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHxwaG90by1wYWdlfHx8&auto=format&fit=crop&w=400&q=80' },
       { name: 'Chiptune', color: '#ff4081', backgroundImage: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHxwaG90by1wYWdlfHx8&auto=format&fit=crop&w=400&q=80' }
     
     ];
@@ -5273,11 +5324,56 @@
     const topArtists = [
         { name: 'Alka Yagnik', id: 'Q466826', image: 'https://c.saavncdn.com/artists/Alka_Yagnik_002_20180608064738_500x500.jpg', subs: '1.38M subs' },
         { name: 'Udit Narayan', id: '459392', image: 'https://c.saavncdn.com/artists/Udit_Narayan_005_20200828033353_500x500.jpg', subs: '3.11M subs' },
+        { name: 'Arijit Singh', id: '459394', image: 'https://c.saavncdn.com/artists/Arijit_Singh_500x500.jpg', subs: '15.1M subs' },
+        { name: 'Shreya Ghoshal', id: '459395', image: 'https://c.saavncdn.com/artists/Shreya_Ghoshal_500x500.jpg', subs: '7.8M subs' },
+        { name: 'Sonu Nigam', id: '459396', image: 'https://c.saavncdn.com/artists/Sonu_Nigam_500x500.jpg', subs: '4.2M subs' },
+        { name: 'Kumar Sanu', id: '459397', image: 'https://c.saavncdn.com/artists/Kumar_Sanu_500x500.jpg', subs: '1.2M subs' },
+        { name: 'Mohit Chauhan', id: '459398', image: 'https://c.saavncdn.com/artists/Mohit_Chauhan_500x500.jpg', subs: '1.5M subs' },
+        { name: 'Atif Aslam', id: '459399', image: 'https://c.saavncdn.com/artists/Atif_Aslam_500x500.jpg', subs: '9.3M subs' },
+        { name: 'Armaan Malik', id: '459400', image: 'https://c.saavncdn.com/artists/Armaan_Malik_500x500.jpg', subs: '6.7M subs' },
+        { name: 'Neha Kakkar', id: '459401', image: 'https://c.saavncdn.com/artists/Neha_Kakkar_500x500.jpg', subs: '8.1M subs' },
+        { name: 'Badshah', id: '459402', image: 'https://c.saavncdn.com/artists/Badshah_500x500.jpg', subs: '10.2M subs' },
+        { name: 'Guru Randhawa', id: '459403', image: 'https://c.saavncdn.com/artists/Guru_Randhawa_500x500.jpg', subs: '5.4M subs' },
+        { name: 'Jubin Nautiyal', id: '459404', image: 'https://c.saavncdn.com/artists/Jubin_Nautiyal_500x500.jpg', subs: '3.8M subs' },
+        { name: 'Tanishk Bagchi', id: '459405', image: 'https://c.saavncdn.com/artists/Tanishk_Bagchi_500x500.jpg', subs: '2.1M subs' },
+        { name: 'Himesh Reshammiya', id: '459406', image: 'https://c.saavncdn.com/artists/Himesh_Reshammiya_500x500.jpg', subs: '1.9M subs' },
+        { name: 'Pritam Chakraborty', id: '459407', image: 'https://c.saavncdn.com/artists/Pritam_Chakraborty_500x500.jpg', subs: '2.5M subs' },
+        { name: 'Amaal Mallik', id: '459408', image: 'https://c.saavncdn.com/artists/Amaal_Mallik_500x500.jpg', subs: '1.6M subs' },
+        { name: 'Vishal-Shekhar', id: '459409', image: 'https://c.saavncdn.com/artists/Vishal-Shekhar_500x500.jpg', subs: '1.3M subs' },
+        { name: 'Salim-Sulaiman', id: '459410', image: 'https://c.saavncdn.com/artists/Salim-Sulaiman_500x500.jpg', subs: '1.1M subs' },
+        { name: 'Shankar-Ehsaan-Loy', id: '459411', image: 'https://c.saavncdn.com/artists/Shankar-Ehsaan-Loy_500x500.jpg', subs: '900K subs' },
+        { name: 'A.R. Rahman', id: '459412', image: 'https://c.saavncdn.com/artists/A.R._Rahman_500x500.jpg', subs: '2.8M subs' },
+        { name: 'Lata Mangeshkar', id: '459413', image: 'https://c.saavncdn.com/artists/Lata_Mangeshkar_500x500.jpg', subs: '3.5M subs' },
+        { name: 'Kishore Kumar', id: '459414', image: 'https://c.saavncdn.com/artists/Kishore_Kumar_500x500.jpg', subs: '2.2M subs' },
+        { name: 'Mohammad Rafi', id: '459415', image: 'https://c.saavncdn.com/artists/Mohammad_Rafi_500x500.jpg', subs: '1.7M subs' },
+        { name: 'Mukesh', id: '459416', image: 'https://c.saavncdn.com/artists/Mukesh_500x500.jpg', subs: '1.4M subs' },
+        { name: 'Geeta Dutt', id: '459417', image: 'https://c.saavncdn.com/artists/Geeta_Dutt_500x500.jpg', subs: '800K subs' },
+        { name: 'Asha Bhosle', id: '459418', image: 'https://c.saavncdn.com/artists/Asha_Bhosle_500x500.jpg', subs: '1.9M subs' },
+        { name: 'Kumar Gandharva', id: '459419', image: 'https://c.saavncdn.com/artists/Kumar_Gandharva_500x500.jpg', subs: '600K subs' },
+        { name: 'Bhupen Hazarika', id: '459420', image: 'https://c.saavncdn.com/artists/Bhupen_Hazarika_500x500.jpg', subs: '500K subs' },
+        { name: 'Jagjit Singh', id: '459421', image: 'https://c.saavncdn.com/artists/Jagjit_Singh_500x500.jpg', subs: '700K subs' },
+        { name: 'Ghulam Ali', id: '459422', image: 'https://c.saavncdn.com/artists/Ghulam_Ali_500x500.jpg', subs: '400K subs' },
+        { name: 'Kailash Kher', id: '459423', image: 'https://c.saavncdn.com/artists/Kailash_Kher_500x500.jpg', subs: '1.1M subs' },
+        { name: 'Rahat Fateh Ali Khan', id: '459424', image: 'https://c.saavncdn.com/artists/Rahat_Fateh_Ali_Khan_500x500.jpg', subs: '2.3M subs' },
+        { name: 'Armaan Bedil', id: '459425', image: 'https://c.saavncdn.com/artists/Armaan_Bedil_500x500.jpg', subs: '300K subs' },
+        { name: 'Sidhu Moosewala', id: '459426', image: 'https://c.saavncdn.com/artists/Sidhu_Moosewala_500x500.jpg', subs: '4.5M subs' },
+        { name: 'Diljit Dosanjh', id: '459427', image: 'https://c.saavncdn.com/artists/Diljit_Dosanjh_500x500.jpg', subs: '3.2M subs' },
+        { name: 'Gippy Grewal', id: '459428', image: 'https://c.saavncdn.com/artists/Gippy_Grewal_500x500.jpg', subs: '1.8M subs' },
+        { name: 'Amrinder Gill', id: '459429', image: 'https://c.saavncdn.com/artists/Amrinder_Gill_500x500.jpg', subs: '900K subs' },
+        { name: 'Ninja', id: '459430', image: 'https://c.saavncdn.com/artists/Ninja_500x500.jpg', subs: '600K subs' },
+        { name: 'Jass Manak', id: '459431', image: 'https://c.saavncdn.com/artists/Jass_Manak_500x500.jpg', subs: '2.1M subs' },
+        { name: 'Karan Aujla', id: '459432', image: 'https://c.saavncdn.com/artists/Karan_Aujla_500x500.jpg', subs: '3.6M subs' },
+        { name: 'Naseebo Lal', id: '459433', image: 'https://c.saavncdn.com/artists/Naseebo_Lal_500x500.jpg', subs: '1.5M subs' },
+        { name: 'Abrar-ul-Haq', id: '459434', image: 'https://c.saavncdn.com/artists/Abrar-ul-Haq_500x500.jpg', subs: '800K subs' },
+        { name: 'Ali Zafar', id: '459435', image: 'https://c.saavncdn.com/artists/Ali_Zafar_500x500.jpg', subs: '2.4M subs' },
+        { name: 'Fariha Pervez', id: '459436', image: 'https://c.saavncdn.com/artists/Fariha_Pervez_500x500.jpg', subs: '700K subs' },
+        { name: 'Hadiqa Kiani', id: '459437', image: 'https://c.saavncdn.com/artists/Hadiqa_Kiani_500x500.jpg', subs: '1.3M subs' },
+        { name: 'Abida Parveen', id: '459438', image: 'https://c.saavncdn.com/artists/Abida_Parveen_500x500.jpg', subs: '1.8M subs' },
         { name: 'Nazia Hassan', id: '459439', image: 'https://c.saavncdn.com/artists/Nazia_Hassan_500x500.jpg', subs: '900K subs' }
 
 
     ];
-
+        
     // ----- NEW: Functions to populate Home Page -----
     function displayGenres() {
         genreGrid.innerHTML = '';
@@ -5296,7 +5392,8 @@
     
     function displayTopArtists() {
         topArtistsList.innerHTML = '';
-        topArtists.forEach((artist, index) => {
+        topArtists.forEach((artist, index) =>
+      {
             const li = document.createElement('li');
             li.className = 'artist-item';
             li.innerHTML = `
