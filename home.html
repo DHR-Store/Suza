@@ -2,447 +2,641 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Movie & TV Show Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SUZA - Home</title>
   
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+  <!-- Bootstrap & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
   <!-- Custom CSS -->
   <style>
-    /* Custom Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
-    * {
-      font-family: 'Poppins', sans-serif;
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      scroll-behavior: smooth;
+    :root {
+      --theme-color: #00c3ff; /* Default primary color (cyan-blue) */
+      --theme-second-color: #ff5722; /* Default secondary color (orange-red) */
+      --background-dark: #0f0f0f;
+      --card-background: #1e1e1e;
+      --text-light: #f1f1f1;
+      --text-muted: #aaaaaa;
+      --border-color: #333;
+      --gradient-main: linear-gradient(90deg, var(--theme-color), var(--theme-second-color));
+      --gradient-alt: linear-gradient(135deg, #6a11cb, #2575fc); /* Example secondary gradient */
     }
-    /* Default mobile styling */
-body.mobile-mode .container {
-  max-width: 100%;
-  padding: 10px;
-}
 
-/* Desktop Mode Styling (browser spoofed or rotated device or wide layout) */
-body.desktop-mode .container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* Optional: Adjust nav bar or hero section in desktop mode */
-body.desktop-mode nav.navbar {
-  justify-content: center;
-  gap: 40px;
-}
-
-body.desktop-mode #hero {
-  height: 90vh;
-  padding: 40px;
-}
+    /* Set a solid black background for the entire body */
+    body {
+      font-family: 'Inter', sans-serif; /* Primary font */
+      background-color: black; /* Solid black background */
+      background-image: none; /* Ensure no background image/gradient */
+      background-attachment: fixed;
+      color: var(--text-light);
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      overflow-x: hidden;
+      padding-bottom: 80px; /* Space for bottom nav */
+    }
     
-
-    body.bg-dark {
-      background-color: #000;
-      color: #fff;
-      webkit-user-select: none; /* Chrome, Safari */
-      -moz-user-select: none;    /* Firefox */
-      -ms-user-select: none;     /* IE10+ */
-      user-select: none;         /* Standard syntax */
-    }
     img {
       -webkit-user-drag: none;
       cursor: default;
     }
 
-        /* Hamburger Button inside Hero Section */
-    .hamburger-btn {
-      position: absolute;
-      top: 20px;
-      left: 40px;
-      background: transparent;
-      border: none;
-      border-radius: 50%;
-      padding: 10px;
-      z-index: 30;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-    }
-    .hamburger-btn:hover {
-      transform: scale(1.1);
-    }
-    .hamburger-btn i {
-      font-size: 1.8rem;
-      color: #fff;
+    /* General containers */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
-        /* News Button inside Hero Section */
-    .news-btn {
+    /* Stylish section titles with icons */
+    .stylish-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 25px;
+      margin-top: 30px;
+      transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .stylish-text i {
+        font-size: 2rem;
+        -webkit-text-fill-color: var(--theme-color);
+        text-shadow: 0 0 8px rgba(var(--theme-color-rgb), 0.5); /* Subtle glow */
+    }
+
+    /* Header for sections with "More" link */
+    .stylish-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 15px;
+    }
+    .more-link {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.3s ease, transform 0.2s ease;
+        padding-bottom: 5px;
+        display: flex;
+        align-items: center;
+    }
+    .more-link:hover {
+        color: var(--theme-color);
+        transform: translateX(5px);
+    }
+    .more-link i {
+        font-size: 0.9em;
+        margin-left: 5px;
+        transition: transform 0.2s ease;
+    }
+    .more-link:hover i {
+        transform: translateX(3px);
+    }
+
+    /* Hamburger and News Buttons (Mobile only) */
+    .top-action-btn {
       position: absolute;
       top: 20px;
-      right: 20px;
-      background: transparent;
+      background: rgba(0, 0, 0, 0.7); /* Slightly darker */
+      backdrop-filter: blur(5px);
       border: none;
       border-radius: 50%;
-      padding: 10px;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       z-index: 30;
-      transition: transform 0.3s ease, opacity 0.3s ease;
+      transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
-    .news-btn:hover {
+    .top-action-btn:hover {
       transform: scale(1.1);
+      background: rgba(0, 0, 0, 0.9);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
     }
-    .news-btn i {
-      font-size: 1.8rem;
-      color: #fff;
+    .top-action-btn i {
+      font-size: 1.6rem;
+      color: var(--text-light);
     }
-    
-    
-    /* Offcanvas Sidebar Enhancements with Responsive Width */
-    
-    /* When a provider link is active, apply a glow effect */
+    .hamburger-btn { left: 20px; }
+    .news-btn { right: 20px; }
+
+    /* Offcanvas Sidebar Enhancements */
     .offcanvas-start {
-  /* Default for smaller screens */
-  width: 50px;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(5px);
-}
+      width: 250px;
+      background: rgba(0, 0, 0, 0.98); /* Almost opaque */
+      backdrop-filter: blur(15px); /* Stronger blur */
+      border-right: 1px solid var(--border-color);
+      box-shadow: 5px 0 20px rgba(0,0,0,0.7);
+    }
+    .offcanvas-header { border-bottom: 1px solid var(--border-color); padding: 20px; }
+    .offcanvas-header h5 { color: var(--text-light); font-family: 'Poppins', sans-serif; font-weight: 600; }
+    .offcanvas-body ul { padding-left: 0; list-style: none; }
+    .offcanvas-body ul li { margin-bottom: 12px; }
+    .offcanvas-body ul li a {
+      display: flex;
+      align-items: center;
+      background: var(--card-background);
+      border: 1px solid rgba(255, 255, 255, 0.15); /* Stronger border */
+      border-radius: 10px;
+      padding: 12px 15px;
+      color: var(--text-light);
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .offcanvas-body ul li a.active {
+      background: var(--gradient-main);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 0 20px rgba(var(--theme-color-rgb), 0.7); /* More prominent glow */
+      transform: translateX(5px);
+    }
+    .offcanvas-body ul li a:hover {
+      background: var(--gradient-alt);
+      color: #fff;
+      transform: translateX(3px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    }
+    .provider-icon {
+      margin-right: 10px;
+      font-size: 1.3rem;
+      color: var(--text-light);
+      transition: color 0.3s ease;
+    }
+    .offcanvas-body ul li a.active .provider-icon {
+        color: #fff;
+    }
 
-/* Increase width for larger screens */
-@media (min-width: 700px) {
-  .offcanvas-start {
-    width: 150px;
-  }
-}
+    /* HERO SECTION */
+    #hero {
+      position: relative;
+      height: 85vh; /* Even taller hero section */
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      transition: background 0.7s ease-in-out; /* Slower transition */
+      overflow: hidden;
+      touch-action: pan-y;
+      border-radius: 0 0 35px 35px; /* More rounded bottom corners */
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+      animation: heroBackgroundPan 60s infinite alternate linear; /* Subtle pan animation */
+    }
+    @keyframes heroBackgroundPan {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 100% 100%; }
+    }
 
-.offcanvas-header h5 {
-  color: #fff;
-}
-
-.offcanvas-body ul {
-  padding-left: 0;
-}
-
-.offcanvas-body ul li {
-  margin-bottom: 10px;
-}
-    /* Provider link styling */
-.offcanvas-body ul li a {
-  display: block;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  padding: 8px 10px;
-  color: #fff;
-  font-size: 1rem;
-  text-decoration: none;
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-/* Active provider link styling with a glow effect */
-.offcanvas-body ul li a.active {
-  background: rgba(0, 255, 255, 0.3);
-  color: #fff;
-  font-weight: bold;
-  box-shadow: 0 0 10px var(--theme-color, #00ffff);
-}
-
-/* Hover state for provider links */
-.offcanvas-body ul li a:hover {
-  background: rgba(0, 255, 255, 0.2);
-  color: var(--theme-color, #00ffff);
-}
-
-/* Provider icon styling */
-.provider-icon {
-  margin-right: 6px;
-  color: var(--theme-color, #00ffff);
-}
-
-/* HERO SECTION */
-#hero {
-  position: relative;
-  height: 70vh;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: white;
-  transition: background 0.5s ease;
-  overflow: hidden;
-  touch-action: pan-y;
-}
-
-/* Semi-transparent overlay for contrast */
-#hero-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 10;
-}
-
-/* Hero Content & Animation */
-#hero-content {
-  position: relative;
-  z-index: 20;
-  opacity: 0;
-  transform: translateY(30px);
-  animation: fadeInUp 1s forwards;
-}
-
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-#hero-title {
-  font-size: 2.8rem;
-  font-weight: 600;
-  letter-spacing: 1px;
-  margin-bottom: 0.5rem;
-}
-
-#hero-rating {
-  font-size: 1.2rem;
-  font-weight: 500;
-  margin-bottom: 1rem;
-}
-
-/* Hero Button */
-.hero-btn {
-  padding: 12px 25px;
-  background: linear-gradient(90deg, var(--theme-color, #00ffff), var(--theme-second-color, #00d4ff));
-  color: black;
-  font-size: 16px;
-  border: none;
-  border-radius: 25px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 1rem;
-}
-
-.hero-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 15px var(--theme-color, rgba(0, 255, 255, 0.8));
-}
-
-/* Dot Indicators */
-#hero-dots {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-.hero-dot {
-  width: 12px;
-  height: 12px;
-  background: #ccc;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-.hero-dot.active {
-  background: var(--theme-color, cyan);
-}
-
-
-        /* Dark blur/gradient at bottom of hero */
-    #hero::after {
-      content: "";
+    #hero-overlay {
       position: absolute;
-      bottom: 0;
+      top: 0;
       left: 0;
       width: 100%;
-      height: 150px; /* Adjust height to your preference */
-      background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.8));
-      z-index: 11;
-      pointer-events: none;
+      height: 100%;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+      z-index: 10;
+    }
+    #hero-content {
+      position: relative;
+      z-index: 20;
+      opacity: 0;
+      transform: translateY(70px);
+      animation: fadeInUp 1.2s forwards cubic-bezier(0.2, 0.8, 0.2, 1); /* Slower, smoother fade in */
+      padding: 0 25px;
+      max-width: 900px; /* Wider content area */
+      display: flex; /* Use flexbox for content alignment */
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Removed #hero-mini-poster styles */
+    #hero-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 4.2rem; /* Even larger hero title */
+      font-weight: 700;
+      letter-spacing: 3px; /* Wider spacing */
+      margin-bottom: 1rem;
+      text-shadow: 0 8px 25px rgba(0,0,0,0.9); /* Stronger shadow */
+      line-height: 1.1;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #hero-synopsis {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        max-height: 80px; /* Limit synopsis height */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Show max 3 lines */
+        -webkit-box-orient: vertical;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    #hero-rating {
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    #hero-rating i {
+        color: gold;
+        font-size: 1.4em;
+        filter: drop-shadow(0 0 5px rgba(255,215,0,0.7)); /* Star glow */
+    }
+    .hero-btn {
+      padding: 18px 40px; /* Even larger button */
+      background: var(--gradient-main);
+      color: #fff;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 35px; /* Even more rounded */
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      animation: pulse 2s infinite ease-in-out; /* Subtle pulse animation */
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+        50% { transform: scale(1.03); box-shadow: 0 15px 45px rgba(0,0,0,0.9); }
+        100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+    }
+    .hero-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.9);
+      background: var(--gradient-alt);
+      animation: none; /* Stop pulse on hover */
+    }
+    .hero-btn i {
+        font-size: 1.6em;
+    }
+
+    /* Dot Indicators */
+    #hero-dots {
+      /* Removed absolute positioning, now part of flex column */
+      display: flex;
+      justify-content: center;
+      gap: 12px; /* Wider gap */
+      z-index: 25;
+      margin-top: 20px; /* Add margin to separate from the button */
+    }
+    .hero-dot {
+      width: 16px; /* Even larger dots */
+      height: 16px;
+      background: rgba(255, 255, 255, 0.4); /* More transparent when inactive */
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    .hero-dot.active {
+      background: var(--theme-color);
+      border-color: var(--theme-color);
+      transform: scale(1.3); /* More pronounced active state */
+      box-shadow: 0 0 15px rgba(var(--theme-color-rgb), 0.8); /* Glow effect */
     }
 
     /* Horizontal Scroll Sections */
     .horizontal-scroll {
       display: flex;
-      overflow-x: auto;
-      padding: 10px 0;
-      gap: 12px;
+      overflow-x: scroll;
+      padding: 15px 0;
+      gap: 25px; /* Even wider gap */
       scroll-snap-type: x mandatory;
-      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--theme-color) var(--background-dark);
     }
-    .horizontal-scroll::-webkit-scrollbar {
-      display: none;
+    .horizontal-scroll::-webkit-scrollbar { height: 10px; } /* Thicker scrollbar */
+    .horizontal-scroll::-webkit-scrollbar-track { background: var(--card-background); border-radius: 10px; }
+    .horizontal-scroll::-webkit-scrollbar-thumb {
+      background-color: var(--theme-color);
+      border-radius: 10px;
+      border: 3px solid var(--background-dark); /* Thicker border for thumb */
     }
+
     .scroll-item {
       flex: 0 0 auto;
-      width: 100px;
-      scroll-snap-align: center;
-      border-radius: 10px;
+      width: 180px; /* Even wider items */
+      scroll-snap-align: start;
+      border-radius: 20px; /* More rounded */
       overflow: hidden;
       cursor: pointer;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
+      background-color: var(--card-background);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5); /* Stronger shadow */
+      padding-bottom: 12px;
+      position: relative; /* For shimmer effect */
     }
+    .scroll-item::before { /* Shimmer effect for lazy loaded images */
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 240px; /* Match image height */
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.05), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.5s ease-out;
+        z-index: 1;
+    }
+    .scroll-item.loading::before {
+        transform: translateX(100%);
+        animation: shimmer 1.5s infinite linear;
+    }
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
     .scroll-item img {
       width: 100%;
-      border-radius: 8px;
-      transition: transform 0.3s ease;
+      height: 270px; /* Fixed height for consistent images */
+      object-fit: cover;
+      border-radius: 20px 20px 0 0;
+      transition: transform 0.4s ease-out; /* Slower, smoother zoom */
     }
     .scroll-item:hover {
+      transform: translateY(-12px); /* More pronounced lift */
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    }
+    .scroll-item:hover img {
       transform: scale(1.1);
     }
-        /* Attractive gradient text style */
-    .stylish-text {
-  font-family: 'Poppins', sans-serif;
-  font-size: 2rem;
-  font-weight: 600;
-  background: linear-gradient(45deg, var(--theme-color, #6a11cb), var(--theme-second-color, #2575fc));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 20px;
-  transition: background 0.3s ease;
+    .scroll-item p {
+      font-size: 15px; /* Slightly larger text */
+      text-align: center;
+      padding: 10px 8px 0;
+      font-weight: 600; /* Bolder text */
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-     .stylish1-text {
-      font-family: 'Poppins', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 50;
-      background: linear-gradient(45deg, var(--theme-color, #6a11cb), var(--theme-second-color, #2575fc));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      top: 1px;
-      margin-left: 250px;
-            }
-        /* ADDED: container background black */
-    .container.mt-4 {
-      background-color: #000; 
-      padding-top: 20px;
-      padding-bottom: 20px;
-      /* If there's any default margin from bootstrap, override it: */
-      margin-top: 0 !important;
-    }
-       /* Bottom Navigation Bar */
-nav.navbar {
-  background: transparent;
-  backdrop-filter: blur(8px);
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 0;
-  border-top: 1px solid #444;
-  transition: transform 0.3s ease, background-color 0.3s ease;
-}
 
-/* Normal Nav Link */
-.nav-link {
-  text-align: center;
-  color: var(--theme-color, white); /* Use theme color */
-  transition: transform 0.3s ease, color 0.3s ease;
-  padding: 5px;
-  border-radius: 10px;
-  font-size: 14px;
-}
-
-/* Icon inside Nav Link */
-.nav-link i {
-  font-size: 24px;
-}
-
-/* Hover Effect */
-.nav-link:hover {
-  color: var(--theme-color, cyan); /* Dynamic hover color */
-  transform: scale(1.1);
-}
-
-/* Active Link */
-.nav-link.active {
-  color: var(--theme-color, cyan); /* Dynamic active color */
-  font-weight: bold;
-}
-
-    @media (min-width: 768px) {
-  #bottom-nav {
-    display: none;
-  }
-}
-    
-
-    
-        #notification {
+    /* Bottom Navigation Bar (Mobile only) */
+    nav.navbar {
+      background: rgba(0, 0, 0, 0.9); /* Darker, more opaque */
+      backdrop-filter: blur(15px); /* Stronger blur */
       position: fixed;
-      bottom: 30px;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 15px 0; /* More padding */
+      border-top: 1px solid var(--border-color);
+      transition: transform 0.3s ease;
+      z-index: 998;
+      box-shadow: 0 -8px 25px rgba(0,0,0,0.7);
+    }
+    .nav-link {
+      text-align: center;
+      color: var(--text-light);
+      transition: all 0.3s ease;
+      padding: 12px 18px; /* More padding */
+      border-radius: 15px; /* More rounded */
+      font-size: 16px; /* Larger font */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      position: relative; /* For active glow */
+    }
+    .nav-link i {
+      font-size: 30px; /* Larger icons */
+      margin-bottom: 6px;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--theme-color);
+      transform: scale(1.1); /* More pronounced scale */
+      background-color: rgba(var(--theme-color-rgb), 0.15); /* More visible background */
+    }
+    .nav-link.active {
+        font-weight: 600;
+        text-shadow: 0 0 10px rgba(var(--theme-color-rgb), 0.5); /* Active text glow */
+    }
+    .nav-link.active::after { /* Active indicator */
+        content: '';
+        position: absolute;
+        bottom: 5px;
+        width: 30px;
+        height: 4px;
+        background: var(--gradient-main);
+        border-radius: 2px;
+        animation: activeUnderline 0.5s forwards;
+    }
+    @keyframes activeUnderline {
+        from { width: 0px; }
+        to { width: 30px; }
+    }
+
+    /* Desktop Mode Sidebar Navigation (Replaces Bottom Nav) */
+    body.desktop-mode .nav_bar_container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 70px; /* Thicker when collapsed */
+      height: 100vh;
+      background: var(--card-background);
+      color: var(--text-light);
+      overflow-x: hidden;
+      overflow-y: auto;
+      white-space: nowrap;
+      transition: width 0.4s ease, background 0.3s ease; /* Slower transition */
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 8px 0 25px rgba(0,0,0,0.6); /* Stronger shadow */
+      z-index: 1000;
+      padding-top: 30px;
+    }
+    body.desktop-mode .nav_bar_container:hover {
+      width: 280px; /* Wider when expanded */
+    }
+    body.desktop-mode .nav_bar_container ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    body.desktop-mode .nav_items {
+      font-size: 1.2rem; /* Larger font */
+      padding: 18px 25px; /* Increased padding */
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      color: var(--text-light);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative; /* For active glow */
+    }
+    body.desktop-mode .nav_items:hover {
+      background: rgba(var(--theme-color-rgb), 0.2); /* More visible hover background */
+      color: var(--theme-color);
+      transform: translateX(8px); /* More pronounced slide */
+    }
+    body.desktop-mode .nav_items.active {
+        background: var(--gradient-main);
+        color: #fff;
+        font-weight: 700; /* Bolder */
+        box-shadow: inset 5px 0 20px rgba(0,0,0,0.4); /* Stronger inner shadow */
+        text-shadow: 0 0 10px rgba(var(--theme-color-rgb), 0.6); /* Active text glow */
+    }
+    body.desktop-mode .nav_items .fa {
+      margin-right: 20px; /* More spacing */
+      min-width: 35px; /* Wider icon area */
+      text-align: center;
+      font-size: 1.6em; /* Larger icon */
+      color: var(--text-light);
+      transition: color 0.3s ease;
+    }
+    body.desktop-mode .nav_items.active .fa {
+        color: #fff;
+    }
+
+    /* Hide mobile bottom nav in desktop mode */
+    @media (min-width: 768px) {
+      #bottom-nav { display: none !important; }
+      .top-action-btn { display: none !important; }
+      body.desktop-mode .container { margin-left: 90px; padding-top: 40px; }
+      body.desktop-mode #hero { margin-left: 90px; border-radius: 0 0 35px 35px; }
+      /* Hide desktop sidebar when mobile mode is active */
+      body.mobile-mode .nav_bar_container { display: none !important; }
+    }
+    /* Mobile specific adjustments */
+    @media (max-width: 767px) {
+        body.desktop-mode .nav_bar_container { display: none !important; }
+        body.mobile-mode .container { padding: 10px; }
+        /* Removed #hero-mini-poster adjustments for mobile */
+        #hero-title { font-size: 2.8rem; }
+        #hero-rating { font-size: 1.3rem; }
+        .hero-btn { padding: 12px 28px; font-size: 1.1rem; margin-top: 1.5rem;} /* Adjusted margin-top */
+        .stylish-text { font-size: 2.2rem; }
+        .stylish-text i { font-size: 1.8rem; }
+        .more-link { font-size: 0.95rem; }
+        .scroll-item { width: 140px; }
+        .scroll-item img { height: 210px; }
+        .scroll-item p { font-size: 13px; }
+        .offcanvas-start { width: 85%; }
+        #notification { bottom: 90px; /* Above bottom nav */ }
+        /* Adjust mobile navigation link padding for better fit */
+        nav.navbar .nav-link {
+            padding: 8px 10px; /* Reduced padding */
+            font-size: 14px; /* Slightly smaller font */
+        }
+        nav.navbar .nav-link i {
+            font-size: 24px; /* Smaller icons */
+            margin-bottom: 4px;
+        }
+    }
+
+    /* Notification card */
+    #notification {
+      position: fixed;
+      bottom: 80px;
       right: 20px;
       z-index: 1050;
-      min-width: 255px;
-        }
+      min-width: 280px;
+      background-color: var(--card-background);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-light);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #notification i {
+        font-size: 1.5rem;
+        color: var(--theme-color);
+    }
+    #notification .btn-light {
+        background: var(--gradient-main);
+        color: #fff;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    #notification .btn-light:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+    #notification .btn-close {
+        filter: invert(1);
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1rem;
+        padding: 5px;
+    }
 
-   body.desktop-mode {
-  height: 200%;
-}
-
-body.desktop-mode .nav_bar_container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 50px;
-  height: 100vh;
-  background: black;
-  color: white;
-  overflow: hidden;
-  white-space: nowrap;
-  transition: width 0.2s ease;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  box-shadow: 0 0 10px #666666;
-  z-index: 1000;
-}
-
-body.desktop-mode .nav_bar_container:hover {
-  width: 200px;
-  overflow-y: auto;
-}
-
-body.desktop-mode .nav_bar_container ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-body.desktop-mode .nav_items {
-  font-size: 22px;
-  padding: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-body.desktop-mode .nav_items:hover {
-  background: #666666;
-  transition: background 0.3s ease;
-}
-
-body.desktop-mode .fa {
-  margin-right: 20px;
-  min-width: 30px;
-  text-align: center;
-}
-
- 
+    /* Scroll to Top Button */
+    #scrollToTopBtn {
+        display: none; /* Hidden by default */
+        position: fixed;
+        bottom: 90px; /* Above bottom nav/notification */
+        left: 20px;
+        z-index: 999;
+        background: var(--gradient-alt);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        opacity: 0;
+        pointer-events: none; /* Disable clicks when hidden */
+    }
+    #scrollToTopBtn.show {
+        opacity: 1;
+        pointer-events: auto; /* Enable clicks when shown */
+        transform: translateY(-5px);
+    }
+    #scrollToTopBtn:hover {
+        transform: translateY(-8px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+    }
   </style>
 </head>
 
@@ -450,951 +644,630 @@ body.desktop-mode .fa {
 
   <!-- HERO SECTION -->
   <div id="hero">
-      <button class="hamburger-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasProviders" aria-controls="offcanvasProviders">
+    <!-- Hamburger Button (Mobile only) -->
+    <button class="hamburger-btn top-action-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasProviders" aria-controls="offcanvasProviders">
       <i class="bi bi-list"></i>
-      </button>
-      <button class="news-btn" type="button" onclick="window.location.href='news.html';">
+    </button>
+    <!-- News Button (Mobile only) -->
+    <button class="news-btn top-action-btn" type="button" onclick="window.location.href='news.html';">
       <i class="bi bi-newspaper"></i>
-      </button>
+    </button>
     <div id="hero-overlay"></div>
     <div id="hero-content">
-      <h1 id="hero-title">Movie Title</h1>
-      <div id="hero-rating">Rating: N/A</div>
-      <button class="hero-btn" id="watch-hero">Watch Now</button>
-      <!-- Dot indicators container -->
+      <!-- Removed mini poster image -->
+      <h1 id="hero-title">Loading...</h1>
+      <p id="hero-synopsis">Fetching exciting movie details...</p>
+      <div id="hero-rating"><i class="bi bi-star-fill"></i> N/A</div>
+      <button class="hero-btn" id="watch-hero"><i class="bi bi-play-fill"></i> Watch Now</button>
+      <!-- Dot indicators container - Moved inside hero-content -->
       <div id="hero-dots"></div>
     </div>
   </div>
 
-    <!-- Offcanvas Sidebar for Providers -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasProviders" aria-labelledby="offcanvasProvidersLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasProvidersLabel">Providers</h5>
-    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  <!-- Offcanvas Sidebar for Providers -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasProviders" aria-labelledby="offcanvasProvidersLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasProvidersLabel">Providers</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="list-unstyled">
+        <li>
+          <a href="home.html?provider=vegamovies" class="provider-link" data-provider="vegamovies">
+            <i class="bi bi-film provider-icon"></i> Vegamovies
+          </a>
+        </li>
+        <li>
+          <a href="moviesMod.html?provider=moviesmod" class="provider-link" data-provider="moviesmod">
+            <i class="bi bi-film provider-icon"></i> Moviesmod
+          </a>
+        </li>
+        <li>
+          <a href="trakt.tv/trakt.html?provider=trakt.tv" class="provider-link" data-provider="trakt.tv">
+            <i class="bi bi-tv provider-icon"></i> Trakt.tv
+          </a>
+        </li>
+        <li>
+          <a href="Anime/Anime.html?provider=netmirror" class="provider-link" data-provider="netmirror">
+            <i class="bi bi-vinyl provider-icon"></i> Anime
+          </a>
+        </li>
+        <li>
+          <a href="provider.html?provider=moviedrive" class="provider-link" data-provider="moviedrive">
+            <i class="bi bi-camera-reels provider-icon"></i> Moviedrive
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
-  <div class="offcanvas-body">
-    <ul class="list-unstyled">
-      <li>
-        <a href="home.html?provider=vegamovies" class="provider-link" data-provider="vegamovies">
-          <i class="bi bi-film provider-icon"></i>vegamovies
-        </a>
-      </li>
-      <li>
-        <a href="moviesMod.html?provider=moviesmod" class="provider-link" data-provider="moviesmod">
-          <i class="bi bi-film provider-icon"></i>moviesmod
-        </a>
-      </li>
-      <li>
-        <a href="trakt.tv/trakt.html?provider=trakt.tv" class="provider-link" data-provider="gogo">
-          <i class="bi bi-film provider-icon"></i>Trakt.tv
-        </a>
-      </li>
-      <li>
-        <a href="Anime/Anime.html?provider=netmirror" class="provider-link" data-provider="netmirror">
-          <i class="bi bi-film provider-icon"></i>Anime
-        </a>
-      </li>
-      <li>
-        <a href="provider.html?provider=moviedrive" class="provider-link" data-provider="moviedrive">
-          <i class="bi bi-film provider-icon"></i>moviedrive
-        </a>
-      </li>
-    </ul>
-  </div>
-</div>
 
   <!-- MAIN CONTENT (Horizontal Scroll Sections) -->
   <div class="container mt-4">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-  <h3 class="stylish-text" style="margin: 0;">Upcoming</h3>
-  <h5 class="stylish1-text" style="margin: 0;"><a href="more6.html">more</a></h5>
-      </div>
-    <div class="horizontal-scroll" id="upcoming-scroll"></div>
-    
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-  <h3 class="stylish-text" style="margin: 0;">Movies</h3>
-  <h5 class="stylish1-text" style="margin: 0;"><a href="more.html">more</a></h5>
-      </div>
-    <div class="horizontal-scroll" id="movies-scroll"></div>
-
-    
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-  <h3 class="stylish-text" style="margin: 0;">Anime</h3>
-  <h5 class="stylish1-text" style="margin: 0;"><a href="more2.html">more</a></h5>
+    <div class="stylish-header-container">
+      <h3 class="stylish-text"><i class="bi bi-fire"></i> Upcoming</h3>
+      <a href="more6.html" class="more-link">More <i class="bi bi-arrow-right"></i></a>
     </div>
-    <div class="horizontal-scroll" id="anime-scroll"></div>
-
-    
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-  <h3 class="stylish-text" style="margin: 0;">Web Series</h3>
-  <h5 class="stylish1-text" style="margin: 0;"><a href="more1.html">more</a></h5>
+    <div class="horizontal-scroll" id="upcoming-scroll">
+        <!-- Content will be dynamically loaded here -->
     </div>
-    <div class="horizontal-scroll" id="web-series-scroll"></div>
-
     
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-  <h3 class="stylish-text" style="margin: 0;">TV Shows</h3>
-  <h5 class="stylish1-text" style="margin: 0;"><a href="more1.html">more</a></h5>
-      </div>
-    <div class="horizontal-scroll" id="tv-shows-scroll"></div>
+    <div class="stylish-header-container">
+      <h3 class="stylish-text"><i class="bi bi-film"></i> Movies</h3>
+      <a href="more.html" class="more-link">More <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="horizontal-scroll" id="movies-scroll">
+        <!-- Content will be dynamically loaded here -->
+    </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-  <h3 class="stylish-text" style="margin: 0;">Bollywood</h3>
-  <h5 class="stylish1-text" style="margin: 0;"><a href="more3.html">more</a></h5>
-      </div>
-    <div class="horizontal-scroll" id="bollywood-scroll"></div>
+    <div class="stylish-header-container">
+      <h3 class="stylish-text"><i class="bi bi-star"></i> Anime</h3>
+      <a href="more2.html" class="more-link">More <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="horizontal-scroll" id="anime-scroll">
+        <!-- Content will be dynamically loaded here -->
+    </div>
+
+    <div class="stylish-header-container">
+      <h3 class="stylish-text"><i class="bi bi-collection-play"></i> Web Series</h3>
+      <a href="more1.html" class="more-link">More <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="horizontal-scroll" id="web-series-scroll">
+        <!-- Content will be dynamically loaded here -->
+    </div>
+    
+    <div class="stylish-header-container">
+      <h3 class="stylish-text"><i class="bi bi-tv"></i> TV Shows</h3>
+      <a href="more1.html" class="more-link">More <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="horizontal-scroll" id="tv-shows-scroll">
+        <!-- Content will be dynamically loaded here -->
+    </div>
+
+    <div class="stylish-header-container">
+      <h3 class="stylish-text"><i class="bi bi-boombox"></i> Bollywood</h3>
+      <a href="more3.html" class="more-link">More <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="horizontal-scroll" id="bollywood-scroll">
+        <!-- Content will be dynamically loaded here -->
+    </div>
   </div>
 
-  <!-- BOTTOM NAVIGATION BAR -->
+  <!-- BOTTOM NAVIGATION BAR (Mobile only) -->
   <nav class="navbar navbar-dark fixed-bottom" id="bottom-nav">
     <div class="container-fluid d-flex justify-content-around">
-      <a href="home.html" class="nav-link"><i class="bi bi-house-door-fill"></i><br></a>
-      <a href="search.html" class="nav-link"><i class="bi bi-search"></i><br></a>
-      <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark"></i><br></a>
-      <a href="settings.html" class="nav-link"><i class="bi bi-gear"></i><br></a>
+      <a href="home.html" class="nav-link"><i class="bi bi-house-door-fill"></i>Home</a>
+      <a href="search.html" class="nav-link"><i class="bi bi-search"></i>Search</a>
+      <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark"></i>Watchlist</a>
+      <!-- Play History removed from mobile navigation -->
+      <a href="settings.html" class="nav-link"><i class="bi bi-gear"></i>Settings</a>
     </div>
   </nav>
 
- <div class="nav_bar_container">
- <ul>
-  <li class="nav_items"><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
-  <li class="nav_items"><a href="search.html"><i class="fa fa-search"></i> Search</a></li>
-  <li class="nav_items"><a href="watchlist.html"><i class="fa fa-bookmark"></i> Watchlist</a></li>
-  <li class="nav_items"><a href="settings.html"><i class="fa fa-cog"></i> Settings</a></li>
-</ul>
+  <!-- DESKTOP SIDEBAR NAVIGATION -->
+  <div class="nav_bar_container">
+    <ul>
+      <a href="home.html" class="nav_items"><i class="fa fa-home"></i> Home</a>
+      <a href="#" class="nav_items" data-bs-toggle="offcanvas" data-bs-target="#offcanvasProviders" aria-controls="offcanvasProviders"><i class="bi bi-grid-3x3-gap-fill"></i> Providers</a>
+      <a href="genres.html" class="nav_items"><i class="bi bi-tags-fill"></i> Genres</a>
+      <a href="new-releases.html" class="nav_items"><i class="bi bi-lightning-fill"></i> New Releases</a>
+      <a href="popular.html" class="nav_items"><i class="bi bi-fire"></i> Popular</a>
+      <a href="my-favorites.html" class="nav_items"><i class="bi bi-heart-fill"></i> My Favorites</a>
+      <a href="search.html" class="nav_items"><i class="bi bi-search"></i> Search</a>
+      <a href="watchlist.html" class="nav-link"><i class="bi bi-bookmark"></i> Watchlist</a>
+      <a href="play-history.html" class="nav_items"><i class="bi bi-clock-history"></i> Play History</a>
+      <a href="settings.html" class="nav_items"><i class="bi bi-gear"></i> Settings</a>
+    </ul>
+  </div>
 
-</div>
-      <!-- Notification card -->
+  <!-- Notification card -->
   <div id="notification" class="alert alert-success alert-dismissible fade show" role="alert">
-    <!-- Bootstrap TV icon -->
     <i class="bi bi-music-note"></i> 
-    SUZA Music for your favourite song and heartbeat sound 
-    <!-- Button that navigates to hh.html -->
+    SUZA Music for your favourite song and heartbeat sound
     <button type="button" class="btn btn-light btn-sm" id="try-btn">Try</button>
-    <!-- Close button for the alert -->
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
-  
 
-    <!-- Bootstrap JS Bundle (includes Popper) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Scroll to Top Button -->
+  <button id="scrollToTopBtn" title="Go to top">
+      <i class="bi bi-arrow-up"></i>
+  </button>
   
-
   <!-- SCRIPTS -->
   <script>
-      // Hide hamburger when offcanvas opens and show it when closed
-    var offcanvasEl = document.getElementById('offcanvasProviders');
-    offcanvasEl.addEventListener('show.bs.offcanvas', function () {
-      document.querySelector('.hamburger-btn').style.opacity = '0';
-    });
-    offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
-      document.querySelector('.hamburger-btn').style.opacity = '1';
-    });
-    
-    // On the provider selection page, set the active provider based on the URL parameter.
-    document.addEventListener('DOMContentLoaded', function() {  
-  // Get the current file name from the URL
-  var path = window.location.pathname.split("/").pop();  
-  if (path === '') { 
-    path = 'home.html'; // Default file if no specific file is in the URL
-  }  
-  
-  // Select all nav button links
-  var navLinks = document.querySelectorAll('nav.navbar .nav-link');  
-  
-  // Loop through each nav link and toggle the active class
-  navLinks.forEach(function(link) {  
-    var href = link.getAttribute('href');  
-    if (href === path) {  
-      link.classList.add('active'); // Add active class to the matching link
-    } else {  
-      link.classList.remove('active'); // Remove active class from other links
-    }  
-  });  
-});
-    
-    // On the provider selection page, 
-   // set the active provider based on the URL parameter.
-      document.addEventListener('DOMContentLoaded', function() {  
-    // Get all provider links  
-    const providerLinks = document.querySelectorAll('.provider-link');  
-  
-    // Retrieve saved active provider from localStorage  
-    const savedProvider = localStorage.getItem('activeProvider');  
-    if (savedProvider) {  
-      const activeLink = document.querySelector(`.provider-link[data-provider="${savedProvider}"]`);  
-      if (activeLink) {  
-        activeLink.classList.add('active');  
-      }  
-    } else if (providerLinks.length) {  
-      // Optionally, set the first provider as active if none is saved  
-      providerLinks[0].classList.add('active');  
-      localStorage.setItem('activeProvider', providerLinks[0].getAttribute('data-provider'));  
-    }  
-  
-    // Add click event listeners to update the active state  
-    providerLinks.forEach(link => {  
-      link.addEventListener('click', function(e) {  
-        // Remove active class from all links  
-        providerLinks.forEach(l => l.classList.remove('active'));  
-        // Add active class to the clicked link  
-        this.classList.add('active');  
-        // Save the current provider in localStorage  
-        localStorage.setItem('activeProvider', this.getAttribute('data-provider'));  
-      });  
-    });  
-  });  
-   
-    // === API Keys ===
-const OMDB_API_KEY = "90b37ad0"; // Replace with your OMDb API Key if needed
-// You need to register for a Trakt API key (Client ID) at https://trakt.tv/oauth/applications
-const TRAKT_CLIENT_ID = "97ca49d276bd090c063dd2c6174ed4c622ee58d443d1160aac87276f50b34b36"; // !!! REPLACE WITH YOUR TRAKT CLIENT ID !!!
+    // Theme color management (similar to watch.html for consistency)
+    let currentThemeColor = localStorage.getItem("themeColor") || '#00c3ff'; // Default if not set
 
-// Ensure you replace "YOUR_TRAKT_CLIENT_ID" with your actual Trakt API key.
-
-// === Hero Carousel Variables ===
-let heroMovies = [];  // Array to store full movie details for hero carousel (fetched via OMDb)
-let heroIndex = 0;    // Current index in the heroMovies array
-let heroInterval;     // Interval reference
-
-// === Swipe Detection Variables ===
-let touchStartX = 0;
-let touchEndX = 0;
-const swipeThreshold = 50; // Minimum distance (in pixels) to consider a swipe
-
-// === Global Event Listeners ===
-// Prevent default right-click/context menu on the entire document
-document.addEventListener('contextmenu', function(e) {
-  e.preventDefault();
-});
-
-// Prevent long-press on touch devices from showing image preview
-document.addEventListener('touchstart', function(e) {
-  if(e.touches.length > 1) {
-    e.preventDefault();
-  }
-});
-
-// === Hero Carousel Functions (Using OMDb) ===
-// Fetch trending movies or anime for the hero carousel
-async function fetchHeroMovies() {
-  // Define two sets of trending titles: one for movies and one for anime
-  // Note: Using specific titles with OMDb search might not always yield the best results.
-  // Consider alternative ways to get trending titles if needed, perhaps from Trakt initially,
-  // and then fetching details from OMDb using IDs.
-  const trendingMovies = ["A Minecraft movie", "Electric State", "jack the giant killer", "Novocaine", "The Snarling", "Marvel", "Avenger endgame", "Hero", "Sci fi", "Action adventure", "romance", "Sports"];
-  const trendingAnime = ["Solo leveling", "Red Ranger", "The Apothecary Diaries", "I'm getting married to girl I hate in class", "Dr stone", "One Piece", "Hunter X Hunter"];
-
-  // Combine the arrays so that a random trending title is chosen across movies and anime
-  const trendingTitles = trendingMovies.concat(trendingAnime);
-  const randomTrendingTitle = trendingTitles[Math.floor(Math.random() * trendingTitles.length)];
-
-  try {
-    // Use encodeURIComponent to safely encode the search term in the URL
-    const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(randomTrendingTitle)}&apikey=${OMDB_API_KEY}`);
-    const data = await response.json();
-
-    if (data.Search && data.Search.length > 0) {
-      // Limit to the first 5 items for the carousel
-      const itemsToFetch = data.Search.slice(0, 5);
-      // Fetch full details (including rating and plot) concurrently for each item
-      const detailsPromises = itemsToFetch.map(item =>
-        fetch(`https://www.omdbapi.com/?i=${item.imdbID}&apikey=${OMDB_API_KEY}&plot=short`).then(res => res.json())
-      );
-      heroMovies = await Promise.all(detailsPromises);
-
-      // Filter out any items that failed to fetch details or have no valid data
-      heroMovies = heroMovies.filter(movie => movie && movie.Response !== "False");
-
-      if (heroMovies.length > 0) {
-        // Initialize and start the carousel
-        heroIndex = 0;
-        showHeroMovie(heroIndex);
-        buildHeroDots();
-
-        if (heroInterval) clearInterval(heroInterval);
-        heroInterval = setInterval(() => {
-          heroIndex = (heroIndex + 1) % heroMovies.length;
-          showHeroMovie(heroIndex);
-        }, 5000);
-      } else {
-        console.warn("No valid hero movies fetched after detail lookup.");
-         document.getElementById("hero-title").textContent = "Content Not Available";
-         document.getElementById("hero-rating").textContent = "";
-         document.getElementById("watch-hero").style.display = "none"; // Hide button if no content
-         document.getElementById("hero-dots").innerHTML = ""; // Clear dots
-      }
-    } else {
-       console.warn(`OMDb search for "${randomTrendingTitle}" found no results.`);
-         document.getElementById("hero-title").textContent = "Content Not Available";
-         document.getElementById("hero-rating").textContent = "";
-         document.getElementById("watch-hero").style.display = "none"; // Hide button if no content
-         document.getElementById("hero-dots").innerHTML = ""; // Clear dots
-    }
-  } catch (error) {
-    console.error("Error fetching hero movies:", error);
-     document.getElementById("hero-title").textContent = "Error Loading Content";
-     document.getElementById("hero-rating").textContent = "";
-     document.getElementById("watch-hero").style.display = "none"; // Hide button on error
-     document.getElementById("hero-dots").innerHTML = ""; // Clear dots on error
-  }
-}
-
-// Build dot indicators for the hero carousel
-function buildHeroDots() {
-  const dotsContainer = document.getElementById("hero-dots");
-  dotsContainer.innerHTML = "";
-  heroMovies.forEach((movie, idx) => {
-    const dot = document.createElement("div");
-    dot.classList.add("hero-dot");
-    if (idx === heroIndex) dot.classList.add("active");
-    dot.addEventListener("click", () => {
-      heroIndex = idx;
-      showHeroMovie(heroIndex);
-      resetHeroInterval();
-    });
-    dotsContainer.appendChild(dot);
-  });
-}
-
-// Reset the auto-play interval
-function resetHeroInterval() {
-  clearInterval(heroInterval);
-  heroInterval = setInterval(() => {
-    heroIndex = (heroIndex + 1) % heroMovies.length;
-    showHeroMovie(heroIndex);
-  }, 5000);
-}
-
-// Update hero section with movie details and update dot indicators
-function showHeroMovie(index) {
-  const movie = heroMovies[index];
-  if (!movie) {
-      // Fallback if for some reason the movie object is null/undefined
-      document.getElementById("hero").style.backgroundImage = "url('fallback-image.jpg')";
-      document.getElementById("hero-title").textContent = "Content Error";
-      document.getElementById("hero-rating").textContent = "";
-      document.getElementById("watch-hero").style.display = "none";
-      return;
-  }
-
-  // Set background image
-  const posterUrl = (movie.Poster && movie.Poster !== "N/A") ? movie.Poster : "fallback-image.jpg";
-  document.getElementById("hero").style.backgroundImage = `url(${posterUrl})`;
-
-  // Set title and rating
-  document.getElementById("hero-title").textContent = movie.Title || "Unknown Title";
-  document.getElementById("hero-rating").textContent = `Rating: ${movie.imdbRating && movie.imdbRating !== "N/A" ? movie.imdbRating : "N/A"}`;
-
-  // Set watch button action
-   const watchButton = document.getElementById("watch-hero");
-   if(movie.Title) { // Only show button if title is available
-        watchButton.style.display = ""; // Make sure button is visible
-        watchButton.onclick = () => {
-            window.location.href = `watch.html?title=${encodeURIComponent(movie.Title)}`;
-        };
-   } else {
-        watchButton.style.display = "none"; // Hide button if no title
-   }
-
-
-  // Update dot indicators
-  const dots = document.querySelectorAll(".hero-dot");
-  dots.forEach((dot, idx) => {
-    dot.classList.toggle("active", idx === index);
-  });
-
-  // Reset hero content animation for smooth transition
-  const heroContent = document.getElementById("hero-content");
-  heroContent.style.animation = 'none';
-  setTimeout(() => heroContent.style.animation = '', 50);
-}
-
-// === Horizontal Scroll Sections Functions (Using Trakt.tv and Jikan) ===
-
-// Function to fetch data from Trakt and then details from OMDb
-async function fetchTraktItemsAndOMDbDetails(endpoint, limit = 10) {
-    if (!TRAKT_CLIENT_ID || TRAKT_CLIENT_ID === "YOUR_TRAKT_CLIENT_ID") {
-        console.error("Trakt Client ID is not set. Cannot fetch from Trakt.");
-        return [];
-    }
-    if (!OMDB_API_KEY || OMDB_API_KEY === "YOUR_OMDB_API_KEY") {
-         console.error("OMDb API Key is not set. Cannot fetch details from OMDb.");
-        return [];
-    }
-
-
-  try {
-    const traktResponse = await fetch(`https://api.trakt.tv/${endpoint}?limit=${limit}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'trakt-api-key': TRAKT_CLIENT_ID,
-        'trakt-api-version': '2' // Specify API version
-      }
-    });
-
-    if (!traktResponse.ok) {
-        console.error(`Trakt API error for endpoint ${endpoint}: ${traktResponse.status}`);
-         // Attempt to read error body if available
-         try {
-            const errorBody = await traktResponse.json();
-            console.error("Trakt Error Details:", errorBody);
-         } catch (e) {
-             console.error("Could not parse Trakt error body.");
-         }
-        return [];
-    }
-
-    const traktData = await traktResponse.json();
-
-    // Trakt trending/popular data format varies slightly for movies vs shows
-    // Extract the core movie or show object and filter for items with IMDb ID
-    const itemsWithImdbId = traktData
-        .map(item => item.movie || item.show) // Get the nested movie or show object
-        .filter(item => item && item.ids && item.ids.imdb); // Filter out nulls and items without IMDb ID
-
-
-    // Fetch detailed info (including poster) from OMDb using IMDb ID
-    const omdbDetailsPromises = itemsWithImdbId.map(item =>
-        fetch(`https://www.omdbapi.com/?i=${item.ids.imdb}&apikey=${OMDB_API_KEY}&plot=short`).then(res => res.json()).catch(e => {
-            console.error(`Error fetching OMDb details for IMDb ID ${item.ids.imdb}:`, e);
-            return null; // Return null on fetch error
-        })
-    );
-
-    const omdbDetails = await Promise.all(omdbDetailsPromises);
-
-    // Filter out items that failed OMDb fetch or have no valid poster
-    const finalItems = omdbDetails.filter(item => item && item.Response !== "False" && item.Poster && item.Poster !== "N/A");
-
-    return finalItems;
-
-  } catch (error) {
-    console.error(`Error fetching data from Trakt or OMDb for endpoint ${endpoint}:`, error);
-    return [];
-  }
-}
-
-
-// Update Movies section using Trakt (Trending Movies)
-async function updateMoviesSectionTrakt() {
-    const movies = await fetchTraktItemsAndOMDbDetails("movies/trending");
-    const sectionElement = document.getElementById("movies-scroll");
-    let htmlContent = "";
-
-    if (movies.length > 0) {
-        movies.forEach(item => {
-            let shortTitle = item.Title.length > 15 ? item.Title.substring(0, 15) + "..." : item.Title;
-             const posterUrl = (item.Poster && item.Poster !== "N/A") ? item.Poster : "fallback-image.jpg";
-            htmlContent += `
-              <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(item.Title)}')">
-                <img src="${posterUrl}" alt="${item.Title}" title="${item.Title}">
-                <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
-              </div>`;
-        });
-    } else {
-         htmlContent = "<p>Could not load trending movies at this time.</p>";
-    }
-     sectionElement.innerHTML = htmlContent;
-}
-
-// Update Web Series and TV Shows sections using Trakt (Trending Shows)
-async function updateShowsSectionTrakt() {
-    // Trakt trending shows include both what you might consider web series and TV shows
-    const shows = await fetchTraktItemsAndOMDbDetails("shows/trending");
-    const webSeriesSectionElement = document.getElementById("web-series-scroll");
-    const tvShowsSectionElement = document.getElementById("tv-shows-scroll");
-    let htmlContent = "";
-
-    if (shows.length > 0) {
-        shows.forEach(item => {
-            let shortTitle = item.Title.length > 15 ? item.Title.substring(0, 15) + "..." : item.Title;
-            const posterUrl = (item.Poster && item.Poster !== "N/A") ? item.Poster : "fallback-image.jpg";
-            htmlContent += `
-              <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(item.Title)}')">
-                <img src="${posterUrl}" alt="${item.Title}" title="${item.Title}">
-                <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
-              </div>`;
-        });
-    } else {
-        htmlContent = "<p>Could not load trending shows at this time.</p>";
-    }
-
-    // Update both sections with the same trending shows data
-    webSeriesSectionElement.innerHTML = htmlContent;
-    tvShowsSectionElement.innerHTML = htmlContent;
-}
-
-
-// Anime section update using Jikan API (example)
-async function updateAnimeSection() {
-  const ANILIST_API_URL = 'https://graphql.anilist.co';
-
-  const query = `
-    query {
-      Page(perPage: 10) {
-        media(type: ANIME, sort: POPULARITY_DESC) {
-          id
-          title {
-            romaji
-            english
-          }
-          coverImage {
-            extraLarge
-            large
-            medium
-          }
+    window.addEventListener('load', function () {
+        var savedColor = localStorage.getItem("themeColor");
+        if (savedColor) {
+            currentThemeColor = savedColor;
+            document.documentElement.style.setProperty('--theme-color', savedColor);
+            let r = parseInt(savedColor.substring(1, 3), 16);
+            let g = parseInt(savedColor.substring(3, 5), 16);
+            let b = parseInt(savedColor.substring(5, 7), 16);
+            document.documentElement.style.setProperty('--theme-color-rgb', `${r},${g},${b}`);
+            document.documentElement.style.setProperty('--theme-second-color', '#ff5722');
+            let r2 = parseInt('ff', 16);
+            let g2 = parseInt('57', 16);
+            let b2 = parseInt('22', 16);
+            document.documentElement.style.setProperty('--theme-second-color-rgb', `${r2},${g2},${b2}`);
         }
-      }
-    }
-  `;
-
-  try {
-    const response = await fetch(ANILIST_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({ query })
+        applyGradientToStylishText(); // Apply gradient on load after theme color is set
     });
 
-    if (!response.ok) {
-      console.error(`AniList API error: ${response.status}`);
-      const errorBody = await response.text();
-      console.error("AniList Error Details:", errorBody);
-      document.getElementById("anime-scroll").innerHTML = "<p>Could not load top anime at this time.</p>";
-      return;
+    function applyGradientToStylishText() {
+        document.querySelectorAll('.stylish-text').forEach(function (element) {
+            element.style.background = `linear-gradient(45deg, var(--theme-color), var(--theme-second-color))`;
+            element.style.webkitBackgroundClip = 'text';
+            element.style.webkitTextFillColor = 'transparent';
+        });
     }
 
-    const json = await response.json();
-    const animeList = json.data.Page.media;
-
-    let htmlContent = "";
-
-    if (animeList && animeList.length > 0) {
-      animeList.forEach(anime => {
-        const englishTitle = anime.title.english || anime.title.romaji || "Untitled";
-        const shortTitle = englishTitle.length > 15 ? englishTitle.substring(0, 15) + "..." : englishTitle;
-        const posterUrl = anime.coverImage.extraLarge || anime.coverImage.large || anime.coverImage.medium || "fallback-image-anime.jpg";
-
-        htmlContent += `
-          <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(englishTitle)}')">
-            <img src="${posterUrl}" alt="${englishTitle}" title="${englishTitle}" style="width: 100%; height: auto; object-fit: cover;">
-            <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
-          </div>`;
+    // Hide hamburger when offcanvas opens and show it when closed
+    var offcanvasEl = document.getElementById('offcanvasProviders');
+    if (offcanvasEl) {
+      offcanvasEl.addEventListener('show.bs.offcanvas', function () {
+        const hamburgerBtn = document.querySelector('.hamburger-btn');
+        if (hamburgerBtn) hamburgerBtn.style.opacity = '0';
       });
-    } else {
-      htmlContent = "<p>No anime found.</p>";
+      offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
+        const hamburgerBtn = document.querySelector('.hamburger-btn');
+        if (hamburgerBtn) hamburgerBtn.style.opacity = '1';
+      });
     }
 
-    document.getElementById("anime-scroll").innerHTML = htmlContent;
-
-  } catch (error) {
-    console.error("Anime data fetch error:", error);
-    document.getElementById("anime-scroll").innerHTML = "<p>Error loading top anime.</p>";
-  }
+    // On the provider selection page, set the active provider based on the URL parameter.
+    document.addEventListener('DOMContentLoaded', function() {
+      var path = window.location.pathname.split("/").pop();
+      if (path === '') {
+        path = 'home.html';
       }
-    async function updateBollywoodSectionOMDb() {
-    const bollywoodTitles = [ 
-"Keshari Chapter 2", "Chhaava", "Alpha", "Sky Force", "Lahore 1947", "Sikandar", "The Diplomat", "Jaat", "Jewel Thief: The Heist Begins", "Superboys of Malegaon"
-      
-    ];
 
-    const sectionElement = document.getElementById("bollywood-scroll");
-     if (!sectionElement) {
-         console.error("Element with ID 'bollywood-scroll' not found.");
-         return; // Exit if the target element doesn't exist
-     }
+      var navLinks = document.querySelectorAll('nav.navbar .nav-link, .nav_bar_container .nav_items');
 
-    if (!OMDB_API_KEY || OMDB_API_KEY === "YOUR_OMDB_API_KEY") {
-         console.error("OMDb API Key is not set. Cannot fetch Bollywood movie details.");
-         sectionElement.innerHTML = "<p>OMDb API Key is not configured. Cannot load Bollywood movies.</p>";
-        return;
+      navLinks.forEach(function(link) {
+        var href = link.getAttribute('href');
+        // Check if href is for offcanvas toggle (e.g., '#')
+        if (href === '#' && link.dataset.bsToggle === 'offcanvas') {
+            // This link opens an offcanvas, it's not a navigation page
+            link.classList.remove('active'); // Ensure it's not active based on URL
+            return; 
+        }
+
+        const linkFilename = href.split('/').pop();
+        if (linkFilename === path) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    });
+
+    // Set the active provider based on the URL parameter.
+    document.addEventListener('DOMContentLoaded', function() {
+      const providerLinks = document.querySelectorAll('.provider-link');
+      const urlParams = new URLSearchParams(window.location.search);
+      const activeProviderFromURL = urlParams.get('provider');
+
+      let currentActiveProvider = activeProviderFromURL || localStorage.getItem('activeProvider');
+
+      if (currentActiveProvider) {
+        const activeLink = document.querySelector(`.provider-link[data-provider="${currentActiveProvider}"]`);
+        if (activeLink) {
+          activeLink.classList.add('active');
+        } else if (providerLinks.length) {
+            providerLinks[0].classList.add('active');
+            localStorage.setItem('activeProvider', providerLinks[0].getAttribute('data-provider'));
+        }
+      } else if (providerLinks.length) {
+        providerLinks[0].classList.add('active');
+        localStorage.setItem('activeProvider', providerLinks[0].getAttribute('data-provider'));
+      }
+
+      providerLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          providerLinks.forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+          localStorage.setItem('activeProvider', this.getAttribute('data-provider'));
+        });
+      });
+    });
+
+    // === API Keys ===
+    const OMDB_API_KEY = "90b37ad0";
+    const TRAKT_CLIENT_ID = "97ca49d276bd090c063dd2c6174ed4c622ee58d443d1160aac87276f50b34b36";
+    const TMDB_API_KEY = "b6b677eb7d4ec17f700e3d4dfc31d005"; // Your TMDb API key
+
+    // === Hero Carousel Variables ===
+    let heroMovies = [];
+    let heroIndex = 0;
+    let heroInterval;
+
+    // === Swipe Detection Variables ===
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const swipeThreshold = 50;
+
+    // === Global Event Listeners --- Moved to the end of the script or inline in HTML
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('touchstart', function(e) { if(e.touches.length > 1) { e.preventDefault(); } });
+
+
+    // === Hero Carousel Functions ===
+    async function fetchHeroMovies() {
+      const trendingTitles = [
+        "Jawan", "Animal", "Pathaan", "K.G.F: Chapter 2", "Vikram", "RRR",
+        "Solo Leveling", "Demon Slayer: Kimetsu no Yaiba", "Jujutsu Kaisen", "Spy x Family"
+      ];
+      const randomTrendingTitle = trendingTitles[Math.floor(Math.random() * trendingTitles.length)];
+
+      try {
+        const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(randomTrendingTitle)}&apikey=${OMDB_API_KEY}`);
+        const data = await response.json();
+
+        if (data.Search && data.Search.length > 0) {
+          const itemsToFetch = data.Search.filter(item => item.Type !== "game").slice(0, 5);
+          const detailsPromises = itemsToFetch.map(item =>
+            fetch(`https://www.omdbapi.com/?i=${item.imdbID}&apikey=${OMDB_API_KEY}&plot=short`).then(res => res.json())
+          );
+          heroMovies = await Promise.all(detailsPromises);
+          heroMovies = heroMovies.filter(movie => movie && movie.Response !== "False" && movie.Poster && movie.Poster !== "N/A");
+
+          if (heroMovies.length > 0) {
+            heroIndex = 0;
+            showHeroMovie(heroIndex);
+            buildHeroDots();
+            if (heroInterval) clearInterval(heroInterval);
+            heroInterval = setInterval(() => {
+              heroIndex = (heroIndex + 1) % heroMovies.length;
+              showHeroMovie(heroIndex);
+            }, 5000);
+          } else {
+            setHeroFallback("No valid hero content found.");
+          }
+        } else {
+          setHeroFallback(`No search results for "${randomTrendingTitle}".`);
+        }
+      } catch (error) {
+        console.error("Error fetching hero movies:", error);
+        setHeroFallback("Error loading content.");
+      }
     }
 
-    let fetchedMovies = [];
+    function setHeroFallback(message) {
+      document.getElementById("hero").style.backgroundImage = "url('https://placehold.co/1200x600/1a1a1a/cccccc?text=Content+Unavailable')";
+      document.getElementById("hero-title").textContent = message;
+      document.getElementById("hero-synopsis").textContent = ""; // Clear synopsis
+      document.getElementById("hero-rating").innerHTML = '';
+      document.getElementById("watch-hero").style.display = "none";
+      document.getElementById("hero-dots").innerHTML = "";
+    }
 
-    try {
-        const fetchPromises = bollywoodTitles.map(title =>
-            fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${OMDB_API_KEY}&plot=short`).then(res => res.json()).catch(e => {
-                 console.error(`Error fetching OMDb details for "${title}":`, e);
-                 return null; // Return null on fetch error
-            })
-        );
+    function buildHeroDots() {
+      const dotsContainer = document.getElementById("hero-dots");
+      dotsContainer.innerHTML = "";
+      heroMovies.forEach((movie, idx) => {
+        const dot = document.createElement("div");
+        dot.classList.add("hero-dot");
+        if (idx === heroIndex) dot.classList.add("active");
+        dot.addEventListener("click", () => {
+          heroIndex = idx;
+          showHeroMovie(heroIndex);
+          resetHeroInterval();
+        });
+        dotsContainer.appendChild(dot);
+      });
+    }
 
-        const results = await Promise.all(fetchPromises);
+    function resetHeroInterval() {
+      clearInterval(heroInterval);
+      heroInterval = setInterval(() => {
+        heroIndex = (heroIndex + 1) % heroMovies.length;
+        showHeroMovie(heroIndex);
+      }, 5000);
+    }
 
-        // Filter out failed fetches and items without valid posters
-        fetchedMovies = results.filter(movie => movie && movie.Response !== "False" && movie.Poster && movie.Poster !== "N/A");
+    function showHeroMovie(index) {
+      const movie = heroMovies[index];
+      if (!movie) return;
 
+      document.getElementById("hero").style.backgroundImage = `url(${movie.Poster})`;
+      
+      document.getElementById("hero-title").textContent = movie.Title || "Unknown Title";
+      document.getElementById("hero-synopsis").textContent = movie.Plot || "Synopsis not available."; // Set synopsis
+      document.getElementById("hero-rating").innerHTML = `<i class="bi bi-star-fill"></i> ${movie.imdbRating && movie.imdbRating !== "N/A" ? movie.imdbRating : "N/A"}`;
+
+      const watchButton = document.getElementById("watch-hero");
+      watchButton.style.display = "inline-flex";
+      watchButton.onclick = () => {
+          let watchPageURL = `watch.html?title=${encodeURIComponent(movie.Title)}&type=${movie.Type.toLowerCase()}`;
+          if (movie.imdbID) {
+              watchPageURL += `&id=${movie.imdbID}`;
+          }
+          if (movie.Poster) {
+              watchPageURL += `&poster=${encodeURIComponent(movie.Poster)}`;
+              watchPageURL += `&bigPoster=${encodeURIComponent(movie.Poster)}`;
+          }
+          window.location.href = watchPageURL;
+      };
+
+      const dots = document.querySelectorAll(".hero-dot");
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle("active", idx === index);
+      });
+
+      const heroContent = document.getElementById("hero-content");
+      heroContent.style.animation = 'none';
+      void heroContent.offsetWidth; // Trigger reflow
+      heroContent.style.animation = 'fadeInUp 1.2s forwards cubic-bezier(0.2, 0.8, 0.2, 1)';
+    }
+
+    // === Horizontal Scroll Sections Functions ===
+    async function populateHorizontalSection(elementId, fetchFunction, type = 'movie') {
+      const sectionElement = document.getElementById(elementId);
+      if (!sectionElement) {
+        console.error(`Element with ID '${elementId}' not found.`);
+        return;
+      }
+      sectionElement.innerHTML = '<p style="text-align: center; color: var(--text-muted); width: 100%;">Loading content...</p>';
+
+      try {
+        const items = await fetchFunction();
         let htmlContent = "";
 
-        if (fetchedMovies.length > 0) {
-            fetchedMovies.forEach(movie => {
-                let shortTitle = movie.Title.length > 15 ? movie.Title.substring(0, 15) + "..." : movie.Title;
-                const posterUrl = movie.Poster; // OMDb provides the direct URL here
+        if (items.length > 0) {
+          items.forEach(item => {
+            const title = item.Title || item.title || "Untitled";
+            const posterUrl = item.Poster || item.poster || item.coverImage?.extraLarge || item.coverImage?.large || item.coverImage?.medium || "https://placehold.co/180x270/2a2a2a/cccccc?text=No+Image";
+            const shortTitle = title.length > 18 ? title.substring(0, 18) + "..." : title;
+            const itemType = item.Type || type;
 
-                htmlContent += `
-                  <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(movie.Title)}')">
-                    <img src="${posterUrl}" alt="${movie.Title}" title="${movie.Title}">
-                    <p style="font-size: 12px; text-align: center;">${shortTitle}</p>
-                  </div>`;
-            });
+            htmlContent += `
+              <div class="scroll-item" 
+                   onclick="openWatchPageWithDetails('${encodeURIComponent(title)}', 
+                                                       '${encodeURIComponent(item.imdbID || '')}', 
+                                                       '${encodeURIComponent(posterUrl)}',
+                                                       '${encodeURIComponent(itemType)}')">
+                <img src="${posterUrl}" alt="${title}" loading="lazy">
+                <p>${shortTitle}</p>
+              </div>`;
+          });
         } else {
-             htmlContent = "<p>Could not load Bollywood movies at this time or no details found.</p>";
-             console.warn("No valid Bollywood movies fetched from OMDb.");
+          htmlContent = "<p style='text-align: center; width: 100%; color: var(--text-muted);'>No content available at this time.</p>";
         }
-
         sectionElement.innerHTML = htmlContent;
-
-    } catch (error) {
-        console.error("Error fetching Bollywood movies from OMDb:", error);
-        sectionElement.innerHTML = "<p>Error loading Bollywood movies.</p>";
-    }
-}
-document.addEventListener("DOMContentLoaded", async function () {
-    const sectionElement = document.getElementById("upcoming-scroll");
-    if (!sectionElement) {
-        console.error("Element with ID 'upcoming-scroll' not found.");
-        return;
-    }
-
-    const apiKey = "b6b677eb7d4ec17f700e3d4dfc31d005"; // Apna TMDb API key yahan daaliye
-    const corsProxy = "https://api.allorigins.win/raw?url=";
-    const imdbBase = "https://v2.sg.media-imdb.com/suggestion/";
-    const defaultPoster = "https://via.placeholder.com/100x150?text=No+Image";
-
-    // Static movie list
-    const staticMovies = [
-        { title: "Panchayat", releaseDate: "2 July 2025" },
-        { title: "Suswagatam Khushaamadeed", releaseDate: "16 May 2025" },
-        { title: "Keseri Veer", releaseDate: "16 May 2025" },
-        { title: "Abir Gulaal", releaseDate: "9 May 2025" },
-        { title: "Bhool Chuk Maaf", releaseDate: "9 May 2025" },
-        { title: "The Networker", releaseDate: "2 May 2025" },
-        { title: "Raid 2", releaseDate: "1 May 2025" },
-        { title: "Costao", releaseDate: "1 May 2025" },
-        { title: "The bhootni", releaseDate: "1 May 2025" },
-        { title: "Ground Zero", releaseDate: "25 Apr 2025" }
-    ];
-
-    // Get poster from IMDb Suggestion API via proxy
-    async function fetchPosterFromIMDb(title) {
-        const query = title.toLowerCase();
-        const firstLetter = query.charAt(0);
-        const url = `${corsProxy}${imdbBase}${firstLetter}/${encodeURIComponent(query)}.json`;
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            const match = data.d?.find(item => item.id?.startsWith("tt") && item.i?.imageUrl);
-            return match?.i?.imageUrl || defaultPoster;
-        } catch (error) {
-            console.error(`IMDb error for "${title}":`, error);
-            return defaultPoster;
-        }
-    }
-
-    // Get poster from TMDb
-    async function fetchUpcomingMovies(count = 10) {
-        const url = `${corsProxy}https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=1`;
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            return data.results.slice(0, count);
-        } catch (error) {
-            console.error("TMDb upcoming fetch failed:", error);
-            return [];
-        }
-    }
-
-    function createMovieCard({ title, releaseDate, poster }) {
-        const shortTitle = title.length > 15 ? title.substring(0, 15) + "..." : title;
-        return `
-            <div class="scroll-item" onclick="openWatchPage('${encodeURIComponent(title)}')" style="width: 100px;">
-                <img src="${poster}" alt="${title}" title="${title}" style="width: 100px; height: 150px; object-fit: cover; display: block; margin: 0 auto;">
-                <p style="font-size: 12px; text-align: center; margin-top: 4px;">${shortTitle}</p>
-                <p style="font-size: 10px; text-align: center; color: gray;">${releaseDate}</p>
-            </div>`;
-    }
-
-    let htmlContent = "";
-
-    // Static list cards with IMDb poster
-    for (let movie of staticMovies) {
-        const poster = await fetchPosterFromIMDb(movie.title);
-        htmlContent += createMovieCard({ ...movie, poster });
-    }
-
-    // TMDb dynamic cards
-    const upcoming = await fetchUpcomingMovies(10);
-    for (let movie of upcoming) {
-        const title = movie.title || "Untitled";
-        const releaseDate = movie.release_date || "Coming Soon";
-        const poster = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : defaultPoster;
-        htmlContent += createMovieCard({ title, releaseDate, poster });
-    }
-
-    sectionElement.innerHTML = htmlContent;
-});
-    
-
-    
-
-
-
-// === Watch Page Function (Placeholder) ===
-// This function is called when a scroll item is clicked.
-// In a real application, this would navigate to a watch page
-// and potentially pass the movie/show title or ID to it.
-function openWatchPage(title) {
-    console.log("Navigate to watch page for:", decodeURIComponent(title));
-    // Example navigation (replace with your actual watch page logic)
-    // window.location.href = `watch.html?title=${title}`;
-    alert(`You clicked on "${decodeURIComponent(title)}". In a real app, this would go to the watch page.`);
-}
-
-
-// === Initialization ===
-document.addEventListener("DOMContentLoaded", () => {
-  fetchHeroMovies(); // Fetch and display hero carousel content
-  updateMoviesSectionTrakt(); // Fetch and display trending movies
-  updateShowsSectionTrakt(); // Fetch and display trending shows (Web Series and TV Shows)
-  updateAnimeSection(); // Fetch and display top anime
-  updateBollywoodSectionOMDb();
-  updateBollywoodSectionIMDB();// Fetch Bollywood movie details from OMDb and populate section
-
-  // Add event listeners for hero carousel swipe
-  const heroElement = document.getElementById("hero");
-  heroElement.addEventListener('touchstart', handleTouchStart, false);
-  heroElement.addEventListener('touchmove', handleTouchMove, false);
-  heroElement.addEventListener('touchend', handleTouchEnd, false);
-});
-
-// === Swipe Detection Handlers for Hero Carousel ===
-function handleTouchStart(event) {
-  touchStartX = event.touches[0].clientX;
-}
-
-function handleTouchMove(event) {
-  touchEndX = event.touches[0].clientX;
-}
-
-function handleTouchEnd() {
-  const deltaX = touchEndX - touchStartX;
-
-  if (deltaX > swipeThreshold) {
-    // Swipe right (previous)
-    heroIndex = (heroIndex - 1 + heroMovies.length) % heroMovies.length;
-    showHeroMovie(heroIndex);
-    resetHeroInterval();
-  } else if (deltaX < -swipeThreshold) {
-    // Swipe left (next)
-    heroIndex = (heroIndex + 1) % heroMovies.length;
-    showHeroMovie(heroIndex);
-    resetHeroInterval();
-  }
-
-  // Reset touch variables
-  touchStartX = 0;
-  touchEndX = 0;
-}
-
-    
-
-    
-// Open watch page function
-function openWatchPage(title) {
-  // Decode the title before using it in the URL, just in case it was double-encoded somewhere
-  // although encoding before passing to this function is generally sufficient.
-  // Let's re-encode here to be safe for the final URL.
-  window.location.href = `watch.html?title=${encodeURIComponent(decodeURIComponent(title))}`;
-}
-
-
-// === Navigation Active Class Logic ===
-// Wait until the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-  // Get the current file name from the URL (default to home.html if empty)
-  var path = window.location.pathname.split("/").pop();
-  if (path === '') {
-    path = 'home.html';
-  }
-
-  // Select all nav links inside the navbar and bottom nav
-  var navLinks = document.querySelectorAll('nav.navbar .nav-link, #bottom-nav .nav-link');
-
-  // Loop through each nav link and add active class if href matches current path
-  navLinks.forEach(function(link) {
-    var href = link.getAttribute('href');
-    if (href === path) {
-      link.classList.add('active');
-    } else {
-      link.classList.remove('active');
-    }
-  });
-
-  // Initial data fetches for the scroll sections
-  updateMoviesSectionTrakt();     // Movies (using Trakt & OMDb)
-  updateAnimeSection();           // Anime (using Jikan)
-  updateShowsSectionTrakt();      // Web Series and TV Shows (using Trakt & OMDb)
-  // Hero section is called separately as it has its own interval/logic
-  fetchHeroMovies();              // Hero Carousel (using OMDb)
-});
-
-// === Hide/Show bottom navigation based on scroll direction ===
-let lastScrollTop = 0;
-// Using a variable to store the bottom nav element for efficiency
-const bottomNav = document.getElementById('bottom-nav');
-window.addEventListener('scroll', () => {
-  let st = window.pageYOffset || document.documentElement.scrollTop;
-  // Add a small threshold to prevent flickering on minor scrolls
-  const scrollThreshold = 5;
-  if (Math.abs(st - lastScrollTop) <= scrollThreshold) {
-      return; // Do nothing if scroll is minimal
-  }
-
-  if (st > lastScrollTop && st > bottomNav.offsetHeight) {
-    // Scrolling down and past the height of the nav: hide nav
-    bottomNav.style.transform = 'translateY(100%)';
-  } else if (st < lastScrollTop) {
-    // Scrolling up: show nav
-    bottomNav.style.transform = 'translateY(0)';
-  }
-  // Ensure lastScrollTop doesn't go below 0
-  lastScrollTop = st <= 0 ? 0 : st;
-});
-
-
-// === Initialize Data Fetching ===
-// Initial calls are now handled within the DOMContentLoaded listener
-// fetchHeroMovies(); // Called in DOMContentLoaded
-// updateMoviesSectionTrakt(); // Called in DOMContentLoaded
-// updateAnimeSection();     // Called in DOMContentLoaded
-// updateShowsSectionTrakt(); // Called in DOMContentLoaded
-
-
-// Update horizontal sections periodically (e.g., every 5 minutes = 300000 ms)
-// Be mindful of API rate limits, especially with the OMDb per-item fetches.
-// Reducing the frequency might be necessary.
-setInterval(() => {
-  updateMoviesSectionTrakt();
-  updateShowsSectionTrakt();
-  updateAnimeSection(); // Also refresh anime data periodically
-}, 300000); // Update every 5 minutes
-
-// === Hero Section Swipe Detection ===
-const heroElement = document.getElementById("hero");
-if (heroElement) { // Check if the hero element exists before adding listeners
-    heroElement.addEventListener("touchstart", (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-      // Stop the auto-interval on touch start, resume on touchend if not swiped
-      clearInterval(heroInterval);
-    });
-
-    heroElement.addEventListener("touchend", (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleSwipe();
-      // Resume the auto-interval after touch ends, but only if not swiped
-      // or handle it inside handleSwipe if you want a delay after swipe
-      // Let's reset the interval in handleSwipe after a swipe occurs.
-      // If no swipe, the interval should also restart.
-       if (heroInterval) clearInterval(heroInterval); // Clear any pending interval
-       heroInterval = setInterval(() => {
-           heroIndex = (heroIndex + 1) % heroMovies.length;
-           showHeroMovie(heroIndex);
-       }, 5000);
-
-    });
-} else {
-    console.warn("Hero element not found. Swipe detection not enabled.");
-}
-
-
-function handleSwipe() {
-  const distance = touchEndX - touchStartX;
-  if (Math.abs(distance) > swipeThreshold) {
-    if (distance < 0) { // Swipe left (next item)
-      heroIndex = (heroIndex + 1) % heroMovies.length;
-    } else { // Swipe right (previous item)
-      heroIndex = (heroIndex - 1 + heroMovies.length) % heroMovies.length;
-    }
-    showHeroMovie(heroIndex);
-    // The interval is reset in the touchend listener
-    // resetHeroInterval(); // This is now handled by touchend
-  } else {
-     // If it was just a tap, also restart the interval
-     // The touchend listener already handles restarting the interval
-  }
-}
-
-// Function for handling click on scroll items - Kept as is
-// Note: The title is encoded when calling openWatchPage
-// in the update functions, so it needs to be decoded if necessary on the watch page.
-// The encoding/decoding logic in openWatchPage is updated slightly for robustness.
-
-
-         // When the page loads, start the timeout to auto-dismiss the notification after 5 seconds.
-    window.addEventListener("load", function() {
-      setTimeout(function() {
-        var notification = document.getElementById("notification");
-        if (notification) {
-          // Use Bootstrap's alert API to close the notification gracefully.
-          var alertInstance = bootstrap.Alert.getInstance(notification);
-          if (!alertInstance) {
-            alertInstance = new bootstrap.Alert(notification);
-          }
-          alertInstance.close();
-        }
-      }, 4000); // 5000 milliseconds = 5 seconds
-    });
-    
-    // Add click event for the Try button to open 'hh.html'
-    document.getElementById("try-btn").addEventListener("click", function() {
-      window.location.href = "suzam19.html";
-    });
-    window.addEventListener('load', function () {
-    var savedColor = localStorage.getItem("themeColor");
-    if (savedColor) {
-      document.documentElement.style.setProperty('--theme-color', savedColor);
-      document.querySelectorAll('.nav-link').forEach(el => el.style.color = savedColor);
-    }
-  });
-    window.addEventListener('load', function() {
-  var savedColor = localStorage.getItem("themeColor");
-  var currentPage = window.location.pathname.split('/').pop(); // Get current page filename
-  
-  if (savedColor) {
-    if (currentPage === 'home.html') {
-      // Sirf search icon ka color change
-      document.querySelector('.nav-link[href="home.html"] i').style.color = savedColor;
-    }
-    // Baaki sab icons white karna
-    document.querySelectorAll('.nav-link i').forEach(function(icon) {
-      if (icon.closest('a').getAttribute('href') !== 'home.html') {
-        icon.style.color = 'white';
+      } catch (error) {
+        console.error(`Error populating ${elementId}:`, error);
+        sectionElement.innerHTML = "<p style='text-align: center; width: 100%; color: var(--text-muted);'>Error loading content.</p>";
       }
-    });
-  }
-});
-      function applyDeviceModeClass() {
-    const width = window.innerWidth;
-    const body = document.body;
-
-    if (width >= 768) {
-      body.classList.add('desktop-mode');
-      body.classList.remove('mobile-mode');
-    } else {
-      body.classList.add('mobile-mode');
-      body.classList.remove('desktop-mode');
     }
-  }
 
-  // Run on page load
-  applyDeviceModeClass();
+    // --- Data Fetching Functions for Sections ---
+    async function fetchTraktItemsAndOMDbDetails(endpoint, limit = 10) {
+        if (!TRAKT_CLIENT_ID) { console.error("Trakt Client ID is not set. Cannot fetch from Trakt."); return []; }
+        if (!OMDB_API_KEY) { console.error("OMDb API Key is not set. Cannot fetch details from OMDb."); return []; }
 
-  // Run again if screen resizes
-  window.addEventListener('resize', applyDeviceModeClass);
+        try {
+            const traktResponse = await fetch(`https://api.trakt.tv/${endpoint}?limit=${limit}`, {
+                headers: { 'Content-Type': 'application/json', 'trakt-api-key': TRAKT_CLIENT_ID, 'trakt-api-version': '2' }
+            });
+            if (!traktResponse.ok) { console.error(`Trakt API error for ${endpoint}: ${traktResponse.status}`, await traktResponse.text()); return []; }
+            const traktData = await traktResponse.json();
+            const itemsWithImdbId = traktData.map(item => item.movie || item.show).filter(item => item && item.ids && item.ids.imdb);
+            const omdbDetailsPromises = itemsWithImdbId.map(item =>
+                fetch(`https://www.omdbapi.com/?i=${item.ids.imdb}&apikey=${OMDB_API_KEY}&plot=short`)
+                    .then(res => res.json())
+                    .catch(e => { console.error(`OMDb fetch error for ${item.ids.imdb}:`, e); return null; })
+            );
+            const omdbDetails = await Promise.all(omdbDetailsPromises);
+            return omdbDetails.filter(item => item && item.Response !== "False" && item.Poster && item.Poster !== "N/A");
+        } catch (error) { console.error(`Error in fetchTraktItemsAndOMDbDetails for ${endpoint}:`, error); return []; }
+    }
+
+    async function fetchUpcomingMoviesTMDB(count = 10) {
+        const corsProxy = "https://api.allorigins.win/raw?url=";
+        const url = `${corsProxy}https://api.themoviedb.org/3/movie/upcoming?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) { console.error(`TMDb API error for upcoming movies: ${response.status}`); return []; }
+            const data = await response.json();
+            return data.results.slice(0, count).map(movie => ({
+                Title: movie.title,
+                Poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/180x270/2a2a2a/cccccc?text=No+Image',
+                Type: 'movie',
+                imdbID: movie.imdb_id
+            }));
+        } catch (error) { console.error("TMDb upcoming fetch failed:", error); return []; }
+    }
+
+    async function fetchAnimeFromAniList(limit = 10) {
+        const ANILIST_API_URL = 'https://graphql.anilist.co';
+        const query = `
+            query { Page(perPage: ${limit}) { media(type: ANIME, sort: POPULARITY_DESC) { id title { romaji english } coverImage { extraLarge large medium } externalLinks { url site } } } }
+        `;
+        try {
+            const response = await fetch(ANILIST_API_URL, {
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ query })
+            });
+            if (!response.ok) { console.error(`AniList API error: ${response.status}`, await response.text()); return []; }
+            const json = await response.json();
+            return json.data.Page.media.map(anime => ({
+                Title: anime.title.english || anime.title.romaji || "Untitled Anime",
+                Poster: anime.coverImage.extraLarge || anime.coverImage.large || anime.coverImage.medium || 'https://placehold.co/180x270/2a2a2a/cccccc?text=No+Image',
+                Type: 'anime',
+                link_url: anime.externalLinks.find(link => link.site === "Crunchyroll" || link.site === "Funimation")?.url
+            }));
+        } catch (error) { console.error("Anime data fetch error:", error); return []; }
+    }
+
+    async function fetchPopularTvShowsTMDB(count = 10) {
+        const corsProxy = "https://api.allorigins.win/raw?url=";
+        const url = `${corsProxy}https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) { console.error(`TMDb API error for popular TV shows: ${response.status}`); return []; }
+            const data = await response.json();
+            return data.results.slice(0, count).map(tvShow => ({
+                Title: tvShow.name,
+                Poster: tvShow.poster_path ? `https://image.tmdb.org/t/p/w500${tvShow.poster_path}` : 'https://placehold.co/180x270/2a2a2a/cccccc?text=No+Image',
+                Type: 'series', // TMDb uses 'tv' but we map to 'series' for consistency
+                imdbID: tvShow.id // TMDb 'id' can be used as a unique identifier
+            }));
+        } catch (error) { console.error("TMDb popular TV shows fetch failed:", error); return []; }
+    }
+
+    async function fetchBollywoodMoviesOMDb() {
+        const bollywoodTitles = ["Keshari Chapter 2", "Chhaava", "Alpha", "Sky Force", "Lahore 1947", "Sikandar", "The Diplomat", "Jaat", "Jewel Thief: The Heist Begins", "Superboys of Malegaon", "Maidaan", "Fighter", "Dunki"];
+        const fetchPromises = bollywoodTitles.map(title =>
+            fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${OMDB_API_KEY}&plot=short`)
+                .then(res => res.json())
+                .catch(e => { console.error(`OMDb fetch error for "${title}":`, e); return null; })
+        );
+        const results = await Promise.all(fetchPromises);
+        return results.filter(movie => movie && movie.Response !== "False" && movie.Poster && movie.Poster !== "N/A");
+    }
+
+    // === Watch Page Function ===
+    function openWatchPageWithDetails(title, imdbID, posterUrl, type) {
+        let url = `watch.html?title=${encodeURIComponent(title)}&type=${encodeURIComponent(type)}`;
+        if (imdbID) { url += `&id=${encodeURIComponent(imdbID)}`; }
+        if (posterUrl) { url += `&poster=${encodeURIComponent(posterUrl)}&bigPoster=${encodeURIComponent(posterUrl)}`; }
+        window.location.href = url;
+    }
+    window.openWatchPageWithDetails = openWatchPageWithDetails;
+
+    // === Initialization ===
+    document.addEventListener("DOMContentLoaded", async () => {
+      applyDeviceModeClass();
+      applyGradientToStylishText();
+
+      // Initial data fetches for all scroll sections
+      await fetchHeroMovies();
+      await populateHorizontalSection("upcoming-scroll", fetchUpcomingMoviesTMDB, 'movie');
+      await populateHorizontalSection("movies-scroll", () => fetchTraktItemsAndOMDbDetails("movies/trending"), 'movie');
+      await populateHorizontalSection("anime-scroll", fetchAnimeFromAniList, 'anime');
+      await populateHorizontalSection("web-series-scroll", () => fetchTraktItemsAndOMDbDetails("shows/trending"), 'series');
+      await populateHorizontalSection("tv-shows-scroll", fetchPopularTvShowsTMDB, 'series'); // Updated to use TMDb for TV shows
+      await populateHorizontalSection("bollywood-scroll", fetchBollywoodMoviesOMDb, 'movie');
+
+      const heroElement = document.getElementById("hero");
+      if (heroElement) {
+        heroElement.addEventListener('touchstart', handleTouchStart, false);
+        heroElement.addEventListener('touchmove', handleTouchMove, false);
+        heroElement.addEventListener('touchend', handleTouchEnd, false);
+      }
+
+      const notification = document.getElementById("notification");
+      if (notification) {
+          setTimeout(() => {
+              const alertInstance = bootstrap.Alert.getInstance(notification) || new bootstrap.Alert(notification);
+              alertInstance.close();
+          }, 4000);
+      }
+
+      document.getElementById("try-btn").addEventListener("click", function() {
+        window.location.href = "suzam19.html";
+      });
+
+      // Scroll to Top Button logic
+      const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+      window.addEventListener('scroll', () => {
+          if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+              scrollToTopBtn.classList.add('show');
+          } else {
+              scrollToTopBtn.classList.remove('show');
+          }
+      });
+      scrollToTopBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    // === Swipe Detection Handlers for Hero Carousel ===
+    function handleTouchStart(event) {
+      touchStartX = event.touches[0].clientX;
+      clearInterval(heroInterval);
+    }
+    function handleTouchMove(event) {
+      touchEndX = event.touches[0].clientX;
+    }
+    function handleTouchEnd() {
+      const deltaX = touchEndX - touchStartX;
+      if (Math.abs(deltaX) > swipeThreshold) {
+        if (deltaX < 0) { heroIndex = (heroIndex + 1) % heroMovies.length; }
+        else { heroIndex = (heroIndex - 1 + heroMovies.length) % heroMovies.length; }
+        showHeroMovie(heroIndex);
+      }
+      resetHeroInterval();
+      touchStartX = 0;
+      touchEndX = 0;
+    }
+
+    // === Device Mode Detection and Class Application ===
+    function applyDeviceModeClass() {
+      const width = window.innerWidth;
+      const body = document.body;
+      const desktopNav = document.querySelector('.nav_bar_container');
+      const mobileNav = document.getElementById('bottom-nav');
+      const topActionBtns = document.querySelectorAll('.top-action-btn');
+
+      if (width >= 768) {
+        body.classList.add('desktop-mode');
+        body.classList.remove('mobile-mode');
+        // Hide mobile specific elements
+        if (mobileNav) mobileNav.style.display = 'none';
+        topActionBtns.forEach(btn => btn.style.display = 'none');
+        // Show desktop specific elements
+        if (desktopNav) desktopNav.style.display = 'block';
+      } else {
+        body.classList.add('mobile-mode');
+        body.classList.remove('desktop-mode');
+        // Hide desktop specific elements
+        if (desktopNav) desktopNav.style.display = 'none';
+        // Show mobile specific elements
+        if (mobileNav) mobileNav.style.display = 'flex'; // Use flex to maintain layout
+        topActionBtns.forEach(btn => btn.style.display = 'flex'); // Use flex to maintain layout
+      }
+    }
+    window.addEventListener('resize', applyDeviceModeClass);
+
+    // === Hide/Show bottom navigation based on scroll direction ===
+    let lastScrollTop = 0;
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        window.addEventListener('scroll', () => {
+            let st = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollThreshold = 5;
+            if (Math.abs(st - lastScrollTop) <= scrollThreshold) { return; }
+
+            if (st > lastScrollTop && st > bottomNav.offsetHeight) {
+                bottomNav.style.transform = 'translateY(100%)';
+            } else if (st < lastScrollTop) {
+                bottomNav.style.transform = 'translateY(0)';
+            }
+            lastScrollTop = st <= 0 ? 0 : st;
+        });
+    }
   </script>
 </body>
 </html>
