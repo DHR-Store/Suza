@@ -1,8 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8">
+    <meta property="og:title" content="SUZA">
+    <meta property="og:description" content="Simple UI based smoothly Movie entertainment page">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta property="og:url" content="https://suza.vercel.app/">
+    <meta property="og:image" content="https://suza.vercel.app/suza.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="https://suza.vercel.app/suza.png" type="image/png">
   <title>SUZA - Home</title>
   
   <!-- Google Fonts -->
@@ -1474,7 +1481,7 @@
         body.classList.remove('mobile-mode');
         // Hide mobile specific elements
         if (mobileNav) mobileNav.style.display = 'none';
-        topActionBtns.forEach(btn => btn.style.display = 'none');
+        topActionBtns.forEach(btn => btn.style.display = 'none'); // Ensure all top action buttons are hidden
         // Show desktop specific elements
         if (desktopNav) desktopNav.style.display = 'block';
         if (fixedHeader) fixedHeader.style.display = 'none'; // Hide fixed header in desktop
@@ -1485,7 +1492,7 @@
         if (desktopNav) desktopNav.style.display = 'none';
         // Show mobile specific elements
         if (mobileNav) mobileNav.style.display = 'flex'; // Use flex to maintain layout
-        // topActionBtns.forEach(btn => btn.style.display = 'flex'); // These are now inside fixed-header
+        topActionBtns.forEach(btn => btn.style.display = 'flex'); // UNCOMMENTED: Ensure top action buttons are shown
         if (fixedHeader) fixedHeader.style.display = 'flex'; // Show fixed header in mobile
       }
     }
